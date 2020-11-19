@@ -1,5 +1,5 @@
 <template>
-  <header class="nav-bar-wrapper" :class="{'is-home-page': isHomePage}">
+  <header class="nav-bar-wrapper">
     <nav v-if="isMobile()" class="subscan-container align-items-center is-mobile">
       <el-dropdown class="dropdown" trigger="click">
         <span class="el-dropdown-link align-items-center">
@@ -160,10 +160,6 @@
                   <el-dropdown-item class="menu-item" command="en">English</el-dropdown-item>
                 </el-dropdown-menu>
               </el-dropdown>
-              <!-- <div class="row">
-                <div class="item" @click="changeLanguage('zh-CN')">简体中文</div>
-                <div class="item" @click="changeLanguage('en')">English</div>
-              </div>-->
             </div>
           </div>
         </el-drawer>
@@ -260,20 +256,6 @@ export default {
     },
     networkHref() {
       return this.getSourceHref(this.sourceSelected);
-    },
-    isHomePage() {
-      let path = this.$route.path;
-      let result = false;
-      switch (path) {
-        case "/":
-        case "/404":
-        case "/noData":
-          result = true;
-          break;
-        default:
-          break;
-      }
-      return result;
     },
     api_doc_link() {
       return  "https://docs.api.subscan.io/";
@@ -520,20 +502,6 @@ export default {
   .nav-bar-search {
     display: none;
   }
-  &.is-home-page {
-    height: 125px;
-    .subscan-container {
-      height: 50px;
-    }
-    .nav-bar-search {
-      display: block;
-      margin-top: 4px;
-      > div {
-        width: 760px;
-        margin: 0 auto;
-      }
-    }
-  }
   @media screen and (max-width: $screen-xs) {
     .subscan-container {
       padding: 0 15px;
@@ -661,24 +629,12 @@ export default {
           }
         }
       }
-      &.is-home-page {
-        background: url("../../assets/images/#{$theme}-banner.png")
-          no-repeat
-          center
-          center;
-        background-size: cover;
-      }
     }
     @media screen and (max-width: $screen-xs) {
       > .nav-bar-wrapper {
         background: url("../../assets/images/#{$theme}-banner-mobile.png")
           no-repeat center center;
         background-size: cover;
-        &.is-home-page {
-          background: url("../../assets/images/#{$theme}-banner-mobile.png")
-            no-repeat center center;
-          background-size: cover;
-        }
       }
     }
   }

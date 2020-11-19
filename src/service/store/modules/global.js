@@ -25,10 +25,12 @@ const global = {
   state: {
     language, // 当前UI语言
     sourceSelected: getLocalStore("polka_source") || "kusama",
-    isEchartsReady: false,
-    isForeignIP: false
+    isPolkadotConnect: false
   },
   mutations: {
+    SET_IS_POLKADOT_CONNECT: (state, status) => {
+      state.isPolkadotConnect = status;
+    },
     SET_LANGUAGE: (state, language) => {
       state.language = language;
     },
@@ -45,10 +47,15 @@ const global = {
         expires: 30
       });
     },
+    SetIsPolkadotConnect({
+      commit
+    }, status) {
+      commit("SET_IS_POLKADOT_CONNECT", status);
+    },
     SetSourceSelected({
       commit
     }, source) {
-      GLOBAL.vbus.$emit("CHANGE_SOURCE", source);
+      window.GLOBAL.vbus.$emit("CHANGE_SOURCE", source);
       commit("SET_SOURCE_SELECTED", source);
       setLocalStore("polka_source", source);
     }

@@ -67,7 +67,7 @@ export default {
           network = item.value;
         }
       });
-      // network = "polkadot";
+      network = "crab";
       this.$store.dispatch("SetSourceSelected", network);
     },
     initWebSocket() {

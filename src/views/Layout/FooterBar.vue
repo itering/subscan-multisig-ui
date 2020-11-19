@@ -6,7 +6,6 @@
       <div class="info-container align-items-center">
         <div class="copyright">{{$t('copy_right', { year: new Date().getFullYear()})}}</div>
         <div class="terms">
-          <a href="https://medium.com/tag/subscan-update/latest">{{$t('version_history')}}</a>
           <a href="https://www.subscan.io/privacy">{{$t('privacy_policy')}}</a>
           <a href="https://www.subscan.io/term">{{$t('term_of_use')}}</a>
         </div>
@@ -279,11 +278,6 @@ export default {
         font-size: 26px;
       }
     }
-    &.is-home-page {
-      .terms {
-        text-align: right;
-      }
-    }
     &.mobile {
       display: none;
     }
@@ -326,8 +320,6 @@ export default {
       }
       .language-dropdown {
         display: none;
-      }
-      &.is-home-page {
       }
     }
   }

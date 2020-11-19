@@ -13,8 +13,6 @@ import store from "Plugins/store";
 import inject from "Plugins/inject";
 import "Plugins/icons";
 import "Plugins/element";
-import consts from 'Plugins/const'
-import _ from "lodash"
 // 引入国际化文件
 import enLocale from "Locale/en.json";
 import zhLocale from "Locale/zh-CN.json";

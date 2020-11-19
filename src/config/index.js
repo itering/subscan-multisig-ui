@@ -1,12 +1,5 @@
 import crabRegistryType from "Service/const/registryType/crab";
 import darwiniaRegistryType from "Service/const/registryType/darwinia";
-import const_symbol from 'Service/const/symbol'
-import {
-  setLocalStore,
-  getLocalStore
-} from "Utils/storage";
-import _ from "lodash"
-const queryString = require("query-string");
 
 // 路由默认配置，路由表并不从此注入
 export const ROUTER_DEFAULT_CONFIG = {

@@ -1,3 +1,64 @@
 {
-  "about": "关于"
+  "about": "关于",
+  "account": "账户",
+  "accounts": "账户",
+  "address": "Address",
+  "available": "Available",
+  "balance": "Balance",
+  "call": "Call",
+  "call_data": "Call Data",
+  "call_hash": "Call Hash",
+  "cancel": "Cancel",
+  "contact_us": "Contact Us",
+  "copy_right": "Subscan © {year} - 由 Subscan 团队开发维护",
+  "create": "Create",
+  "destination": "Destination",
+  "donate": "捐赠",
+  "donate_unit": "捐赠 ({unit}) :",
+  "donate_other": "捐赠其他网络通证",
+  "explorer": "Explorer",
+  "extrinsic": "交易",
+  "extrinsic_index": "交易ID",
+  "fee": "手续费",
+  "language_demo": "语言",
+  "local_account": "Local Account",
+  "msg": {
+    "delete": "Are you sure to delete ？"
+  },
+  "module": "Module",
+  "multisig": {
+    "index": "Multisig",
+    "intro": "Polka Multisig is the most secure way to manage multisig wallet and extrinsic"
+  },
+  "name": "Name",
+  "network": "Network",
+  "ok": "Ok",
+  "owner": "Owner",
+  "polkadot": {
+    "connect": "Connect to polkadot{.js} extension",
+    "connected": "Polkadot{.js} is connected",
+    "download": "Download polkadot{.js} extension",
+    "download_tip": "polkadot{.js} extension not installed, please download and install first",
+    "none": "No accounts",
+    "waiting": "Waiting for authorization from the extension. Please open the installed extension and approve or reject access."
+  },
+  "privacy_policy": "隐私协议",
+  "refresh": "Refresh",
+  "send": "Send",
+  "status": {
+    "approved": "Approved",
+    "cancel": "Cancel",
+    "index": "Status",
+    "pending": "Pending"
+  },
+  "submit_extrinsic": "Submit Extrinsic",
+  "term_of_use": "使用协议",
+  "threshold": "Threshold",
+  "unavailable": "Unavailable",
+  "wallet": {
+    "add": "Add Wallet",
+    "deploy": "Deploy Wallet",
+    "empty": "Please create Multisig wallet first",
+    "index": "Wallet"
+  }
 }

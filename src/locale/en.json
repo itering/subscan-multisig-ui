@@ -1,3 +1,64 @@
 {
-  "about": "About"
+  "about": "About",
+  "account": "Account",
+  "accounts": "Accounts",
+  "address": "Address",
+  "available": "Available",
+  "balance": "Balance",
+  "call": "Call",
+  "call_data": "Call Data",
+  "call_hash": "Call Hash",
+  "cancel": "Cancel",
+  "contact_us": "Contact Us",
+  "copy_right": "Subscan © {year} - Developed By Subscan Team",
+  "create": "Create",
+  "destination": "Destination",
+  "donate": "Donate",
+  "donate_unit": "Donate ({unit}) :",
+  "donate_other": "Donate Other Token",
+  "explorer": "Explorer",
+  "extrinsic": "Extrinsic",
+  "extrinsic_index": "Extrinsic Index",
+  "fee": "Fee",
+  "language_demo": "语言",
+  "local_account": "Local Account",
+  "msg": {
+    "delete": "Are you sure to delete ？"
+  },
+  "module": "Module",
+  "multisig": {
+    "index": "Multisig",
+    "intro": "Polka Multisig is the most secure way to manage multisig wallet and extrinsic"
+  },
+  "name": "Name",
+  "network": "Network",
+  "ok": "Ok",
+  "owner": "Owner",
+  "polkadot": {
+    "connect": "Connect to polkadot{.js} extension",
+    "connected": "Polkadot{.js} is connected",
+    "download": "Download polkadot{.js} extension",
+    "download_tip": "polkadot{.js} extension not installed, please download and install first",
+    "none": "No accounts",
+    "waiting": "Waiting for authorization from the extension. Please open the installed extension and approve or reject access."
+  },
+  "privacy_policy": "Privacy Policy",
+  "refresh": "Refresh",
+  "send": "Send",
+  "status": {
+    "approved": "Approved",
+    "cancel": "Cancel",
+    "index": "Status",
+    "pending": "Pending"
+  },
+  "submit_extrinsic": "Submit Extrinsic",
+  "term_of_use": "Terms Of Use",
+  "threshold": "Threshold",
+  "unavailable": "Unavailable",
+  "wallet": {
+    "add": "Add Wallet",
+    "deploy": "Deploy Wallet",
+    "empty": "Please create Multisig wallet first",
+    "index": "Wallet"
+  }
 }
