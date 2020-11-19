@@ -4,9 +4,6 @@
       class="subscan-container space-between align-items-center"
     >
       <div class="info-container align-items-center">
-        <div v-if="showLicense" class="license">
-          <a target="_blank" rel="noopener" href="http://www.beian.miit.gov.cn">{{$t('license')}}</a>
-        </div>
         <div class="copyright">{{$t('copy_right', { year: new Date().getFullYear()})}}</div>
         <div class="terms">
           <a href="https://medium.com/tag/subscan-update/latest">{{$t('version_history')}}</a>
@@ -107,9 +104,6 @@
     <div
       class="subscan-container mobile space-between align-items-center"
     >
-      <div v-if="showLicense" class="license">
-        <a target="_blank" rel="noopener" href="http://www.beian.miit.gov.cn">{{$t('license')}}</a>
-      </div>
       <div class="copyright">
         <div class="text">{{$t('copy_right', { year: new Date().getFullYear()})}}</div>
         <el-dropdown class="donate-dropdown" trigger="click">
@@ -171,14 +165,6 @@ export default {
         result = result.replace("subscan.io", "subscan.cn");
       }
       return result;
-    },
-    showLicense() {
-      let result = false;
-      let href = window.location && window.location.href;
-      if (href.indexOf(".cn") > -1) {
-        result = true;
-      }
-      return result;
     }
   },
   directives: {
@@ -211,28 +197,6 @@ export default {
     flex-direction: column;
     width: 1180px;
     max-width: 100%;
-    .partner {
-      width: 100%;
-      color: #fff;
-      font-size: 14px;
-      border-bottom: 1px solid rgba(216, 216, 216, 0.2);
-      .partner-title {
-        display: inline-block;
-        margin: 20px 0;
-      }
-      .partner-list {
-        display: flex;
-        justify-content: space-between;
-        opacity: 0.5;
-        margin-bottom: 20px;
-      }
-      .partner-img-wrapper {
-        height: 33px;
-        img {
-          height: 100%;
-        }
-      }
-    }
     .donate-media {
       width: 100%;
       height: 60px;
@@ -354,54 +318,6 @@ export default {
       .license {
         line-height: 40px;
         padding-left: 10px;
-      }
-      .partner {
-        border: none;
-        padding: 20px 10px 10px 10px;
-        margin: 0;
-        display: flex;
-        height: auto;
-        .partner-title {
-          margin: 0;
-          padding-right: 20px;
-          flex: 0 0 auto;
-          font-size: 12px;
-        }
-        .partner-imgs {
-          flex: 1 1 auto;
-          height: auto;
-          margin: 0;
-          opacity: 0.5;
-          .partner-img-wrapper {
-            display: inline-block;
-            margin-right: 10px;
-          }
-          .logo-math {
-            width: 105px;
-          }
-          .logo-imtoken {
-            width: 79px;
-          }
-          .logo-cobo {
-            width: 86px;
-          }
-          .logo-trust {
-            width: 79px;
-          }
-          .logo-polka {
-            width: 92px;
-          }
-          .logo-hotbit {
-            width: 83px;
-          }
-          .logo-coin {
-            width: 71px;
-          }
-          img {
-            width: 100%;
-            height: auto;
-          }
-        }
       }
       .split-line {
         height: 1px;

@@ -3,7 +3,6 @@
     <nav v-if="isMobile()" class="subscan-container align-items-center is-mobile">
       <el-dropdown class="dropdown" trigger="click">
         <span class="el-dropdown-link align-items-center">
-          <!--<div class="choosed-source">{{sourceSelectedLabel}}</div>-->
           <div :class="`network-button ${sourceSelectedValue}-button`">
             <img class="network-button-img" :src="mobileIconImg" />
             <span class="network-arrow" :style="{ backgroundColor: arrowColor }">
@@ -20,14 +19,7 @@
               <a class="menu-dropdown-item-label" :href="getSourceHref(item.value)">{{item.label}}</a>
             </li>
           </div>
-          <div class="network-title">Testnet</div>
           <div class="network-split-line"></div>
-          <div v-for="item in filterSourceList" :key="item.value + ' test'">
-            <li v-if="item.type === 'testnet'" class="menu-dropdown-item align-items-center">
-              <i class="choosed-icon" :class="{show: sourceSelected===item.value}"></i>
-              <a class="menu-dropdown-item-label" :href="getSourceHref(item.value)">{{item.label}}</a>
-            </li>
-          </div>
           <div class="menu-dropdown-item align-items-center">
             <i class="choosed-icon"></i>
             <a
@@ -56,13 +48,9 @@
           <div class="drawer-content">
             <div class="menu-section">
               <div class="row">
-                <router-link
-                  class="item"
-                  to="/"
-                  tag="div"
-                  @click.native="drawer = false"
-                >{{$t('home_page')}}</router-link>
-
+                <div class="item">
+                  <a :href="networkHref">{{$t('explorer')}}</a>
+                </div>
                 <el-collapse accordion>
                   <el-collapse-item :title="$t('blockchain')" name="0">
                     <router-link
@@ -183,65 +171,16 @@
     </nav>
     <nav v-else class="subscan-container align-items-center">
       <router-link class="logo" to="/" tag="a"></router-link>
+      <div class="rate"></div>
       <div class="right-menu align-items-center">
         <ul class="nav-item-list align-items-center">
-          <router-link class="nav-item" to="/" tag="a" active-class="choosed">{{$t('home_page')}}</router-link>
-          <el-dropdown class="account-dropdown" trigger="click">
-            <li class="nav-item">
-              {{$t('blockchain')}}
-              <span>
-                <i class="el-icon-caret-bottom"></i>
-              </span>
-            </li>
-            <el-dropdown-menu slot="dropdown" class="account-dropdown-menu">
-              <router-link class="account-nav-item" to="/block" tag="a" active-class="choosed">
-                <el-dropdown-item class="menu-item">{{$t('blocks')}}</el-dropdown-item>
-              </router-link>
-              <router-link class="account-nav-item" to="/extrinsic" tag="a" active-class="choosed">
-                <el-dropdown-item class="menu-item">{{$t('extrinsics')}}</el-dropdown-item>
-              </router-link>
-              <router-link class="account-nav-item" to="/transfer" tag="a" active-class="choosed">
-                <el-dropdown-item class="menu-item">{{$t('transfers')}}</el-dropdown-item>
-              </router-link>
-              <router-link class="account-nav-item" to="/event" tag="a" active-class="choosed">
-                <el-dropdown-item class="menu-item">{{$t('events')}}</el-dropdown-item>
-              </router-link>
-            </el-dropdown-menu>
-          </el-dropdown>
+          <a class="nav-item" :href="networkHref">{{$t('explorer')}}</a>
           <router-link
             class="nav-item"
             to="/account"
             tag="a"
             active-class="choosed"
           >{{$t('accounts')}}</router-link>
-          <el-dropdown class="account-dropdown" trigger="click">
-            <li class="nav-item">
-              {{$t('tools')}}
-              <span>
-                <i class="el-icon-caret-bottom"></i>
-              </span>
-            </li>
-            <el-dropdown-menu slot="dropdown" class="account-dropdown-menu">
-              <router-link class="account-nav-item" to="/runtime" tag="a">
-                <el-dropdown-item class="menu-item">{{$t('runtime.runtime')}}</el-dropdown-item>
-              </router-link>
-              <a
-                v-if="api_doc_link"
-                class="account-nav-item"
-                :href="api_doc_link"
-                target="_blank"
-                rel="noopener"
-              >
-                <el-dropdown-item class="menu-item">{{$t('api_docs')}}</el-dropdown-item>
-              </a>
-              <a class="account-nav-item" href="/tools/ss58_transform" tag="a">
-                <el-dropdown-item class="menu-item">{{$t('ss58.address_transform')}}</el-dropdown-item>
-              </a>
-              <a class="account-nav-item" href="/tools/charts" tag="a">
-                <el-dropdown-item class="menu-item">{{$t('charts.charts')}}</el-dropdown-item>
-              </a>
-            </el-dropdown-menu>
-          </el-dropdown>
           <el-dropdown class="account-dropdown" trigger="click">
             <li class="nav-item">
               {{$t('language_demo')}}
@@ -274,191 +213,8 @@
                 <a class="menu-dropdown-item-label" :href="getSourceHref(item.value)">{{item.label}}</a>
               </li>
             </div>
-            <div class="network-title">Testnet</div>
-            <div class="network-split-line"></div>
-            <div v-for="item in filterSourceList" :key="item.value + ' test'">
-              <li v-if="item.type === 'testnet'" class="menu-dropdown-item align-items-center">
-                <i class="choosed-icon" :class="{show: sourceSelected===item.value}"></i>
-                <a class="menu-dropdown-item-label" :href="getSourceHref(item.value)">{{item.label}}</a>
-              </li>
-            </div>
-            <div class="menu-dropdown-item align-items-center">
-              <i class="choosed-icon"></i>
-              <a
-                class="menu-dropdown-item-label join-subscan"
-                :href="$t('join_subscan_url')"
-                target="_blank"
-                rel="noopener"
-              >{{$t('join_subscan')}}</a>
-            </div>
           </el-dropdown-menu>
         </el-dropdown>
-        <div class="mobile-menu">
-          <div class="menu-area" @click="drawer = true">
-            <icon-svg icon-class="hamburger-button" class="icon" />
-          </div>
-        </div>
-        <el-drawer
-          :title="$t('menu')"
-          class="mobile-drawer"
-          size="260px"
-          :visible.sync="drawer"
-          :direction="direction"
-        >
-          <div class="drawer-content">
-            <div class="menu-section">
-              <div class="row">
-                <router-link
-                  class="item"
-                  to="/"
-                  tag="div"
-                  @click.native="drawer = false"
-                >{{$t('home_page')}}</router-link>
-
-                <el-collapse accordion>
-                  <el-collapse-item :title="$t('blockchain')" name="0">
-                    <router-link
-                      class="sub-item"
-                      to="/block"
-                      tag="div"
-                      @click.native="drawer = false"
-                    >{{$t('blocks')}}</router-link>
-                    <router-link
-                      class="sub-item"
-                      to="/extrinsic"
-                      tag="div"
-                      @click.native="drawer = false"
-                    >{{$t('extrinsics')}}</router-link>
-                    <router-link
-                      class="sub-item"
-                      to="/transfer"
-                      tag="div"
-                      @click.native="drawer = false"
-                    >{{$t('transfers')}}</router-link>
-                    <router-link
-                      class="sub-item"
-                      to="/event"
-                      tag="div"
-                      @click.native="drawer = false"
-                    >{{$t('events')}}</router-link>
-                  </el-collapse-item>
-                  <router-link
-                    class="item"
-                    to="/account"
-                    tag="div"
-                    @click.native="drawer = false"
-                  >{{$t('accounts')}}</router-link>
-                  <el-collapse-item :title="$t('tools')" name="3">
-                    <router-link
-                      class="sub-item"
-                      to="/runtime"
-                      tag="div"
-                      @click.native="drawer = false"
-                    >{{$t('runtime.runtime')}}</router-link>
-                    <a
-                      v-if="api_doc_link"
-                      class="sub-item"
-                      :href="api_doc_link"
-                      target="_blank"
-                      @mousedown="drawer = false"
-                      rel="noopener"
-                    >{{$t('api_docs')}}</a>
-                    <router-link
-                      class="sub-item"
-                      to="/tools/ss58_transform"
-                      tag="div"
-                      @click.native="drawer = false"
-                    >{{$t('ss58.address_transform')}}</router-link>
-                    <router-link
-                      class="sub-item"
-                      to="/tools/charts"
-                      tag="div"
-                      @click.native="drawer = false"
-                    >{{$t('charts.charts')}}</router-link>
-                  </el-collapse-item>
-                  <el-collapse-item :title="$t('about')" name="4">
-                    <a
-                      class="sub-item"
-                      href="https://medium.com/tag/subscan-update/latest"
-                      target="_blank"
-                      @mousedown="drawer = false"
-                      rel="noopener"
-                    >{{$t('version_history')}}</a>
-                    <a
-                      class="sub-item"
-                      href="https://www.subscan.io/privacy"
-                      target="_blank"
-                      @mousedown="drawer = false"
-                      rel="noopener"
-                    >{{$t('privacy_policy')}}</a>
-                    <a
-                      class="sub-item"
-                      href="https://www.subscan.io/term"
-                      target="_blank"
-                      @mousedown="drawer = false"
-                      rel="noopener"
-                    >{{$t('term_of_use')}}</a>
-                  </el-collapse-item>
-                </el-collapse>
-              </div>
-            </div>
-            <div class="language-section">
-              <a
-                class="contact-item twitter"
-                target="_blank"
-                rel="noopener"
-                href="https://twitter.com/subscan_io/"
-              >
-                <icon-svg icon-class="twitter-grey" class="icon" />
-              </a>
-              <a
-                class="contact-item riot"
-                target="_blank"
-                rel="noopener"
-                href="https://riot.im/app/#/room/!uaYUrKBueiKUurHliJ:matrix.org?via=matrix.org&via=matrix.parity.io&via=web3.foundation"
-              >
-                <icon-svg icon-class="riot-grey" class="icon" />
-              </a>
-              <a
-                class="contact-item github"
-                target="_blank"
-                rel="noopener"
-                href="https://github.com/itering/subscan-essentials"
-              >
-                <icon-svg icon-class="github-grey" class="icon" />
-              </a>
-              <a
-                class="contact-item medium"
-                target="_blank"
-                rel="noopener"
-                href="https://medium.com/subscan"
-              >
-                <icon-svg icon-class="medium-grey" class="icon" />
-              </a>
-              <a
-                class="contact-item mail"
-                target="_blank"
-                rel="noopener"
-                href="mailto:hello@subscan.io"
-              >
-                <icon-svg icon-class="email-grey" class="icon" />
-              </a>
-              <el-dropdown class="language-dropdown" trigger="click" @command="changeLanguage">
-                <div class="contact-item language">
-                  <icon-svg icon-class="zh" class="icon" />
-                </div>
-                <el-dropdown-menu slot="dropdown">
-                  <el-dropdown-item class="menu-item" command="zh-CN">简体中文</el-dropdown-item>
-                  <el-dropdown-item class="menu-item" command="en">English</el-dropdown-item>
-                </el-dropdown-menu>
-              </el-dropdown>
-              <!-- <div class="row">
-                <div class="item" @click="changeLanguage('zh-CN')">简体中文</div>
-                <div class="item" @click="changeLanguage('en')">English</div>
-              </div>-->
-            </div>
-          </div>
-        </el-drawer>
       </div>
     </nav>
   </header>
@@ -502,6 +258,9 @@ export default {
     arrowColor() {
       return this.$const[`SYMBOL/${this.sourceSelected}`]["arrowColor"];
     },
+    networkHref() {
+      return this.getSourceHref(this.sourceSelected);
+    },
     isHomePage() {
       let path = this.$route.path;
       let result = false;
@@ -530,7 +289,6 @@ export default {
     this.init();
   },
   beforeDestroy() {
-    this.$loop.removeLoop("token");
   },
   methods: {
     async init() {
