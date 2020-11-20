@@ -16,11 +16,13 @@
   "donate": "Donate",
   "donate_unit": "Donate ({unit}) :",
   "donate_other": "Donate Other Token",
+  "error": "Error",
   "explorer": "Explorer",
   "extrinsic": "Extrinsic",
   "extrinsic_index": "Extrinsic Index",
   "fee": "Fee",
   "language_demo": "语言",
+  "loading": "Loading",
   "local_account": "Local Account",
   "msg": {
     "delete": "Are you sure to delete ？"

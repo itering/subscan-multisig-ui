@@ -175,12 +175,34 @@
       <div class="right-menu align-items-center">
         <ul class="nav-item-list align-items-center">
           <a class="nav-item" :href="networkHref">{{$t('explorer')}}</a>
-          <router-link
-            class="nav-item"
-            to="/account"
-            tag="a"
-            active-class="choosed"
-          >{{$t('accounts')}}</router-link>
+          <div class="nav-item">
+            <el-popover
+              placement="bottom"
+              width="400"
+              trigger="click">
+              <div>
+                <h1 v-if="!hasExtensionAccount">{{ $t("polkadot.none") }}</h1>
+                <div v-else>
+                  <h1>{{ $t("local_account") }}</h1>
+                  <div class="account"
+                    v-for="item in extensionAccountList"
+                    :key="item.address">
+                    <identicon :size="40" theme="polkadot" :value="item.address" />
+                      <div class="title">
+                        <p class="name">{{ item.meta.name }}</p>
+                        <p class="address">{{ item.address }}</p>
+                      </div>
+                  </div>
+                </div>
+              </div>
+              <div slot="reference">
+                {{$t('accounts')}}
+                <span>
+                  <i class="el-icon-caret-bottom"></i>
+                </span>
+              </div>
+            </el-popover>
+          </div>
           <el-dropdown class="account-dropdown" trigger="click">
             <li class="nav-item">
               {{$t('language_demo')}}
@@ -222,6 +244,11 @@
 <script>
 import { mapState } from "vuex";
 import { formatSymbol, isMobile } from "Utils/tools";
+import {
+  web3Accounts,
+  web3Enable,
+  isWeb3Injected,
+} from "@polkadot/extension-dapp";
 import _ from "lodash";
 export default {
   name: "NavBar",
@@ -233,6 +260,24 @@ export default {
       drawer: false,
       direction: "rtl",
       sourceList: this.$const["COMMON/networkList"]["all"].value,
+      extensionAccountList: [],
+      gridData: [{
+          date: '2016-05-02',
+          name: '王小虎',
+          address: '上海市普陀区金沙江路 1518 弄'
+        }, {
+          date: '2016-05-04',
+          name: '王小虎',
+          address: '上海市普陀区金沙江路 1518 弄'
+        }, {
+          date: '2016-05-01',
+          name: '王小虎',
+          address: '上海市普陀区金沙江路 1518 弄'
+        }, {
+          date: '2016-05-03',
+          name: '王小虎',
+          address: '上海市普陀区金沙江路 1518 弄'
+        }]
     };
   },
   watch: {},
@@ -248,6 +293,13 @@ export default {
       return _.filter(list, (item) => {
         return item;
       });
+    },
+    hasExtensionAccount() {
+      return this.extensionAccountList && this.extensionAccountList.length > 0;
+    },
+    hasWalletAccount() {
+      let result = false;
+      return result;
     },
     iconImg() {
       return this.$const[`SYMBOL/${this.sourceSelected}`]["button"];
@@ -282,6 +334,27 @@ export default {
       // this.getMetaData();
       // await this.getData();
       // this.getToken();
+      if (this.isPolkadotConnect) {
+        this.getExtensionAccounts();
+      }
+    },
+    async getExtensionAccounts() {
+      const allAccounts = await web3Accounts();
+      this.extensionAccountList = allAccounts || [];
+    },
+    connectPolkadot() {
+      this.initPolkadotJs();
+    },
+    async initPolkadotJs() {
+      const extensions = await web3Enable("multisig");
+      if (extensions.length === 0) {
+        return;
+      }
+      if (isWeb3Injected) {
+        this.$store.dispatch("SetIsPolkadotConnect", true);
+        const allAccounts = await web3Accounts();
+        this.extensionAccountList = allAccounts || [];
+      }
     },
     async getToken() {
       await Promise.all([this.$store.dispatch("SetToken")]);

@@ -42,7 +42,7 @@ import {
   TableColumn,
   Tooltip,
   // Pagination,
-  // Popover,
+  Popover,
   Select,
   Option,
   Pagination,
@@ -94,7 +94,7 @@ Vue.use(Tabs)
 Vue.use(TabPane)
 Vue.use(Table)
 Vue.use(TableColumn)
-// Vue.use(Popover)
+Vue.use(Popover)
 Vue.use(Select);
 Vue.use(Option);
 Vue.use(Pagination);

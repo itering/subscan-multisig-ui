@@ -1,8 +1,54 @@
 <template>
   <div id="app" :class="[sourceSelected]">
-    <navbar/>
+    <navbar />
     <main class="main">
-      <router-view />
+      <div v-if="!isPolkadotConnect" class="connect-section subscan-content">
+        <div class="subscan-container subscan-card">
+          <div class="connect">
+            <div class="loading-anime">
+              <ul>
+                <li id="a"></li>
+                <li id="b"></li>
+                <li id="c"></li>
+                <li id="d"></li>
+                <li id="e"></li>
+                <li id="f"></li>
+                <li id="g"></li>
+                <li id="h"></li>
+                <li id="i"></li>
+              </ul>
+            </div>
+            <h1>{{ $t("loading") }}</h1>
+            <div>{{ $t("polkadot.waiting") }}</div>
+            <div class="btns">
+              <div class="button" @click="initPolkadotJs">
+                {{ $t("polkadot.connect") }}
+              </div>
+            </div>
+          </div>
+          <div class="download">
+            <a target="_blank" :href="polkadotInstallLink">{{
+              $t("polkadot.download")
+            }}</a>
+          </div>
+          <el-dialog
+            class="downloadDialog"
+            title=""
+            :visible.sync="dialogVisible"
+            width="560px"
+          >
+            <div class="title">{{ $t("error")}}</div>
+            <div class="text">{{ $t("polkadot.download_tip") }}</div>
+            <div class="btns">
+              <a class="button" target="_blank" :href="polkadotInstallLink">
+                {{ $t("polkadot.download") }}
+              </a>
+            </div>
+            <span slot="footer" class="dialog-footer"> </span>
+          </el-dialog>
+        </div>
+      </div>
+      <router-view v-else />
     </main>
     <footer-bar class="footer-bar"></footer-bar>
   </div>
@@ -11,10 +57,7 @@
 <script>
 import Navbar from "Views/Layout/Navbar";
 import FooterBar from "Views/Layout/FooterBar";
-import {
-  web3Enable,
-  isWeb3Injected
-} from "@polkadot/extension-dapp";
+import { web3Enable, isWeb3Injected } from "@polkadot/extension-dapp";
 
 const queryString = require("query-string");
 import { mapState } from "vuex";
@@ -28,12 +71,16 @@ export default {
   data() {
     return {
       network: NETWORK_LIST,
+      dialogVisible: false,
+      polkadotInstallLink:
+        "https://chrome.google.com/webstore/detail/polkadot%7Bjs%7D-extension/mopnmbcafieddcagagdcbnhejhlodfdd",
     };
   },
   computed: {
     ...mapState({
       sourceSelected: (state) => state.global.sourceSelected,
-    })
+      isPolkadotConnect: (state) => state.global.isPolkadotConnect,
+    }),
   },
   beforeDestroy() {
     this.websocketclose();
@@ -70,7 +117,8 @@ export default {
       const extensions = await web3Enable("multisig");
       this.isLoading = false;
       if (extensions.length === 0) {
-          return;
+        this.dialogVisible = true;
+        return;
       }
       if (isWeb3Injected) {
         this.$store.dispatch("SetIsPolkadotConnect", true);
@@ -139,43 +187,224 @@ export default {
 };
 </script>
 <style lang='scss' scoped>
-.banner {
-  position: fixed;
-  bottom: 0;
-  width: 100%;
-  margin-bottom: 10px;
-  background: #333;
-  padding: 15px;
+.main {
   display: flex;
-  align-items: center;
-  .text {
-    flex: 1 1 auto;
-    font-size: 16px;
-    color: #fff;
-    .link {
-      padding: 0 5px;
-      color: #e90979;
+}
+.connect-section {
+  display: flex;
+  flex: 1 1 auto;
+  @mixin place($n, $t, $l) {
+    animation: $n 1s ease-in-out infinite;
+    top: $t;
+    left: $l;
+  }
+  .subscan-card {
+    position: relative;
+    min-height: 500px;
+    // flex: 1 1 500px;
+  }
+  .connect {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    h1 {
+      text-align: center;
+      font-size: 20px;
+      font-weight: 600;
+      margin: 50px 0;
+    }
+    .btns {
+      display: flex;
+      justify-content: center;
+    }
+    .button {
+      cursor: pointer;
+      display: inline-block;
+      margin-top: 10px;
+      padding: 10px 50px;
+      background: #302b3c;
+      border-radius: 2px;
+      color: #fff;
+    }
+    > div {
+      text-align: center;
+      font-size: 14px;
+      font-weight: 600;
+      line-height: 20px;
     }
   }
-  .btn {
-    flex: 0 0 80px;
-    font-size: 16px;
-    cursor: pointer;
-    background-color: #e6007a;
-    color: #fff;
-    display: inline-block;
-    width: 80px;
-    text-align: center;
-    height: 34px;
-    line-height: 34px;
-    border-radius: 4px;
+  .download {
+    position: absolute;
+    bottom: 40px;
+    left: 50%;
+    transform: translate(-50%, 0);
+    a {
+      color: var(--link-color);
+      font-size: 14px;
+    }
+  }
+  .loading-anime {
+    position: relative;
+    height: 80px;
+    //https://codepen.io/hynden/pen/nyblr
+    ul {
+      position: absolute;
+      left: 50%;
+      transform: translate(-50%, 0);
+      transform: rotate(45deg);
+    }
+    li {
+      list-style-type: none;
+      position: absolute;
+      top: 0px;
+      left: 0px;
+      width: 20px;
+      height: 20px;
+      background: var(--main-color);
+      border-radius: 50%;
+    }
+    #a {
+      @include place(a, -40px, -40px);
+    }
+    #b {
+      @include place(b, -40px, 0px);
+    }
+    #c {
+      @include place(c, -40px, 40px);
+    }
+    #d {
+      @include place(d, 0px, -40px);
+    }
+    #e {
+      @include place(e, 0px, 0px);
+    }
+    #f {
+      @include place(f, 0px, 40px);
+    }
+    #g {
+      @include place(g, 40px, -40px);
+    }
+    #h {
+      @include place(h, 40px, 0px);
+    }
+    #i {
+      @include place(i, 40px, 40px);
+    }
+
+    @keyframes a {
+      50% {
+        top: 0px;
+        left: -40px;
+      }
+      100% {
+        top: 0px;
+        left: -40px;
+      }
+    }
+    @keyframes b {
+      50% {
+        top: -40px;
+        left: -40px;
+      }
+      100% {
+        top: -40px;
+        left: -40px;
+      }
+    }
+    @keyframes c {
+      50% {
+        top: -40px;
+        left: 0px;
+      }
+      100% {
+        top: -40px;
+        left: 0px;
+      }
+    }
+    @keyframes d {
+      50% {
+        top: 40px;
+        left: -40px;
+      }
+      100% {
+        top: 40px;
+        left: -40px;
+      }
+    }
+    @keyframes f {
+      50% {
+        top: -40px;
+        left: 40px;
+      }
+      100% {
+        top: -40px;
+        left: 40px;
+      }
+    }
+    @keyframes g {
+      50% {
+        top: 40px;
+        left: 0px;
+      }
+      100% {
+        top: 40px;
+        left: 0px;
+      }
+    }
+    @keyframes h {
+      50% {
+        top: 40px;
+        left: 40px;
+      }
+      100% {
+        top: 40px;
+        left: 40px;
+      }
+    }
+    @keyframes i {
+      50% {
+        top: 0px;
+        left: 40px;
+      }
+      100% {
+        top: 0px;
+        left: 40px;
+      }
+    }
+  }
+  .downloadDialog {
+    .title {
+      font-size: 20px;
+      font-weight: 600;
+      line-height: 26px;
+      text-align: center;
+      color: var(--black-color);
+    }
+    .text {
+      font-size: 14px;
+      font-weight: 600;
+      margin: 20px 0;
+      word-break: normal;
+      text-align: center;
+      color: var(--black-color);
+    }
+    .btns {
+      display: flex;
+      justify-content: center;
+    }
+    .button {
+      cursor: pointer;
+      display: inline-block;
+      margin-top: 10px;
+      padding: 10px 50px;
+      background: #302b3c;
+      border-radius: 2px;
+      color: #fff;
+    }
   }
 }
-@media screen and (max-width: $screen-xs) {
-  .banner {
-    display: none;
-  }
-}
+
 </style>
 <style lang="scss">
 @import "./assets/style/index.scss";
@@ -241,19 +470,6 @@ body {
   .el-select-dropdown__item.selected {
     color: inherit;
     font-weight: inherit;
-  }
-  /deep/ {
-    .italic {
-      font-style: italic;
-    }
-  }
-  .italic {
-    font-style: italic;
-    &.el-select {
-      /deep/ input {
-        font-style: italic;
-      }
-    }
   }
   .copy-icon {
     color: var(--main-color-light);

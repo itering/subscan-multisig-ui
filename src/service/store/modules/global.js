@@ -25,11 +25,15 @@ const global = {
   state: {
     language, // 当前UI语言
     sourceSelected: getLocalStore("polka_source") || "kusama",
-    isPolkadotConnect: false
+    isPolkadotConnect: false,
+    isKeyringLoaded: false
   },
   mutations: {
     SET_IS_POLKADOT_CONNECT: (state, status) => {
       state.isPolkadotConnect = status;
+    },
+    SET_KEYRING_STATUS: (state, status) => {
+      state.isKeyringLoaded = status;
     },
     SET_LANGUAGE: (state, language) => {
       state.language = language;
@@ -51,6 +55,17 @@ const global = {
       commit
     }, status) {
       commit("SET_IS_POLKADOT_CONNECT", status);
+    },
+    initKeyring({ commit }, isLoaded) {
+      return new Promise(resolve => {
+        if (isLoaded) {
+          commit("SET_KEYRING_STATUS", isLoaded);
+          resolve(isLoaded);
+        } else {
+          commit("SET_KEYRING_STATUS", isLoaded);
+          resolve(isLoaded);
+        }
+      });
     },
     SetSourceSelected({
       commit
