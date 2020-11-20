@@ -14,5 +14,15 @@ export default [
     baseURL: "",
     path: "/scan/metadata",
     options: {}
+  },
+  {
+    name: "getToken",
+    method: "POST",
+    desc: "获取token信息",
+    baseURL: "",
+    path: "/scan/token",
+    options: {
+      noShowDefaultError: true
+    }
   }
 ];

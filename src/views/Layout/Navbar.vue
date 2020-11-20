@@ -166,7 +166,11 @@
       </div>
     </nav>
     <nav v-else class="subscan-container align-items-center">
-      <router-link class="logo" to="/" tag="a"></router-link>
+      <router-link class="logo" to="/" tag="a">
+        <div class="subscan-logo"></div>
+        <div class="multisig">{{$t("multisig.index")}}</div>
+      </router-link>
+      <div class="polkadot-status" :class="isPolkadotConnect ? 'connected' : ''"></div>
       <div class="rate"></div>
       <div class="right-menu align-items-center">
         <ul class="nav-item-list align-items-center">
@@ -263,6 +267,7 @@ export default {
     ...mapState({
       metadata: (state) => state.polka.metadata,
       sourceSelected: (state) => state.global.sourceSelected,
+      isPolkadotConnect: (state) => state.global.isPolkadotConnect,
       token: (state) => state.polka.token,
       language: (state) => state.global.language,
     }),
@@ -340,11 +345,33 @@ export default {
     width: 1180px;
     max-width: 100%;
     .logo {
-      height: 25px;
-      width: 119px;
-      background: url("../../assets/images/logo@2x.png") no-repeat center center;
-      background-size: cover;
       cursor: pointer;
+      display: flex;
+      align-items: center;
+      .subscan-logo {
+        height: 25px;
+        width: 119px;
+        background: url("../../assets/images/logo@2x.png") no-repeat center center;
+        background-size: cover;
+      }
+      .multisig {
+        background: #fff;
+        border-radius: 9px;
+        color: var(--main-color);
+        padding: 2px 10px;
+        margin-left: 5px;
+      }
+    }
+    .polkadot-status {
+      width: 32px;
+      height: 24px;
+      background: url("../../assets/images/polka-cross.png") no-repeat center center;
+      background-size: cover;
+      margin-left: 10px;
+      &.connected {
+        background: url("../../assets/images/polka-check.png") no-repeat center center;
+        background-size: cover;
+      }
     }
     .rate {
       flex: 1 1 auto;

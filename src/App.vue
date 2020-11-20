@@ -11,6 +11,10 @@
 <script>
 import Navbar from "Views/Layout/Navbar";
 import FooterBar from "Views/Layout/FooterBar";
+import {
+  web3Enable,
+  isWeb3Injected
+} from "@polkadot/extension-dapp";
 
 const queryString = require("query-string");
 import { mapState } from "vuex";
@@ -47,8 +51,7 @@ export default {
       this.$store.dispatch("SetLanguage", language);
       this.$i18n.locale = language;
     }
-    this.detectNetwork();
-    this.initWebSocket();
+    this.init();
   },
   mounted() {
     window.GLOBAL.vbus.$on("CHANGE_LANGUAGE", (language) => {
@@ -57,6 +60,22 @@ export default {
     document.getElementsByTagName("body")[0].className = this.sourceSelected;
   },
   methods: {
+    init() {
+      this.detectNetwork();
+      this.initWebSocket();
+      this.initPolkadotJs();
+    },
+    async initPolkadotJs() {
+      this.isLoading = true;
+      const extensions = await web3Enable("multisig");
+      this.isLoading = false;
+      if (extensions.length === 0) {
+          return;
+      }
+      if (isWeb3Injected) {
+        this.$store.dispatch("SetIsPolkadotConnect", true);
+      }
+    },
     detectNetwork() {
       const parsedObj = queryString.parse(location.search);
       let networkParam = parsedObj["network"] || "";
