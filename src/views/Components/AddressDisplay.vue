@@ -95,7 +95,6 @@ import clipboard from "Directives/clipboard";
 import { hashFormat } from "Utils/filters";
 import Tooltip from "@/views/Components/Tooltip";
 import _ from "lodash";
-import {TypeRegistry} from '@polkadot/types/create';
 export default {
   name: "address-display",
   components: {

@@ -191,15 +191,22 @@
                   </div>
                 </div>
                 <div v-else>
-                  <h1>{{ $t("local_account") }}</h1>
                   <div class="account"
                     v-for="item in extensionAccountList"
                     :key="item.address">
-                    <identicon :size="40" theme="polkadot" :value="item.address" />
-                      <div class="title">
-                        <p class="name">{{ item.meta.name }}</p>
-                        <p class="address">{{ item.address }}</p>
-                      </div>
+                    <address-display
+                      customCls="address-display-cls"
+                      :hasAddressWrapper="true"
+                      :hasHashFormat="true"
+                      :isVertical="true"
+                      :iconSize="30"
+                      :address="item.address"
+                      :hasDisplayNameInfo="true"
+                      :displayNameInfo="getAccountDisplayInfo(item)"
+                    ></address-display>
+                  </div>
+                  <div class="button" @click="getExtensionAccounts">
+                    {{ $t("refresh") }}
                   </div>
                 </div>
               </div>
@@ -252,6 +259,7 @@
 <script>
 import { mapState } from "vuex";
 import { formatSymbol, isMobile } from "Utils/tools";
+import AddressDisplay from "@/views/Components/AddressDisplay";
 import {
   web3Accounts,
   web3Enable,
@@ -261,6 +269,7 @@ import _ from "lodash";
 export default {
   name: "NavBar",
   components: {
+    AddressDisplay
   },
   data() {
     return {
@@ -269,23 +278,6 @@ export default {
       direction: "rtl",
       sourceList: this.$const["COMMON/networkList"]["all"].value,
       extensionAccountList: [],
-      gridData: [{
-          date: '2016-05-02',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄'
-        }, {
-          date: '2016-05-04',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄'
-        }, {
-          date: '2016-05-01',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄'
-        }, {
-          date: '2016-05-03',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄'
-        }]
     };
   },
   watch: {},
@@ -349,6 +341,12 @@ export default {
     async getExtensionAccounts() {
       const allAccounts = await web3Accounts();
       this.extensionAccountList = allAccounts || [];
+    },
+    getAccountDisplayInfo(item) {
+      return {
+        address: item.address,
+        display: item.meta.name
+      }
     },
     connectPolkadot() {
       this.initPolkadotJs();
@@ -767,19 +765,35 @@ export default {
         font-size: 60px;
       }
     }
-    .button {
-      margin-top: 20px;
-      cursor: pointer;
-      display: inline-block;
-      font-weight: 600;
-      width: 200px;
-      text-align: center;
-      padding: 5px 0;
-      border-radius: 2px;
-      border: 1px solid var(--main-color);
-      color: var(--main-color);
+  }
+  .address-display-cls {
+    padding: 10px 0;
+    border-bottom: 1px solid #E7EAF3;
+    .name-wrapper {
+      pointer-events: none;
+      .nick-name {
+        a {
+          color: var(--main-color) !important;
+        }
+        font-weight: 600;
+      }
     }
-
+    .address-wrapper-address {
+      width: 124px;
+      pointer-events: none;
+    }
+  }
+  .button {
+    margin-top: 20px;
+    cursor: pointer;
+    display: inline-block;
+    font-weight: 600;
+    width: 200px;
+    text-align: center;
+    padding: 5px 0;
+    border-radius: 2px;
+    border: 1px solid var(--main-color);
+    color: var(--main-color);
   }
 }
 .account-dropdown-menu.el-dropdown-menu {
