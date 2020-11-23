@@ -178,10 +178,18 @@
           <div class="nav-item">
             <el-popover
               placement="bottom"
-              width="400"
+              width="260"
               trigger="click">
-              <div>
-                <h1 v-if="!hasExtensionAccount">{{ $t("polkadot.none") }}</h1>
+              <div class="polka-account-list">
+                <div v-if="!hasExtensionAccount" class="empty">
+                  <div class="avatar">
+                    <icon-svg icon-class="user" class="icon avatar-icon"/>
+                  </div>
+                  <div>{{ $t("polkadot.none") }}</div>
+                  <div class="button" @click="getExtensionAccounts">
+                    {{ $t("refresh") }}
+                  </div>
+                </div>
                 <div v-else>
                   <h1>{{ $t("local_account") }}</h1>
                   <div class="account"
@@ -431,7 +439,7 @@ export default {
         background: #fff;
         border-radius: 9px;
         color: var(--main-color);
-        padding: 2px 10px;
+        padding: 0px 10px;
         margin-left: 5px;
       }
     }
@@ -737,6 +745,41 @@ export default {
         background-size: cover;
       }
     }
+  }
+}
+.polka-account-list {
+  padding: 20px;
+  .empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    .avatar {
+      width: 100px;
+      height: 100px;
+      background-color: var(--main-color-bg-light);
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: 20px 0;
+      .avatar-icon {
+        color: var(--main-color-light);
+        font-size: 60px;
+      }
+    }
+    .button {
+      margin-top: 20px;
+      cursor: pointer;
+      display: inline-block;
+      font-weight: 600;
+      width: 200px;
+      text-align: center;
+      padding: 5px 0;
+      border-radius: 2px;
+      border: 1px solid var(--main-color);
+      color: var(--main-color);
+    }
+
   }
 }
 .account-dropdown-menu.el-dropdown-menu {

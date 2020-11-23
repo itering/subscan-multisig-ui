@@ -39,7 +39,7 @@
     "connected": "Polkadot{.js} is connected",
     "download": "Download polkadot{.js} extension",
     "download_tip": "polkadot{.js} extension not installed, please download and install first",
-    "none": "No accounts",
+    "none": "未从 polkadot{.js} extension 获取到账号",
     "waiting": "Waiting for authorization from the extension. Please open the installed extension and approve or reject access."
   },
   "privacy_policy": "隐私协议",
