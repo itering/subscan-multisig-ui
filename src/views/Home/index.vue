@@ -13,6 +13,9 @@
           </el-table-column>
           <el-table-column min-width="300" :label="$t('address')" fit>
             <template slot-scope="props">
+              <router-link :to="`/wallet/${props.row.address}`" tag="a">
+                {{props.row.address}}
+              </router-link>
               <div class="address">{{props.row.address}}</div>
             </template>
           </el-table-column>
