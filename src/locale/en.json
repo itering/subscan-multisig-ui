@@ -14,6 +14,7 @@
   "contact_us": "Contact Us",
   "copy_right": "Subscan © {year} - Developed By Subscan Team",
   "create": "Create",
+  "delete": "Delete",
   "destination": "Destination",
   "donate": "Donate",
   "donate_unit": "Donate ({unit}) :",
@@ -52,6 +53,7 @@
   },
   "privacy_policy": "Privacy Policy",
   "refresh": "Refresh",
+  "rename": "Rename",
   "send": "Send",
   "status": {
     "approved": "Approved",
@@ -64,6 +66,7 @@
   "term_of_use": "Terms Of Use",
   "threshold": "Threshold",
   "unavailable": "Unavailable",
+  "view_in_subscan": "View in Subscan",
   "wallet": {
     "add": "Add Wallet",
     "deploy": "Deploy Wallet",

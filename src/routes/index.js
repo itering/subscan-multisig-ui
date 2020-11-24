@@ -10,6 +10,12 @@ export default [{
     component: () => import( /* webpackChunkName: "createWallet" */ "Views/CreateWallet")
   },
   {
+    name: "walletDetail",
+    path: "/wallet/:key",
+    component: () =>
+      import( /* webpackChunkName: "walletDetail" */ "Views/WalletDetail")
+  },
+  {
     name: "404",
     path: "/404",
     component: () => import( /* webpackChunkName: "404" */ "Views/ErrorPage/404")
