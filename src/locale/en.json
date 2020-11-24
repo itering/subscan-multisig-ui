@@ -2,6 +2,8 @@
   "about": "About",
   "account": "Account",
   "accounts": "Accounts",
+  "action": "Action",
+  "add_members": "Add Members",
   "address": "Address",
   "available": "Available",
   "balance": "Balance",
@@ -18,12 +20,16 @@
   "donate_other": "Donate Other Token",
   "error": "Error",
   "explorer": "Explorer",
+  "external": "External",
   "extrinsic": "Extrinsic",
   "extrinsic_index": "Extrinsic Index",
   "fee": "Fee",
+  "id": "ID",
+  "injected": "Injected",
   "language_demo": "语言",
   "loading": "Loading",
   "local_account": "Local Account",
+  "members": "Members",
   "msg": {
     "delete": "Are you sure to delete ？"
   },
@@ -54,6 +60,7 @@
     "pending": "Pending"
   },
   "submit_extrinsic": "Submit Extrinsic",
+  "success": "Success",
   "term_of_use": "Terms Of Use",
   "threshold": "Threshold",
   "unavailable": "Unavailable",
@@ -61,6 +68,7 @@
     "add": "Add Wallet",
     "deploy": "Deploy Wallet",
     "empty": "Please create Multisig wallet first",
-    "index": "Wallet"
+    "index": "Wallet",
+    "list": "Multisig list"
   }
 }

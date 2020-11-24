@@ -48,6 +48,26 @@
           </el-dialog>
         </div>
       </div>
+      <div v-else-if="!isKeyringLoaded" class="connect-section subscan-content">
+        <div class="subscan-container subscan-card">
+          <div class="connect">
+            <div class="loading-anime">
+              <ul>
+                <li id="a"></li>
+                <li id="b"></li>
+                <li id="c"></li>
+                <li id="d"></li>
+                <li id="e"></li>
+                <li id="f"></li>
+                <li id="g"></li>
+                <li id="h"></li>
+                <li id="i"></li>
+              </ul>
+            </div>
+            <h1>{{ $t("loading") }}</h1>
+          </div>
+        </div>
+      </div>
       <router-view v-else />
     </main>
     <footer-bar class="footer-bar"></footer-bar>
@@ -80,6 +100,7 @@ export default {
     ...mapState({
       sourceSelected: (state) => state.global.sourceSelected,
       isPolkadotConnect: (state) => state.global.isPolkadotConnect,
+      isKeyringLoaded: (state) => state.global.isKeyringLoaded
     }),
   },
   beforeDestroy() {
@@ -108,9 +129,9 @@ export default {
   },
   methods: {
     init() {
+      this.initPolkadotJs();
       this.detectNetwork();
       this.initWebSocket();
-      this.initPolkadotJs();
     },
     async initPolkadotJs() {
       this.isLoading = true;
@@ -501,6 +522,12 @@ body {
     padding: 20px 0;
     overflow: scroll;
   }
+  .subscan-card-title {
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 20px;
+    margin-bottom: 10px;
+  }
   .subscan-card {
     background: #fff;
     box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.05);
@@ -530,6 +557,57 @@ body {
         align-items: center;
         .caret-wrapper {
           margin-top: 0.3em;
+        }
+      }
+    }
+    .el-table__header-wrapper {
+      th,
+      tr {
+        box-sizing: border-box;
+        height: 44px;
+        background: #f3f5f9;
+        font-size: 14px;
+        font-weight: bold;
+        color: #302b3c;
+      }
+      th {
+        padding: 0;
+        border: none;
+      }
+    }
+    .el-table__body-wrapper {
+      .el-table__body tr:hover > td {
+        background: none;
+      }
+      tr {
+        box-sizing: border-box;
+        height: 50px;
+        font-size: 14px;
+        color: #302b3c;
+      }
+      td {
+        padding: 0;
+      }
+    }
+    .el-table__expanded-cell {
+      background: #f3f5f9;
+      &:hover {
+        background: #f3f5f9 !important;
+      }
+    }
+    .expand-form {
+      background: #f3f5f9;
+      padding: 20px;
+      .form-item {
+        min-height: 40px;
+        font-size: 14px;
+        color: rgba(48, 43, 60, 1);
+        .label {
+          min-width: 140px;
+        }
+        .value {
+          width: 900px;
+          word-break: break-all;
         }
       }
     }

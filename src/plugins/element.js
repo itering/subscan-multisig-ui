@@ -34,8 +34,8 @@ import {
   // Menu,
   // Submenu,
   // MenuItem,
-  // Form,
-  // FormItem,
+  Form,
+  FormItem,
   Tabs,
   TabPane,
   Table,
@@ -88,8 +88,8 @@ Vue.use(Tooltip);
 // Vue.use(Menu)
 // Vue.use(Submenu)
 // Vue.use(MenuItem)
-// Vue.use(Form)
-// Vue.use(FormItem)
+Vue.use(Form)
+Vue.use(FormItem)
 Vue.use(Tabs)
 Vue.use(TabPane)
 Vue.use(Table)

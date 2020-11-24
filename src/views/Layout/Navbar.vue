@@ -1,22 +1,41 @@
 <template>
   <header class="nav-bar-wrapper">
-    <nav v-if="isMobile()" class="subscan-container align-items-center is-mobile">
+    <nav
+      v-if="isMobile()"
+      class="subscan-container align-items-center is-mobile"
+    >
       <el-dropdown class="dropdown" trigger="click">
         <span class="el-dropdown-link align-items-center">
           <div :class="`network-button ${sourceSelectedValue}-button`">
             <img class="network-button-img" :src="mobileIconImg" />
-            <span class="network-arrow" :style="{ backgroundColor: arrowColor }">
+            <span
+              class="network-arrow"
+              :style="{ backgroundColor: arrowColor }"
+            >
               <i class="el-icon-caret-bottom"></i>
             </span>
           </div>
         </span>
-        <el-dropdown-menu slot="dropdown" class="menu-dropdown network-dropdown">
+        <el-dropdown-menu
+          slot="dropdown"
+          class="menu-dropdown network-dropdown"
+        >
           <div class="network-title">Mainnet</div>
           <div class="network-split-line"></div>
           <div v-for="item in sourceList" :key="item.value + ' main'">
-            <li v-if="item.type === 'mainnet'" class="menu-dropdown-item align-items-center">
-              <i class="choosed-icon" :class="{show: sourceSelected===item.value}"></i>
-              <a class="menu-dropdown-item-label" :href="getSourceHref(item.value)">{{item.label}}</a>
+            <li
+              v-if="item.type === 'mainnet'"
+              class="menu-dropdown-item align-items-center"
+            >
+              <i
+                class="choosed-icon"
+                :class="{ show: sourceSelected === item.value }"
+              ></i>
+              <a
+                class="menu-dropdown-item-label"
+                :href="getSourceHref(item.value)"
+                >{{ item.label }}</a
+              >
             </li>
           </div>
           <div class="network-split-line"></div>
@@ -27,7 +46,8 @@
               :href="$t('join_subscan_url')"
               target="_blank"
               rel="noopener"
-            >{{$t('join_subscan')}}</a>
+              >{{ $t("join_subscan") }}</a
+            >
           </div>
         </el-dropdown-menu>
       </el-dropdown>
@@ -49,7 +69,7 @@
             <div class="menu-section">
               <div class="row">
                 <div class="item">
-                  <a :href="networkHref">{{$t('explorer')}}</a>
+                  <a :href="networkHref">{{ $t("explorer") }}</a>
                 </div>
                 <el-collapse accordion>
                   <el-collapse-item :title="$t('blockchain')" name="0">
@@ -58,32 +78,37 @@
                       to="/block"
                       tag="div"
                       @click.native="drawer = false"
-                    >{{$t('blocks')}}</router-link>
+                      >{{ $t("blocks") }}</router-link
+                    >
                     <router-link
                       class="sub-item"
                       to="/extrinsic"
                       tag="div"
                       @click.native="drawer = false"
-                    >{{$t('extrinsics')}}</router-link>
+                      >{{ $t("extrinsics") }}</router-link
+                    >
                     <router-link
                       class="sub-item"
                       to="/transfer"
                       tag="div"
                       @click.native="drawer = false"
-                    >{{$t('transfers')}}</router-link>
+                      >{{ $t("transfers") }}</router-link
+                    >
                     <router-link
                       class="sub-item"
                       to="/event"
                       tag="div"
                       @click.native="drawer = false"
-                    >{{$t('events')}}</router-link>
+                      >{{ $t("events") }}</router-link
+                    >
                   </el-collapse-item>
                   <router-link
                     class="item"
                     to="/account"
                     tag="div"
                     @click.native="drawer = false"
-                  >{{$t('accounts')}}</router-link>
+                    >{{ $t("accounts") }}</router-link
+                  >
                   <el-collapse-item :title="$t('about')" name="4">
                     <a
                       class="sub-item"
@@ -91,21 +116,24 @@
                       target="_blank"
                       @mousedown="drawer = false"
                       rel="noopener"
-                    >{{$t('version_history')}}</a>
+                      >{{ $t("version_history") }}</a
+                    >
                     <a
                       class="sub-item"
                       href="https://www.subscan.io/privacy"
                       target="_blank"
                       @mousedown="drawer = false"
                       rel="noopener"
-                    >{{$t('privacy_policy')}}</a>
+                      >{{ $t("privacy_policy") }}</a
+                    >
                     <a
                       class="sub-item"
                       href="https://www.subscan.io/term"
                       target="_blank"
                       @mousedown="drawer = false"
                       rel="noopener"
-                    >{{$t('term_of_use')}}</a>
+                      >{{ $t("term_of_use") }}</a
+                    >
                   </el-collapse-item>
                 </el-collapse>
               </div>
@@ -151,13 +179,21 @@
               >
                 <icon-svg icon-class="email-grey" class="icon" />
               </a>
-              <el-dropdown class="language-dropdown" trigger="click" @command="changeLanguage">
+              <el-dropdown
+                class="language-dropdown"
+                trigger="click"
+                @command="changeLanguage"
+              >
                 <div class="contact-item language">
                   <icon-svg icon-class="zh" class="icon" />
                 </div>
                 <el-dropdown-menu slot="dropdown">
-                  <el-dropdown-item class="menu-item" command="zh-CN">简体中文</el-dropdown-item>
-                  <el-dropdown-item class="menu-item" command="en">English</el-dropdown-item>
+                  <el-dropdown-item class="menu-item" command="zh-CN"
+                    >简体中文</el-dropdown-item
+                  >
+                  <el-dropdown-item class="menu-item" command="en"
+                    >English</el-dropdown-item
+                  >
                 </el-dropdown-menu>
               </el-dropdown>
             </div>
@@ -168,22 +204,22 @@
     <nav v-else class="subscan-container align-items-center">
       <router-link class="logo" to="/" tag="a">
         <div class="subscan-logo"></div>
-        <div class="multisig">{{$t("multisig.index")}}</div>
+        <div class="multisig">{{ $t("multisig.index") }}</div>
       </router-link>
-      <div class="polkadot-status" :class="isPolkadotConnect ? 'connected' : ''"></div>
+      <div
+        class="polkadot-status"
+        :class="isPolkadotConnect ? 'connected' : ''"
+      ></div>
       <div class="rate"></div>
       <div class="right-menu align-items-center">
         <ul class="nav-item-list align-items-center">
-          <a class="nav-item" :href="networkHref">{{$t('explorer')}}</a>
+          <a class="nav-item" :href="networkHref">{{ $t("explorer") }}</a>
           <div class="nav-item">
-            <el-popover
-              placement="bottom"
-              width="260"
-              trigger="click">
+            <el-popover placement="bottom" width="260" trigger="click">
               <div class="polka-account-list">
                 <div v-if="!hasExtensionAccount" class="empty">
                   <div class="avatar">
-                    <icon-svg icon-class="user" class="icon avatar-icon"/>
+                    <icon-svg icon-class="user" class="icon avatar-icon" />
                   </div>
                   <div>{{ $t("polkadot.none") }}</div>
                   <div class="button" @click="getExtensionAccounts">
@@ -191,9 +227,11 @@
                   </div>
                 </div>
                 <div v-else>
-                  <div class="account"
+                  <div
+                    class="account"
                     v-for="item in extensionAccountList"
-                    :key="item.address">
+                    :key="item.address"
+                  >
                     <address-display
                       customCls="address-display-cls"
                       :hasAddressWrapper="true"
@@ -211,7 +249,7 @@
                 </div>
               </div>
               <div slot="reference">
-                {{$t('accounts')}}
+                {{ $t("accounts") }}
                 <span>
                   <i class="el-icon-caret-bottom"></i>
                 </span>
@@ -220,14 +258,22 @@
           </div>
           <el-dropdown class="account-dropdown" trigger="click">
             <li class="nav-item">
-              {{$t('language_demo')}}
+              {{ $t("language_demo") }}
               <span>
                 <i class="el-icon-caret-bottom"></i>
               </span>
             </li>
             <el-dropdown-menu slot="dropdown" class="account-dropdown-menu">
-              <el-dropdown-item class="menu-item" @click.native="changeLanguage('zh-CN')">简体中文</el-dropdown-item>
-              <el-dropdown-item class="menu-item" @click.native="changeLanguage('en')">English</el-dropdown-item>
+              <el-dropdown-item
+                class="menu-item"
+                @click.native="changeLanguage('zh-CN')"
+                >简体中文</el-dropdown-item
+              >
+              <el-dropdown-item
+                class="menu-item"
+                @click.native="changeLanguage('en')"
+                >English</el-dropdown-item
+              >
             </el-dropdown-menu>
           </el-dropdown>
         </ul>
@@ -236,18 +282,34 @@
             <!--<div class="choosed-source">{{sourceSelectedLabel}}</div>-->
             <div :class="`network-button ${sourceSelectedValue}-button`">
               <img class="network-button-img" :src="iconImg" />
-              <span class="network-arrow" :style="{ backgroundColor: arrowColor }">
+              <span
+                class="network-arrow"
+                :style="{ backgroundColor: arrowColor }"
+              >
                 <i class="el-icon-caret-bottom"></i>
               </span>
             </div>
           </span>
-          <el-dropdown-menu slot="dropdown" class="menu-dropdown network-dropdown">
+          <el-dropdown-menu
+            slot="dropdown"
+            class="menu-dropdown network-dropdown"
+          >
             <div class="network-title">Mainnet</div>
             <div class="network-split-line"></div>
             <div v-for="item in sourceList" :key="item.value + ' main'">
-              <li v-if="item.type === 'mainnet'" class="menu-dropdown-item align-items-center">
-                <i class="choosed-icon" :class="{show: sourceSelected===item.value}"></i>
-                <a class="menu-dropdown-item-label" :href="getSourceHref(item.value)">{{item.label}}</a>
+              <li
+                v-if="item.type === 'mainnet'"
+                class="menu-dropdown-item align-items-center"
+              >
+                <i
+                  class="choosed-icon"
+                  :class="{ show: sourceSelected === item.value }"
+                ></i>
+                <a
+                  class="menu-dropdown-item-label"
+                  :href="getSourceHref(item.value)"
+                  >{{ item.label }}</a
+                >
               </li>
             </div>
           </el-dropdown-menu>
@@ -260,27 +322,28 @@
 import { mapState } from "vuex";
 import { formatSymbol, isMobile } from "Utils/tools";
 import AddressDisplay from "@/views/Components/AddressDisplay";
-import {
-  web3Accounts,
-  web3Enable,
-  isWeb3Injected,
-} from "@polkadot/extension-dapp";
+import { web3Accounts } from "@polkadot/extension-dapp";
 import _ from "lodash";
 export default {
   name: "NavBar",
   components: {
-    AddressDisplay
+    AddressDisplay,
   },
   data() {
     return {
       currentTime: Date.now(),
       drawer: false,
       direction: "rtl",
-      sourceList: this.$const["COMMON/networkList"]["all"].value,
-      extensionAccountList: [],
+      sourceList: this.$const["COMMON/networkList"]["all"].value
     };
   },
-  watch: {},
+  watch: {
+    isPolkadotConnect(newValue) {
+      if (newValue) {
+        this.getExtensionAccounts();
+      }
+    },
+  },
   computed: {
     sourceSelectedValue() {
       let source = this.sourceList.find((item) => {
@@ -313,12 +376,10 @@ export default {
     networkHref() {
       return this.getSourceHref(this.sourceSelected);
     },
-    api_doc_link() {
-      return  "https://docs.api.subscan.io/";
-    },
     ...mapState({
       metadata: (state) => state.polka.metadata,
       sourceSelected: (state) => state.global.sourceSelected,
+      extensionAccountList: (state) => state.global.extensionAccountList,
       isPolkadotConnect: (state) => state.global.isPolkadotConnect,
       token: (state) => state.polka.token,
       language: (state) => state.global.language,
@@ -327,8 +388,7 @@ export default {
   created() {
     this.init();
   },
-  beforeDestroy() {
-  },
+  beforeDestroy() {},
   methods: {
     async init() {
       // this.getMetaData();
@@ -340,27 +400,13 @@ export default {
     },
     async getExtensionAccounts() {
       const allAccounts = await web3Accounts();
-      this.extensionAccountList = allAccounts || [];
+      this.$store.dispatch("SetExtensionAccountList", allAccounts || []);
     },
     getAccountDisplayInfo(item) {
       return {
         address: item.address,
-        display: item.meta.name
-      }
-    },
-    connectPolkadot() {
-      this.initPolkadotJs();
-    },
-    async initPolkadotJs() {
-      const extensions = await web3Enable("multisig");
-      if (extensions.length === 0) {
-        return;
-      }
-      if (isWeb3Injected) {
-        this.$store.dispatch("SetIsPolkadotConnect", true);
-        const allAccounts = await web3Accounts();
-        this.extensionAccountList = allAccounts || [];
-      }
+        display: item.meta.name,
+      };
     },
     async getToken() {
       await Promise.all([this.$store.dispatch("SetToken")]);
@@ -409,7 +455,7 @@ export default {
         href = href.replace("subscan.io", "subscan.cn");
       }
       return href;
-    }
+    },
   },
 };
 </script>
@@ -430,7 +476,8 @@ export default {
       .subscan-logo {
         height: 25px;
         width: 119px;
-        background: url("../../assets/images/logo@2x.png") no-repeat center center;
+        background: url("../../assets/images/logo@2x.png") no-repeat center
+          center;
         background-size: cover;
       }
       .multisig {
@@ -444,11 +491,13 @@ export default {
     .polkadot-status {
       width: 32px;
       height: 24px;
-      background: url("../../assets/images/polka-cross.png") no-repeat center center;
+      background: url("../../assets/images/polka-cross.png") no-repeat center
+        center;
       background-size: cover;
       margin-left: 10px;
       &.connected {
-        background: url("../../assets/images/polka-check.png") no-repeat center center;
+        background: url("../../assets/images/polka-check.png") no-repeat center
+          center;
         background-size: cover;
       }
     }
@@ -711,8 +760,7 @@ export default {
 }
 </style>
 <style lang="scss">
-@each $theme in kusama, darwinia, crab, polkadot
-{
+@each $theme in kusama, darwinia, crab, polkadot {
   .#{$theme} {
     > .nav-bar-wrapper {
       background: var(--navbar-bg);
@@ -768,7 +816,7 @@ export default {
   }
   .address-display-cls {
     padding: 10px 0;
-    border-bottom: 1px solid #E7EAF3;
+    border-bottom: 1px solid #e7eaf3;
     .name-wrapper {
       pointer-events: none;
       .nick-name {

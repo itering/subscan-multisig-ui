@@ -24,13 +24,17 @@ if (language_bak == null) {
 const global = {
   state: {
     language, // 当前UI语言
-    sourceSelected: getLocalStore("polka_source") || "kusama",
+    sourceSelected: getLocalStore("polka_source") || "crab",
+    extensionAccountList: [],
     isPolkadotConnect: false,
     isKeyringLoaded: false
   },
   mutations: {
     SET_IS_POLKADOT_CONNECT: (state, status) => {
       state.isPolkadotConnect = status;
+    },
+    SET_EXTENSION_ACCOUNT_LIST: (state, list) => {
+      state.extensionAccountList = list;
     },
     SET_KEYRING_STATUS: (state, status) => {
       state.isKeyringLoaded = status;
@@ -50,6 +54,11 @@ const global = {
       setCookie("local_language", language, {
         expires: 30
       });
+    },
+    SetExtensionAccountList({
+      commit
+    }, list) {
+      commit("SET_EXTENSION_ACCOUNT_LIST", list);
     },
     SetIsPolkadotConnect({
       commit
