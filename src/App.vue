@@ -533,6 +533,19 @@ body {
   .token-symbol {
     margin-left: 4px;
   }
+  .button {
+    border-radius: 2px;
+    &.black-btn {
+      border: 1px solid #302b3c;
+      background: #302b3c;
+      color: #fff;
+    }
+    &.white-btn {
+      border: 1px solid #302b3c;
+      background: #fff;
+      color: #302b3c;
+    }
+  }
   .el-table {
     &::before {
       background-color: transparent;

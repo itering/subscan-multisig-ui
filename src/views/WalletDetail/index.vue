@@ -38,12 +38,12 @@
         width="560px"
       >
         <div class="title">{{ $t("wallet.delete") }}</div>
-        <div>{{ $t("wallet.delete_confirm", {name: multisigAccount.meta && multisigAccount.meta.name}) }}</div>
+        <div class="message">{{ $t("wallet.delete_confirm", {name: multisigAccount.meta && multisigAccount.meta.name}) }}</div>
         <div class="btns">
-          <div class="button" @click="deleteWallet">
+          <div class="button black-btn" @click="deleteWallet">
             {{ $t("ok") }}
           </div>
-          <div class="button" @click="deleteDialogVisible=false">
+          <div class="button white-btn" @click="deleteDialogVisible=false">
             {{ $t("cancel") }}
           </div>
         </div>
@@ -64,10 +64,10 @@
           </el-form-item>
         </el-form>
         <div class="btns">
-          <div class="button" @click="renameWallet">
+          <div class="button black-btn" @click="renameWallet">
             {{ $t("ok") }}
           </div>
-          <div class="button" @click="renameDialogVisible=false">
+          <div class="button white-btn" @click="renameDialogVisible=false">
             {{ $t("cancel") }}
           </div>
         </div>
@@ -299,6 +299,33 @@ export default {
 <style lang="scss">
 .main {
   display: flex;
+}
+.deleteDialog, .renameDialog {
+  .title {
+    font-size: 20px;
+    font-weight: 600;
+    line-height: 27px;
+    text-align: center;
+  }
+  .message {
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 20px;
+    text-align: center;
+    margin: 20px 0;
+  }
+  .btns {
+    display: flex;
+    justify-content: center;
+  }
+  .button {
+    width: 150px;
+    text-align: center;
+    padding: 10px 0;
+    & + .button {
+      margin-left: 20px;
+    }
+  }
 }
 .setting-dropdown-menu {
   .menu-item {
