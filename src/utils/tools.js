@@ -235,7 +235,6 @@ export function isMobile() {
       !!u.match(/AppleWebKit.*Mobile.*/)) ||
     window.innerWidth <= 768;
 }
-
 export function getCurrencyTokenDetail(token, sourceSelected, currency) {
   if (token && token.detail && token.token) {
     if (sourceSelected !== "crab" && sourceSelected !== "darwinia") {
@@ -256,6 +255,12 @@ export function getTokenDetail(token, sourceSelected) {
     }
   }
   return {};
+}
+export function getTokenDecimalByCurrency(token) {
+  if (token) {
+    return token.tokenDecimals;
+  }
+  return 0;
 }
 export function getTokenDecimal(token) {
   if (token) {

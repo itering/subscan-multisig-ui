@@ -1,4 +1,3 @@
-// const cring_icon = require('./../../assets/images/cring.png')
 const cring_icon = require('./../../assets/images/cring.svg')
 const ring_icon = require('./../../assets/images/ring.svg')
 const ckton_icon = require('./../../assets/images/ckton.svg')
@@ -19,7 +18,6 @@ export default [{
     value: {
       balances: {
         value: "DOT",
-        // value: "DOT",
         oldValue: "DOT (old)",
         icon: polkadot_icon
       },
@@ -34,7 +32,6 @@ export default [{
       color: "#E90979",
       arrowColor: "#E6017A",
       colorMap: ["#E90979", "#F081B9", "#d7d7d7"],
-      ua: "UA-152561314-10",
       kton: {
         value: "KTON",
         icon: kton_icon
@@ -59,9 +56,6 @@ export default [{
       },
       github: {
         value: 'https://github.com/paritytech/polkadot'
-      },
-      api_docs: {
-        value: 'https://documenter.getpostman.com/view/1618960/TVCe1oRU?version=latest'
       },
       price_link: {
         value: 'https://coinmarketcap.com/currencies/polkadot-iou/'
@@ -89,7 +83,6 @@ export default [{
       color: "#E90979",
       arrowColor: "#000",
       colorMap: ["#E90979", "#F081B9", "#d7d7d7"],
-      ua: "UA-152561314-3",
       kton: {
         value: "KTON",
         icon: kton_icon
@@ -114,9 +107,6 @@ export default [{
       },
       github: {
         value: 'https://github.com/paritytech/polkadot/'
-      },
-      api_docs: {
-        value: 'https://documenter.getpostman.com/view/1618960/TVCe1oMA?version=latest'
       },
       price_link: {
         value: 'https://coinmarketcap.com/currencies/kusama/'
@@ -144,7 +134,6 @@ export default [{
       color: "#5930DD",
       arrowColor: "#5930DD",
       colorMap: ["#5930DD", "#A894EB", "#d7d7d7"],
-      ua: "UA-152561314-19",
       kton: {
         value: "KTON",
         icon: kton_icon
@@ -177,9 +166,6 @@ export default [{
       github: {
         value: 'https://github.com/darwinia-network'
       },
-      api_docs: {
-        value: 'https://documenter.getpostman.com/view/1618960/TVKFzvyD?version=latest'
-      },
       donate: {
         address: '2rbREPAhkptwCtdvU5eSGnHgFiyPcehdkXuGqFF916oYCJ7s'
       }
@@ -202,7 +188,6 @@ export default [{
       color: "#5930DD",
       arrowColor: "#5930DD",
       colorMap: ["#5930DD", "#A894EB", "#d7d7d7"],
-      ua: "UA-152561314-4",
       kton: {
         value: "CKTON",
         icon: ckton_icon
@@ -234,9 +219,6 @@ export default [{
       },
       github: {
         value: 'https://github.com/darwinia-network'
-      },
-      api_docs: {
-        value: 'https://documenter.getpostman.com/view/1618960/TVCe1oM2?version=latest'
       },
       donate: {
         address: '5FVFSCANyotNxJM4Crm1LQfsmNQSw3p8H7CRbegN7d5Ex91y'

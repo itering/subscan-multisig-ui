@@ -1,31 +1,46 @@
 <template>
   <div class="dashboard-wrapper subscan-content">
-    <div v-if="multisigAccounts.length > 0" class="subscan-container subscan-card-title">
+    <div
+      v-if="multisigAccounts.length > 0"
+      class="subscan-container subscan-card-title"
+    >
       {{ $t("wallet.list") }}
     </div>
     <div class="subscan-container subscan-card">
       <div v-if="multisigAccounts.length > 0" class="list-section">
-        <el-table :data="multisigAccounts" style="width: 100%" ref="accountTable">
+        <el-table
+          :data="multisigAccounts"
+          style="width: 100%"
+          ref="accountTable"
+        >
           <el-table-column min-width="100" :label="$t('name')" fit>
             <template slot-scope="props">
-              <div>{{props.row.meta.name}}</div>
+              <div>{{ props.row.meta.name }}</div>
             </template>
           </el-table-column>
           <el-table-column min-width="300" :label="$t('address')" fit>
             <template slot-scope="props">
-              <router-link :to="`/wallet/${props.row.address}`" tag="a">
+              <!-- <router-link :to="`/wallet/${props.row.address}`" tag="a">
                 {{props.row.address}}
-              </router-link>
+              </router-link> -->
+              <div>{{ props.row.address }}</div>
             </template>
           </el-table-column>
           <el-table-column min-width="200" :label="$t('balance')" fit>
-            <!-- <template slot-scope="props">
-              <div>{{props.row.address}}</div>
-            </template> -->
+            <template slot-scope="props">
+              <div>
+                <span>{{ props.row.balance | accuracyFormat(tokenDecimal) }}</span>
+                <span class="token-symbol">{{tokenSymbol}}</span>
+              </div>
+            </template>
           </el-table-column>
           <el-table-column min-width="100" :label="$t('status.index')" fit>
             <template slot-scope="props">
-              <div>{{props.row.isAvailable ? $t('available') : $t('unavailable')}}</div>
+              <div>
+                {{
+                  props.row.isAvailable ? $t("available") : $t("unavailable")
+                }}
+              </div>
             </template>
           </el-table-column>
           <el-table-column width="100" type="expand" :label="$t('action')">
@@ -35,10 +50,11 @@
                   :data="props.row.meta.addressPair"
                   border
                   :show-header="false"
-                  style="width: 100%">
+                  style="width: 100%"
+                >
                   <el-table-column prop="name" width="160">
                     <template slot-scope="props">
-                      <div>{{props.row.name}}</div>
+                      <div>{{ props.row.name }}</div>
                     </template>
                   </el-table-column>
                   <el-table-column prop="address">
@@ -54,7 +70,11 @@
                   </el-table-column>
                   <el-table-column prop="type" width="200">
                     <template slot-scope="props">
-                      <div>{{props.row.isInjected ? $t('injected') : $t('external')}}</div>
+                      <div>
+                        {{
+                          props.row.isInjected ? $t("injected") : $t("external")
+                        }}
+                      </div>
                     </template>
                   </el-table-column>
                 </el-table>
@@ -84,10 +104,12 @@ import { mapState } from "vuex";
 import { isMobile } from "Utils/tools";
 import keyring from "@polkadot/ui-keyring";
 import AddressDisplay from "@/views/Components/AddressDisplay";
+import { accuracyFormat, toThousandslsFilter } from "Utils/filters";
+import { getTokenDecimalByCurrency } from "../../utils/tools";
 export default {
   name: "Home",
   components: {
-    AddressDisplay
+    AddressDisplay,
   },
   data() {
     return {
@@ -96,25 +118,37 @@ export default {
       drawer: false,
       network: "polkadot",
       multisigAccounts: [],
+      extensionAddressList: [],
       tokens: {},
       metadata: {},
       sourceList: this.$const["COMMON/networkList"]["all"].value,
     };
   },
+  filters: {
+    accuracyFormat,
+    toThousandslsFilter,
+  },
   watch: {
     isKeyringLoaded(newValue) {
-      if(newValue) {
+      if (newValue) {
         this.getMultisigAccounts();
       }
-    }
+    },
   },
   computed: {
     ...mapState({
       sourceSelected: (state) => state.global.sourceSelected,
       language: (state) => state.global.language,
+      token: (state) => state.polka.token,
       extensionAccountList: (state) => state.global.extensionAccountList,
-      isKeyringLoaded: (state) => state.global.isKeyringLoaded
-    })
+      isKeyringLoaded: (state) => state.global.isKeyringLoaded,
+    }),
+    tokenSymbol() {
+      return this.token.tokenSymbol;
+    },
+    tokenDecimal() {
+      return getTokenDecimalByCurrency(this.token);
+    },
   },
   created() {
     this.init();
@@ -123,30 +157,43 @@ export default {
   methods: {
     init() {
       this.getMultisigAccounts();
+      this.getAccountBalance();
+    },
+    getAccountBalance() {
+      let multisigAddressList = _.map(this.multisigAccounts, "address");
+      this.$polkaApi.query.system.account.multi(
+        multisigAddressList,
+        (balances) => {
+          _.forEach(balances, ({ data }, index) => {
+            this.multisigAccounts[index]["balance"] = data.free.toString();
+          });
+        }
+      );
     },
     getMultisigAccounts() {
       this.multisigAccounts = [];
       const accounts = keyring.getAccounts();
-      let extensionAddressList = [];
+      this.extensionAddressList = [];
       _.forEach(this.extensionAccountList, (item) => {
-        extensionAddressList.push(item.address);
-      })
+        this.extensionAddressList.push(item.address);
+      });
       _.forEach(accounts, ({ address, meta }) => {
         if (meta.isMultisig) {
           let isAvailable = false;
           _.forEach(meta.addressPair, (item) => {
-            if (extensionAddressList.indexOf(item.address) > -1) {
+            if (this.extensionAddressList.indexOf(item.address) > -1) {
               item.isInjected = true;
               isAvailable = true;
             } else {
               item.isInjected = false;
             }
-          })
+          });
           this.multisigAccounts.push({
+            balance: "",
             address: address,
             meta: meta,
-            isAvailable: isAvailable
-          })
+            isAvailable: isAvailable,
+          });
         }
       });
     },

@@ -37,7 +37,7 @@
             :visible.sync="dialogVisible"
             width="560px"
           >
-            <div class="title">{{ $t("error")}}</div>
+            <div class="title">{{ $t("error") }}</div>
             <div class="text">{{ $t("polkadot.download_tip") }}</div>
             <div class="btns">
               <a class="button" target="_blank" :href="polkadotInstallLink">
@@ -100,7 +100,7 @@ export default {
     ...mapState({
       sourceSelected: (state) => state.global.sourceSelected,
       isPolkadotConnect: (state) => state.global.isPolkadotConnect,
-      isKeyringLoaded: (state) => state.global.isKeyringLoaded
+      isKeyringLoaded: (state) => state.global.isKeyringLoaded,
     }),
   },
   beforeDestroy() {
@@ -131,7 +131,12 @@ export default {
     init() {
       this.initPolkadotJs();
       this.detectNetwork();
+      this.initChainState();
       this.initWebSocket();
+    },
+    async initChainState() {
+      const chainState = await this.$polkaApi.rpc.system.properties();
+      this.$store.commit("SET_TOKEN", chainState.toJSON());
     },
     async initPolkadotJs() {
       this.isLoading = true;
@@ -425,7 +430,6 @@ export default {
     }
   }
 }
-
 </style>
 <style lang="scss">
 @import "./assets/style/index.scss";
@@ -539,6 +543,9 @@ body {
     margin: 0 auto;
     width: 290px;
     height: 250px;
+  }
+  .token-symbol {
+    margin-left: 4px;
   }
   .el-table {
     &::before {
