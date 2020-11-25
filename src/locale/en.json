@@ -66,9 +66,12 @@
   "term_of_use": "Terms Of Use",
   "threshold": "Threshold",
   "unavailable": "Unavailable",
+  "version_history": "Version History",
   "view_in_subscan": "View in Subscan",
   "wallet": {
     "add": "Add Wallet",
+    "delete": "Delete Wallet",
+    "delete_confirm": "Are you sure to delete “{name}” ？",
     "deploy": "Deploy Wallet",
     "empty": "Please create Multisig wallet first",
     "index": "Wallet",

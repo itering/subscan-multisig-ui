@@ -19,16 +19,60 @@
           >
           <el-dropdown-item
             class="menu-item"
-            @click.native="renameWallet"
+            @click.native="renameDialogVisible=true"
             >{{$t("rename")}}</el-dropdown-item
           >
           <el-dropdown-item
             class="menu-item"
-            @click.native="deleteWallet"
+            @click.native="deleteDialogVisible=true"
             >{{$t("delete")}}</el-dropdown-item
           >
         </el-dropdown-menu>
       </el-dropdown>
+      <el-dialog
+        class="deleteDialog"
+        title=""
+        :show-close="false"
+        :close-on-click-modal="false"
+        :visible.sync="deleteDialogVisible"
+        width="560px"
+      >
+        <div class="title">{{ $t("wallet.delete") }}</div>
+        <div>{{ $t("wallet.delete_confirm", {name: multisigAccount.meta && multisigAccount.meta.name}) }}</div>
+        <div class="btns">
+          <div class="button" @click="deleteWallet">
+            {{ $t("ok") }}
+          </div>
+          <div class="button" @click="deleteDialogVisible=false">
+            {{ $t("cancel") }}
+          </div>
+        </div>
+        <span slot="footer" class="dialog-footer"> </span>
+      </el-dialog>
+      <el-dialog
+        class="renameDialog"
+        title=""
+        :show-close="false"
+        :close-on-click-modal="false"
+        :visible.sync="renameDialogVisible"
+        width="560px"
+      >
+        <div class="title">{{ $t("rename") }}</div>
+        <el-form label-width="80px" :model="form" label-position="top">
+          <el-form-item :label="$t('name')">
+            <el-input v-model="form.name"></el-input>
+          </el-form-item>
+        </el-form>
+        <div class="btns">
+          <div class="button" @click="renameWallet">
+            {{ $t("ok") }}
+          </div>
+          <div class="button" @click="renameDialogVisible=false">
+            {{ $t("cancel") }}
+          </div>
+        </div>
+        <span slot="footer" class="dialog-footer"> </span>
+      </el-dialog>
       <div class="placeholder"></div>
       <div class="button">{{$t("submit_extrinsic")}}</div>
     </div>
@@ -54,6 +98,11 @@ export default {
       const_symbol: const_symbol,
       multisigAccount: {},
       address: "",
+      form: {
+        name: ""
+      },
+      deleteDialogVisible: false,
+      renameDialogVisible: false,
       tokens: {},
       metadata: {},
     };
@@ -110,9 +159,36 @@ export default {
       });
     },
     renameWallet() {
-
+      try {
+        const pair = keyring.getPair(this.address);
+        keyring.saveAccountMeta(pair, { name: this.form.name, whenEdited: Date.now() });
+        this.$message({
+          type: "success",
+          message: this.$t("success"),
+        });
+        this.renameDialogVisible = false;
+        this.getMultisigAccount();
+      } catch (error) {
+        this.$message({
+          type: "error",
+          message: error.message
+        });
+      }
     },
     deleteWallet() {
+      try {
+        keyring.forgetAccount(this.address);
+        this.$message({
+          type: "success",
+          message: this.$t("success"),
+        });
+        this.$router.push("/");
+      } catch (error) {
+        this.$message({
+          type: "error",
+          message: error.message
+        });
+      }
 
     },
     isMobile() {
