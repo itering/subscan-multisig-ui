@@ -130,7 +130,6 @@ export default {
   methods: {
     init() {
       this.initPolkadotJs();
-      this.detectNetwork();
       this.initChainState();
       this.initWebSocket();
     },
@@ -149,19 +148,6 @@ export default {
       if (isWeb3Injected) {
         this.$store.dispatch("SetIsPolkadotConnect", true);
       }
-    },
-    detectNetwork() {
-      const parsedObj = queryString.parse(location.search);
-      let networkParam = parsedObj["network"] || "";
-      const materialText = location.host + networkParam;
-      let network = this.network[0].value;
-      this.network.forEach((item) => {
-        if (materialText.indexOf(item.key) > -1) {
-          network = item.value;
-        }
-      });
-      network = "crab";
-      this.$store.dispatch("SetSourceSelected", network);
     },
     initWebSocket() {
       //初始化weosocket

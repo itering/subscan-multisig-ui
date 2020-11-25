@@ -211,7 +211,9 @@ export default {
   .subscan-card {
     position: relative;
     min-height: 500px;
+    flex: 1 1 auto;
     .create-section {
+      flex: 1 1 auto;
       .create {
         position: absolute;
         left: 50%;
@@ -248,6 +250,7 @@ export default {
       }
     }
     .list-section {
+      flex: 1 1 auto;
       margin: 30px;
       /deep/ .address-display-cls {
         .address-wrapper-address {
