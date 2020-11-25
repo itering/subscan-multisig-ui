@@ -33,7 +33,7 @@
               ></i>
               <a
                 class="menu-dropdown-item-label"
-                :href="getSourceHref(item.value)"
+                @click="changeSource(item.value)"
                 >{{ item.label }}</a
               >
             </li>
@@ -72,36 +72,6 @@
                   <a :href="networkHref">{{ $t("explorer") }}</a>
                 </div>
                 <el-collapse accordion>
-                  <el-collapse-item :title="$t('blockchain')" name="0">
-                    <router-link
-                      class="sub-item"
-                      to="/block"
-                      tag="div"
-                      @click.native="drawer = false"
-                      >{{ $t("blocks") }}</router-link
-                    >
-                    <router-link
-                      class="sub-item"
-                      to="/extrinsic"
-                      tag="div"
-                      @click.native="drawer = false"
-                      >{{ $t("extrinsics") }}</router-link
-                    >
-                    <router-link
-                      class="sub-item"
-                      to="/transfer"
-                      tag="div"
-                      @click.native="drawer = false"
-                      >{{ $t("transfers") }}</router-link
-                    >
-                    <router-link
-                      class="sub-item"
-                      to="/event"
-                      tag="div"
-                      @click.native="drawer = false"
-                      >{{ $t("events") }}</router-link
-                    >
-                  </el-collapse-item>
                   <router-link
                     class="item"
                     to="/account"
@@ -307,7 +277,7 @@
                 ></i>
                 <a
                   class="menu-dropdown-item-label"
-                  :href="getSourceHref(item.value)"
+                  @click="changeSource(item.value)"
                   >{{ item.label }}</a
                 >
               </li>
@@ -334,7 +304,7 @@ export default {
       currentTime: Date.now(),
       drawer: false,
       direction: "rtl",
-      sourceList: this.$const["COMMON/networkList"]["all"].value
+      sourceList: this.$const["COMMON/networkList"]["all"].value,
     };
   },
   watch: {

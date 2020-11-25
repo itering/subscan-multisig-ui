@@ -14,7 +14,7 @@ async function connectWS() {
   });
   await apiInstance.isReady;
   cryptoWaitReady().then(() => {
-    keyring.loadAll({ type: 'sr25519' });
+    keyring.loadAll({ type: 'sr25519', ss58Format: ENDPOINTS_MAP[store.state.global.sourceSelected].prefix });
     store.commit("SET_KEYRING_STATUS", true);
   });
 }
