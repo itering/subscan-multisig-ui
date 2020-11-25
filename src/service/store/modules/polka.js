@@ -1,10 +1,3 @@
-import api from "Plugins/api";
-
-const {
-  polkaGetMetadata,
-  polkaGetToken,
-} = api;
-
 export default {
   state: {
     metadata: {},
@@ -19,17 +12,5 @@ export default {
     }
   },
   actions: {
-    async SetMetadata({
-      commit
-    }) {
-      const data = await polkaGetMetadata();
-      commit("SET_METADATA", data);
-    },
-    async SetToken({
-      commit
-    }) {
-      const data = await polkaGetToken();
-      commit("SET_TOKEN", data);
-    }
   }
 };

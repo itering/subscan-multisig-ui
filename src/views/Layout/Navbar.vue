@@ -361,9 +361,6 @@ export default {
   beforeDestroy() {},
   methods: {
     async init() {
-      // this.getMetaData();
-      // await this.getData();
-      // this.getToken();
       if (this.isPolkadotConnect) {
         this.getExtensionAccounts();
       }
@@ -377,9 +374,6 @@ export default {
         address: item.address,
         display: item.meta.name,
       };
-    },
-    async getToken() {
-      await Promise.all([this.$store.dispatch("SetToken")]);
     },
     isMobile() {
       return isMobile();
@@ -403,9 +397,6 @@ export default {
       return this.formatSymbol("balances", {
         block: this.metadata.blockNum,
       });
-    },
-    async getMetaData() {
-      await Promise.all([this.$store.dispatch("SetMetadata")]);
     },
     changeLanguage(language) {
       window.GLOBAL.vbus.$emit("CHANGE_LANGUAGE", language);
