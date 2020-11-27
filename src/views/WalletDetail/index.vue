@@ -147,71 +147,69 @@
       </el-dialog>
     </div>
     <div class="subscan-container subscan-card extrinsic-list">
-      <el-table :data="extrinsics" style="width: 100%" ref="accountTable">
-        <el-table-column min-width="100" :label="$t('call_hash')" fit>
-          <template slot-scope="props">
-            <div>{{ props.row.meta.name }}</div>
-          </template>
-        </el-table-column>
-        <el-table-column min-width="100" :label="$t('action')" fit>
-          <template slot-scope="props">
-            <!-- <router-link :to="`/wallet/${props.row.address}`" tag="a">
-              {{props.row.address}}
-            </router-link> -->
-            <div>{{ props.row.address }}</div>
-          </template>
-        </el-table-column>
-        <el-table-column min-width="100" :label="$t('progress')" fit>
-          <template slot-scope="props">
-            <div>{{ props.row.address }}</div>
-          </template>
-        </el-table-column>
-        <el-table-column min-width="100" :label="$t('status.index')" fit>
-          <template slot-scope="props">
-            <div>
-              {{ props.row.isAvailable ? $t("available") : $t("unavailable") }}
-            </div>
-          </template>
-        </el-table-column>
-        <el-table-column width="100" type="expand">
-          <template slot-scope="props">
-            <div class="expand-form">
-              <el-table
-                :data="props.row.meta.addressPair"
-                border
-                :show-header="false"
-                style="width: 100%"
-              >
-                <el-table-column prop="name" width="160">
-                  <template slot-scope="props">
-                    <div>{{ props.row.name }}</div>
-                  </template>
-                </el-table-column>
-                <el-table-column prop="address">
-                  <template slot-scope="props">
-                    <address-display
-                      customCls="address-display-cls"
-                      :iconSize="30"
-                      :hasCopyBtn="false"
-                      :hasDisplayName="false"
-                      :address="props.row.address"
-                    ></address-display>
-                  </template>
-                </el-table-column>
-                <el-table-column prop="type" width="200">
-                  <template slot-scope="props">
-                    <div>
-                      {{
-                        props.row.isInjected ? $t("injected") : $t("external")
-                      }}
-                    </div>
-                  </template>
-                </el-table-column>
-              </el-table>
-            </div>
-          </template>
-        </el-table-column>
-      </el-table>
+      <div class="list-section">
+        <el-table :data="extrinsics" style="width: 100%" ref="accountTable">
+          <el-table-column min-width="200" :label="$t('call_hash')" fit>
+            <template slot-scope="props">
+              <div>{{ props.row.callHash }}</div>
+            </template>
+          </el-table-column>
+          <el-table-column min-width="80" :label="$t('action')" fit>
+            <template slot-scope="props">
+              <!-- <router-link :to="`/wallet/${props.row.address}`" tag="a">
+                {{props.row.address}}
+              </router-link> -->
+              <div>{{ getAction(props.row.address) }}</div>
+            </template>
+          </el-table-column>
+          <el-table-column min-width="40" :label="$t('progress')" fit>
+            <template slot-scope="props">
+              <div>{{ getProgress(props.row.approvals) }}</div>
+            </template>
+          </el-table-column>
+          <el-table-column min-width="80" :label="$t('status.index')" fit>
+            <template slot-scope="props">
+              <div>
+                {{ getExtrinsicStatus(props.row.callHash) }}
+              </div>
+            </template>
+          </el-table-column>
+          <el-table-column width="40" type="expand">
+            <template slot-scope="scope">
+              <div class="expand-form">
+                <el-table
+                  :data="multisigAccount.meta.addressPair"
+                  border
+                  :show-header="false"
+                  style="width: 100%"
+                >
+                  <el-table-column prop="name" width="160">
+                    <template slot-scope="props">
+                      <div>{{ props.row.name }}</div>
+                    </template>
+                  </el-table-column>
+                  <el-table-column prop="address">
+                    <template slot-scope="props">
+                      <address-display
+                        customCls="address-display-cls"
+                        :iconSize="30"
+                        :hasCopyBtn="false"
+                        :hasDisplayName="false"
+                        :address="props.row.address"
+                      ></address-display>
+                    </template>
+                  </el-table-column>
+                  <el-table-column prop="type" width="200">
+                    <template slot-scope="props">
+                      <div>{{ hasApproved(props.row.address, scope.row.approvals) }}</div>
+                    </template>
+                  </el-table-column>
+                </el-table>
+              </div>
+            </template>
+          </el-table-column>
+        </el-table>
+      </div>
     </div>
   </div>
 </template>
@@ -244,7 +242,7 @@ export default {
       },
       fee: "0",
       extrinsics: [],
-      extrinsicDialogVisible: true,
+      extrinsicDialogVisible: false,
       deleteDialogVisible: false,
       renameDialogVisible: false,
       tokens: {},
@@ -277,10 +275,6 @@ export default {
       return getTokenDecimalByCurrency(this.token);
     },
     injectedAccountList() {
-      let result = _.filter(this.multisigAccount.meta?.addressPair, (item) => {
-        return item.isInjected;
-      });
-      console.log(result);
       return _.filter(this.multisigAccount.meta?.addressPair, (item) => {
         return item.isInjected;
       });
@@ -298,6 +292,7 @@ export default {
   methods: {
     init() {
       this.getMultisigAccount();
+      this.getAccountMultisigs();
       // let hex = transfer.method.toHex();
       // const callData = this.$registry.createType("Call", hex);
       // console.log(callData.toHuman());
@@ -334,6 +329,32 @@ export default {
           return false;
         }
       });
+    },
+    hasApproved(address, approveList) {
+      return (approveList && (approveList.indexOf(address) > -1)) ? "approved": "unapproved";
+    },
+    async getAccountMultisigs() {
+      const info = await this.$polkaApi.query["multisig"].multisigs.entries(
+        this.multisigAccount.address
+      );
+      _.forEach(info, item => {
+        let extrinsic = {
+          ...(item[1].toJSON()),
+          address: (item[0].toHuman())[0],
+          callHash: (item[0].toHuman())[1],
+        };
+        this.extrinsics.push(extrinsic);
+      })
+    },
+    getAction() {
+      return "-"
+    },
+    getProgress(approvals) {
+      let cur = approvals && approvals.length || 0;
+      return cur + "/" + this.multisigAccount.meta.threshold;
+    },
+    getExtrinsicStatus() {
+      return "pending";
     },
     extractExternal(accountId) {
       if (!accountId) {
@@ -380,11 +401,11 @@ export default {
     async sendTransction() {
       let multiRoot = this.multisigAccount.address;
       let signAddress = this.form.account;
-      let tx = this.$polkaApi.tx.balances.transferKeepAlive(
+      let api = this.$polkaApi;
+      let tx = api.tx.balances.transferKeepAlive(
         this.form.dest,
         this.getBn(this.form.value)
       );
-      let api = this.$polkaApi;
       let multiModule = api.tx.multisig;
       const info = await api.query["multisig"].multisigs(
         multiRoot,
