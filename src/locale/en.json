@@ -52,6 +52,7 @@
     "waiting": "Waiting for authorization from the extension. Please open the installed extension and approve or reject access."
   },
   "privacy_policy": "Privacy Policy",
+  "progress": "Progress",
   "refresh": "Refresh",
   "rename": "Rename",
   "send": "Send",

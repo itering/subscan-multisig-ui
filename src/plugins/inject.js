@@ -8,7 +8,8 @@ export default {
     Vue.prototype.$api = api
     Vue.prototype.$ajax = axios
     Vue.prototype.$const = consts
-    Vue.prototype.$polkaApi = polkaApi;
+    Vue.prototype.$polkaApi = polkaApi.apiInstance;
+    Vue.prototype.$registry = polkaApi.registry;
     // 需要挂载的都放在这里
   }
 }
