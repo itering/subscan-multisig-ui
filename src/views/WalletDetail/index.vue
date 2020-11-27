@@ -147,7 +147,7 @@
       </el-dialog>
     </div>
     <div class="subscan-container subscan-card extrinsic-list">
-      <div class="list-section">
+      <div class="list-section" v-show="!isLoading">
         <el-table :data="extrinsics" style="width: 100%" ref="accountTable">
           <el-table-column min-width="200" :label="$t('call_hash')" fit>
             <template slot-scope="props">
@@ -156,10 +156,7 @@
           </el-table-column>
           <el-table-column min-width="80" :label="$t('action')" fit>
             <template slot-scope="props">
-              <!-- <router-link :to="`/wallet/${props.row.address}`" tag="a">
-                {{props.row.address}}
-              </router-link> -->
-              <div>{{ getAction(props.row.address) }}</div>
+              <div>{{ getAction(props.row) }}</div>
             </template>
           </el-table-column>
           <el-table-column min-width="40" :label="$t('progress')" fit>
@@ -177,6 +174,7 @@
           <el-table-column width="40" type="expand">
             <template slot-scope="scope">
               <div class="expand-form">
+                <div class="table-title">{{$t("progress")}}</div>
                 <el-table
                   :data="multisigAccount.meta.addressPair"
                   border
@@ -205,6 +203,8 @@
                     </template>
                   </el-table-column>
                 </el-table>
+                <div class="table-title">{{$t("parameters")}}</div>
+                 <struct-table :struct="scope.row.params"/>
               </div>
             </template>
           </el-table-column>
@@ -218,6 +218,7 @@ import _ from "lodash";
 import const_symbol from "Service/const/symbol";
 import { mapState } from "vuex";
 import { isMobile } from "Utils/tools";
+import StructTable from "@/views/Components/StructTable";
 import keyring from "@polkadot/ui-keyring";
 import AddressDisplay from "@/views/Components/AddressDisplay";
 import { accuracyFormat, toThousandslsFilter } from "Utils/filters";
@@ -227,6 +228,7 @@ export default {
   name: "Home",
   components: {
     AddressDisplay,
+    StructTable
   },
   data() {
     return {
@@ -240,6 +242,7 @@ export default {
         call: "",
         value: "",
       },
+      isLoading: false,
       fee: "0",
       extrinsics: [],
       extrinsicDialogVisible: false,
@@ -293,9 +296,6 @@ export default {
     init() {
       this.getMultisigAccount();
       this.getAccountMultisigs();
-      // let hex = transfer.method.toHex();
-      // const callData = this.$registry.createType("Call", hex);
-      // console.log(callData.toHuman());
     },
     getAccountDisplayInfo(item) {
       return {
@@ -334,6 +334,8 @@ export default {
       return (approveList && (approveList.indexOf(address) > -1)) ? "approved": "unapproved";
     },
     async getAccountMultisigs() {
+      this.isLoading = true;
+      let callHashs = [];
       const info = await this.$polkaApi.query["multisig"].multisigs.entries(
         this.multisigAccount.address
       );
@@ -343,10 +345,32 @@ export default {
           address: (item[0].toHuman())[0],
           callHash: (item[0].toHuman())[1],
         };
+        callHashs.push(extrinsic.callHash);
         this.extrinsics.push(extrinsic);
       })
+      const callInfos = await this.$polkaApi.query["multisig"].calls.multi(callHashs);
+      _.forEach(callInfos, (item, index) => {
+        let call = item.toHuman();
+        const callDataInfoJSON = this.$registry.createType("Call", call[0]).toJSON();
+        const callDataInfo = this.$registry.createType("Call", call[0]).toHuman();
+        let meta = this.$polkaApi.tx[callDataInfo.section][callDataInfo.method].meta.toJSON();
+        _.forEach(meta.args, (arg) => {
+          arg.value = callDataInfoJSON.args[arg.name];
+        })
+        this.extrinsics[index]  = {
+          ...this.extrinsics[index],
+          ...callDataInfo,
+          params: meta.args,
+          callData: call[0],
+          callInfo: call,
+        }
+      })
+      this.isLoading = false;
     },
-    getAction() {
+    getAction(row) {
+      if (row.section && row.method) {
+        return row.section + "(" + row.method + ")";
+      }
       return "-"
     },
     getProgress(approvals) {
@@ -538,6 +562,9 @@ export default {
     }
     .list-section {
       margin: 30px;
+      .table-title {
+        margin: 10px 0;
+      }
     }
     &.account-intro {
       height: 70px;

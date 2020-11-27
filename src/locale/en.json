@@ -43,6 +43,7 @@
   "network": "Network",
   "ok": "Ok",
   "owner": "Owner",
+  "parameters": "Parameters",
   "polkadot": {
     "connect": "Connect to polkadot{.js} extension",
     "connected": "Polkadot{.js} is connected",

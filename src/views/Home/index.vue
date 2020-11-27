@@ -20,10 +20,9 @@
           </el-table-column>
           <el-table-column min-width="300" :label="$t('address')" fit>
             <template slot-scope="props">
-              <!-- <router-link :to="`/wallet/${props.row.address}`" tag="a">
+              <router-link :to="`/wallet/${props.row.address}`" tag="a">
                 {{props.row.address}}
-              </router-link> -->
-              <div>{{ props.row.address }}</div>
+              </router-link>
             </template>
           </el-table-column>
           <el-table-column min-width="200" :label="$t('balance')" fit>
@@ -82,13 +81,18 @@
             </template>
           </el-table-column>
         </el-table>
+        <div class="btns">
+          <router-link class="button black-btn" to="/wallet/create" tag="a">
+            {{ $t("wallet.add") }}
+          </router-link>
+        </div>
       </div>
       <div v-else class="create-section">
         <div class="create">
           <icon-svg icon-class="add-circle" class="icon" />
           <div class="add-tip">{{ $t("wallet.empty") }}</div>
           <div class="btns">
-            <router-link class="button" to="/wallet/create" tag="a">
+            <router-link class="button black-btn" to="/wallet/create" tag="a">
               {{ $t("wallet.add") }}
             </router-link>
           </div>
@@ -239,9 +243,6 @@ export default {
           display: inline-block;
           margin-top: 10px;
           padding: 10px 50px;
-          background: #302b3c;
-          border-radius: 2px;
-          color: #fff;
         }
         > div {
           text-align: center;
@@ -252,6 +253,13 @@ export default {
     .list-section {
       flex: 1 1 auto;
       margin: 30px;
+      .button {
+        font-size: 14px;
+        cursor: pointer;
+        display: inline-block;
+        margin-top: 10px;
+        padding: 10px 50px;
+      }
       /deep/ .address-display-cls {
         .address-wrapper-address {
           pointer-events: none;
