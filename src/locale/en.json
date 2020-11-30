@@ -5,6 +5,7 @@
   "action": "Action",
   "add_members": "Add Members",
   "address": "Address",
+  "approve": "Approve",
   "available": "Available",
   "balance": "Balance",
   "calculating": "Calculating",
@@ -37,6 +38,12 @@
   },
   "module": "Module",
   "multisig": {
+    "approval": "Multisig approval",
+    "approval_tip": "Please check the transaction information carefully and confirm it before approve",
+    "cancel": "Multisig Cancel",
+    "cancel_tip": "Only the sender can cancel this extrinsic",
+    "customize": "(Customize)",
+    "from_chain": "(Caught from the chain storage)",
     "index": "Multisig",
     "intro": "Polka Multisig is the most secure way to manage multisig wallet and extrinsic"
   },
@@ -45,6 +52,7 @@
   "ok": "Ok",
   "owner": "Owner",
   "parameters": "Parameters",
+  "pending_hash": "Pending Hash:",
   "polkadot": {
     "connect": "Connect to polkadot{.js} extension",
     "connected": "Polkadot{.js} is connected",
@@ -64,6 +72,7 @@
     "index": "Status",
     "pending": "Pending"
   },
+  "submit": "Submit",
   "submit_extrinsic": "Submit Extrinsic",
   "success": "Success",
   "term_of_use": "Terms Of Use",
