@@ -17,6 +17,7 @@
   "copy_right": "Subscan © {year} - Developed By Subscan Team",
   "create": "Create",
   "delete": "Delete",
+  "dest": "Dest",
   "destination": "Destination",
   "donate": "Donate",
   "donate_unit": "Donate ({unit}) :",
@@ -84,6 +85,7 @@
   "transaction_success_title": "Success",
   "transaction_failed_title": "Failed",
   "unavailable": "Unavailable",
+  "value": "Value",
   "version_history": "Version History",
   "view_in_subscan": "View in Subscan",
   "wallet": {

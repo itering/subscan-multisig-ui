@@ -335,7 +335,7 @@ export default {
       });
     },
     hasApproved(address, approveList) {
-      return (approveList && (approveList.indexOf(address) > -1)) ? "approved": "unapproved";
+      return (approveList && (approveList.indexOf(address) > -1)) ? this.$t("status.approved"): this.$t("status.pending");
     },
     async getAccountMultisigs() {
       this.isLoading = true;
@@ -382,7 +382,7 @@ export default {
       return cur + "/" + this.multisigAccount.meta.threshold;
     },
     getExtrinsicStatus() {
-      return "pending";
+      return this.$t("status.pending");
     },
     extractExternal(accountId) {
       if (!accountId) {
