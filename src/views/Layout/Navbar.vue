@@ -727,7 +727,7 @@ export default {
       background: var(--navbar-bg);
       @if $theme == centrifuge {
         .subscan-container {
-          color: #302b3c;
+          color: var(--black-color);
           .logo {
             height: 25px;
             width: 119px;
@@ -739,7 +739,7 @@ export default {
           }
           .right-menu {
             .account-dropdown {
-              color: #302b3c;
+              color: var(--black-color);
             }
           }
         }
@@ -878,7 +878,7 @@ export default {
 .mobile-drawer {
   .el-drawer {
     color: #fff;
-    background-color: #302b3c;
+    background-color: var(--black-color);
   }
   .el-drawer__header {
     padding: 10px 0;

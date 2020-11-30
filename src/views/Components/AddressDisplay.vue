@@ -329,7 +329,7 @@ export default {
   }
   .name-wrapper {
     display: flex;
-    color: #302b3c;
+    color: var(--black-color);
     align-items: center;
     .nick-name {
       margin-right: 5px;

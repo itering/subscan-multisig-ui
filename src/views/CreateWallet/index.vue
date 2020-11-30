@@ -207,7 +207,7 @@ export default {
             font-size: 14px;
             line-height: 20px;
             font-weight: 600;
-            color: #302b3c;
+            color: var(--black-color);
           }
           .el-input {
             input {
@@ -223,7 +223,7 @@ export default {
           display: inline-block;
           margin-top: 10px;
           padding: 10px 80px;
-          border: 1px solid #302b3c;
+          border: 1px solid var(--black-color);
           border-radius: 2px;
           line-height: 20px;
           & + .button {
@@ -237,7 +237,7 @@ export default {
           }
         }
         .black {
-          background: #302b3c;
+          background: var(--black-color);
           color: #fff;
         }
       }

@@ -536,14 +536,14 @@ body {
   .button {
     border-radius: 2px;
     &.black-btn {
-      border: 1px solid #302b3c;
-      background: #302b3c;
+      border: 1px solid var(--black-color);
+      background: var(--black-color);
       color: #fff;
     }
     &.white-btn {
-      border: 1px solid #302b3c;
+      border: 1px solid var(--black-color);
       background: #fff;
-      color: #302b3c;
+      color: var(--black-color);
     }
   }
   .el-table {
@@ -574,7 +574,7 @@ body {
         background: #f3f5f9;
         font-size: 14px;
         font-weight: bold;
-        color: #302b3c;
+        color: var(--black-color);
       }
       th {
         padding: 0;
@@ -589,7 +589,7 @@ body {
         box-sizing: border-box;
         height: 50px;
         font-size: 14px;
-        color: #302b3c;
+        color: var(--black-color);
       }
       td {
         padding: 0;

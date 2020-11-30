@@ -90,9 +90,10 @@
         :show-close="false"
         :close-on-click-modal="false"
         :visible.sync="extrinsicDialogVisible"
-        width="560px"
+        width="670px"
       >
         <div class="title">{{ $t("submit_extrinsic") }}</div>
+        <div class="split-line"></div>
         <el-form label-width="80px" :model="form" label-position="top">
           <el-form-item :label="$t('account')">
             <el-select placeholder v-model="form.account" class="select">
@@ -106,7 +107,6 @@
                 <address-display
                   customCls="address-display-cls"
                   :hasAddressWrapper="true"
-                  :hasHashFormat="true"
                   :iconSize="30"
                   :address="item.address"
                   :hasCopyBtn="false"
@@ -116,31 +116,34 @@
               </el-option>
             </el-select>
           </el-form-item>
-          <el-form-item :label="$t('module')">
+          <el-form-item :label="$t('module')" class="module-item">
             <el-input v-model="form.module" :readonly="true"></el-input>
           </el-form-item>
-          <el-form-item :label="$t('call')">
+          <el-form-item :label="$t('call')" class="call-item">
             <el-input v-model="form.call" :readonly="true"></el-input>
           </el-form-item>
+          <!-- <el-form-item :label="$t('parameters')">
+          </el-form-item> -->
           <el-form-item :label="$t('dest')">
-            <el-input v-model="form.dest"></el-input>
+            <el-input v-model="form.dest" @input="handleInputChange"></el-input>
           </el-form-item>
           <el-form-item :label="$t('value')">
             <el-input
               v-model="form.value"
               @input="handleInputChange"
             ></el-input>
-            <div>
-              {{ fee }}
-            </div>
           </el-form-item>
         </el-form>
-        <div class="btns">
-          <div class="button black-btn" @click="sendTransction">
-            {{ $t("send") }}
-          </div>
-          <div class="button white-btn" @click="extrinsicDialogVisible = false">
-            {{ $t("cancel") }}
+        <div class="split-line"></div>
+        <div class="footer">
+          <div class="fee">{{ $t("fee", {num: fee}) }}</div>
+          <div class="btns">
+            <div class="button black-btn" @click="sendTransction">
+              {{ $t("send") }}
+            </div>
+            <div class="button white-btn" @click="extrinsicDialogVisible = false">
+              {{ $t("cancel") }}
+            </div>
           </div>
         </div>
         <span slot="footer" class="dialog-footer"> </span>
@@ -221,6 +224,7 @@ import { isMobile } from "Utils/tools";
 import StructTable from "@/views/Components/StructTable";
 import keyring from "@polkadot/ui-keyring";
 import AddressDisplay from "@/views/Components/AddressDisplay";
+import { web3FromAddress } from "@polkadot/extension-dapp";
 import { accuracyFormat, toThousandslsFilter } from "Utils/filters";
 import { getTokenDecimalByCurrency } from "../../utils/tools";
 import BN from "bn.js";
@@ -238,8 +242,8 @@ export default {
       form: {
         account: "",
         dest: "",
-        module: "",
-        call: "",
+        module: "balances",
+        call: "transferKeepAlive",
         value: "",
       },
       isLoading: false,
@@ -407,20 +411,22 @@ export default {
       return num;
     },
     handleInputChange() {
-      this.fee = "calculating";
+      this.fee = this.$t("calculating");
       this.debounceCalc();
     },
     async calcFee() {
-      let multiRoot = this.multisigAccount.address;
-      let tx = this.$polkaApi.tx.balances.transferKeepAlive(
-        this.form.dest,
-        this.getBn(this.form.value)
-      );
-      const { partialFee } = await tx.paymentInfo(multiRoot);
-      this.fee =
-        accuracyFormat(partialFee.toJSON(), this.tokenDecimal) +
-        " " +
-        this.tokenSymbol;
+      if (this.form.dest && this.form.value) {
+        let multiRoot = this.multisigAccount.address;
+        let tx = this.$polkaApi.tx.balances.transferKeepAlive(
+          this.form.dest,
+          this.getBn(this.form.value)
+        );
+        const { partialFee } = await tx.paymentInfo(multiRoot);
+        this.fee =
+          accuracyFormat(partialFee.toJSON(), this.tokenDecimal) +
+          " " +
+          this.tokenSymbol;
+      }
     },
     async sendTransction() {
       let multiRoot = this.multisigAccount.address;
@@ -452,23 +458,46 @@ export default {
       this.$polkaApi.tx.multisig.approveAsMulti(threshold, others, timepoint, tx.method.hash, weight);
       this.signAndSend(tx);
     },
-    async signAndSend() {
-      // try {
-      //   await tx.signAsync(pairOrAddress, options);
-      //   queueSetTxStatus(currentItem.id, 'sending');
-      //   const unsubscribe = await tx.send(handleTxResults('signAndSend', queueSetTxStatus, currentItem, () => {
-      //     unsubscribe();
-      //     this.$message({
-      //       type: "success",
-      //       message: this.$t("success"),
-      //     });
-      //   }));
-      // } catch(err) {
-      //   this.$message({
-      //     type: "error",
-      //     message: error.message
-      //   });
-      // }
+    async signAndSend(tx) {
+      try {
+        const injector = await web3FromAddress(this.form.account);
+        this.$polkaApi.setSigner(injector.signer);
+        await tx.signAndSend(this.form.account, ({ events = [] }) => {
+          events.forEach(({ event: { data, method, section } }) => {
+            if (method === "ExtrinsicSuccess" && section === "system") {
+              this.$notify({
+                title: this.$t("transaction_success_title"),
+                message: this.$t("transaction_success_content"),
+                type: "success"
+              });
+              this.extrinsicDialogVisible = false;
+            }
+            if (method === "ExtrinsicFailed" && section === "system") {
+              const [dispatchError] = data;
+              let message = dispatchError.type;
+              if (dispatchError.isModule) {
+                try {
+                  const mod = dispatchError.asModule;
+                  const error = dispatchError.registry.findMetaError(mod);
+                  message = `${error.section}.${error.name}`;
+                } catch (error) {
+                  // swallow
+                }
+              }
+              this.$notify({
+                title: this.$t("transaction_failed_title"),
+                message: message,
+                type: "error"
+              });
+            }
+          });
+        });
+      } catch(error) {
+        this.$message({
+          type: "error",
+          message: error.message
+        });
+      }
     },
     renameWallet() {
       try {
@@ -550,7 +579,7 @@ export default {
           display: inline-block;
           margin-top: 10px;
           padding: 10px 50px;
-          background: #302b3c;
+          background: var(--black-color);
           border-radius: 2px;
           color: #fff;
         }
@@ -621,6 +650,7 @@ export default {
   display: flex;
 }
 .deleteDialog,
+.submitDialog,
 .renameDialog {
   .title {
     font-size: 20px;
@@ -645,6 +675,40 @@ export default {
     padding: 10px 0;
     & + .button {
       margin-left: 20px;
+    }
+  }
+  .module-item {
+    width: 180px;
+    margin-right: 20px;
+    display: inline-block;
+  }
+  .call-item {
+    width: 350px;
+    display: inline-block;
+  }
+}
+.submitDialog {
+  .split-line {
+    margin: 20px 0 10px;
+    background-color: #E7EAF3;
+    height: 1px;
+  }
+  .fee {
+    flex: 1 1 auto;
+    color: var(--main-color);
+  }
+  .footer {
+    display: flex;
+    align-items: center;
+  }
+  /deep/ .el-dialog__body {
+    padding: 10px 60px;
+    .el-form-item__label {
+      font-weight: 600;
+      color: var(--black-color);
+    }
+    .el-select {
+      width: 100%;
     }
   }
 }

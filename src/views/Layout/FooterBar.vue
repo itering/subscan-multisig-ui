@@ -191,7 +191,7 @@ export default {
 <style lang='scss' scoped>
 .footer-bar {
   color: #acabb1;
-  background: #302b3c;
+  background: var(--black-color);
   .subscan-container {
     flex-direction: column;
     width: 1180px;
@@ -286,7 +286,7 @@ export default {
     .subscan-container {
       height: inherit;
       flex-direction: column;
-      background-color: #302b3c;
+      background-color: var(--black-color);
       align-items: initial;
       position: relative;
       display: none;
