@@ -43,8 +43,8 @@
     "approval_tip": "Please check the transaction information carefully and confirm it before approve",
     "cancel": "Multisig Cancel",
     "cancel_tip": "Only the sender can cancel this extrinsic",
-    "customize": "(Customize)",
-    "from_chain": "(Caught from the chain storage)",
+    "customize": "Call Data (Customize)",
+    "from_chain": "Call Data (Caught from the chain storage)",
     "index": "Multisig",
     "intro": "Polka Multisig is the most secure way to manage multisig wallet and extrinsic"
   },
@@ -53,7 +53,7 @@
   "ok": "Ok",
   "owner": "Owner",
   "parameters": "Parameters",
-  "pending_hash": "Pending Hash:",
+  "pending_hash": "Pending Hash",
   "polkadot": {
     "connect": "Connect to polkadot{.js} extension",
     "connected": "Polkadot{.js} is connected",

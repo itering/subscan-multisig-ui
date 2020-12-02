@@ -31,7 +31,7 @@
         </el-dropdown-menu>
       </el-dropdown>
       <el-dialog
-        class="deleteDialog"
+        class="dialog deleteDialog"
         title=""
         :show-close="false"
         :close-on-click-modal="false"
@@ -57,7 +57,7 @@
         <span slot="footer" class="dialog-footer"> </span>
       </el-dialog>
       <el-dialog
-        class="renameDialog"
+        class="dialog renameDialog"
         title=""
         :show-close="false"
         :close-on-click-modal="false"
@@ -85,7 +85,7 @@
         {{ $t("submit_extrinsic") }}
       </div>
       <el-dialog
-        class="submitDialog"
+        class="dialog submitDialog"
         title=""
         :show-close="false"
         :close-on-click-modal="false"
@@ -138,7 +138,7 @@
         <div class="footer">
           <div class="fee">{{ $t("fee", {num: fee}) }}</div>
           <div class="btns">
-            <div class="button black-btn" @click="sendTransction">
+            <div class="button black-btn" @click="sendTransaction">
               {{ $t("send") }}
             </div>
             <div class="button white-btn" @click="extrinsicDialogVisible = false">
@@ -169,9 +169,64 @@
           </el-table-column>
           <el-table-column min-width="80" :label="$t('status.index')" fit>
             <template slot-scope="props">
-              <div>
-                {{ getExtrinsicStatus(props.row.callHash) }}
+              <div v-for="action in getExtrinsicActions(props.row)" :key="action">
+                <div v-if="action.indexOf('pending') > -1">{{action}}</div>
+                <div class="button" v-else-if="action.indexOf('cancel') > -1" @click="cancelDialogVisible=true">{{action}}</div>
+                <div class="button" v-else-if="action.indexOf('approve') > -1" @click="handleApproveBtnClick(props.row)">{{action}}</div>
               </div>
+              <el-dialog
+                class="dialog approveDialog"
+                title=""
+                :show-close="false"
+                :close-on-click-modal="false"
+                :visible.sync="approveDialogVisible"
+                width="670px"
+              >
+                <div class="title">{{ $t("multisig.approval") }}</div>
+                <div class="split-line"></div>
+                <el-form label-width="80px" :model="approveForm" label-position="top">
+                  <el-form-item :label="$t('pending_hash')">
+                    <div>{{props.row.callHash}}</div>
+                  </el-form-item>
+                  <el-form-item :label="$t('account')">
+                    <el-select placeholder v-model="approveForm.account" class="select" @change="handleInputChange">
+                      <el-option
+                        v-for="item in injectedAccountList"
+                        :key="item.address"
+                        class="popover-option"
+                        :label="item.name"
+                        :value="item.address"
+                      >
+                        <address-display
+                          customCls="address-display-cls"
+                          :hasAddressWrapper="true"
+                          :iconSize="30"
+                          :address="item.address"
+                          :hasCopyBtn="false"
+                          :hasDisplayNameInfo="true"
+                          :displayNameInfo="getAccountDisplayInfo(item)"
+                        ></address-display>
+                      </el-option>
+                    </el-select>
+                  </el-form-item>
+                  <el-form-item :label="$t('call')">
+                    <el-input v-model="approveForm.callData" @input="handleInputChange"></el-input>
+                  </el-form-item>
+                </el-form>
+                <div class="split-line"></div>
+                <div class="footer">
+                  <div class="fee">{{ $t("fee", {num: fee}) }}</div>
+                  <div class="btns">
+                    <div class="button black-btn" @click="approveTransction">
+                      {{ $t("approve") }}
+                    </div>
+                    <div class="button white-btn" @click="approveDialogVisible = false">
+                      {{ $t("cancel") }}
+                    </div>
+                  </div>
+                </div>
+                <span slot="footer" class="dialog-footer"> </span>
+              </el-dialog>
             </template>
           </el-table-column>
           <el-table-column width="40" type="expand">
@@ -206,8 +261,8 @@
                     </template>
                   </el-table-column>
                 </el-table>
-                <div class="table-title">{{$t("parameters")}}</div>
-                 <struct-table :struct="scope.row.params"/>
+                <div v-if="scope.row.params" class="table-title">{{$t("parameters")}}</div>
+                <struct-table v-if="scope.row.params" :struct="scope.row.params"/>
               </div>
             </template>
           </el-table-column>
@@ -246,10 +301,16 @@ export default {
         call: "transferKeepAlive",
         value: "",
       },
+      approveForm: {
+        account: "",
+        callData: ""
+      },
       isLoading: false,
       fee: "0",
       extrinsics: [],
       extrinsicDialogVisible: false,
+      approveDialogVisible: false,
+      cancelDialogVisible: false,
       deleteDialogVisible: false,
       renameDialogVisible: false,
       tokens: {},
@@ -334,6 +395,10 @@ export default {
         }
       });
     },
+    handleApproveBtnClick(row) {
+      this.approveForm.callData = row.callData;
+      this.approveDialogVisible = true;
+    },
     hasApproved(address, approveList) {
       return (approveList && (approveList.indexOf(address) > -1)) ? this.$t("status.approved"): this.$t("status.pending");
     },
@@ -355,25 +420,27 @@ export default {
       const callInfos = await this.$polkaApi.query["multisig"].calls.multi(callHashs);
       _.forEach(callInfos, (item, index) => {
         let call = item.toHuman();
-        const callDataInfoJSON = this.$registry.createType("Call", call[0]).toJSON();
-        const callDataInfo = this.$registry.createType("Call", call[0]).toHuman();
-        let meta = this.$polkaApi.tx[callDataInfo.section][callDataInfo.method].meta.toJSON();
-        _.forEach(meta.args, (arg) => {
-          arg.value = callDataInfoJSON.args[arg.name];
-        })
-        this.extrinsics[index]  = {
-          ...this.extrinsics[index],
-          ...callDataInfo,
-          params: meta.args,
-          callData: call[0],
-          callInfo: call,
+        if (call) {
+          const callDataInfoJSON = this.$registry.createType("Call", call[0]).toJSON();
+          const callDataInfo = this.$registry.createType("Call", call[0]).toHuman();
+          let meta = this.$polkaApi.tx[callDataInfo.section][callDataInfo.method].meta.toJSON();
+          _.forEach(meta.args, (arg) => {
+            arg.value = callDataInfoJSON.args[arg.name];
+          })
+          this.extrinsics[index]  = {
+            ...this.extrinsics[index],
+            ...callDataInfo,
+            params: meta.args,
+            callData: call[0],
+            callInfo: call,
+          }
         }
       })
       this.isLoading = false;
     },
     getAction(row) {
       if (row.section && row.method) {
-        return row.section + "(" + row.method + ")";
+        return row.section + " (" + row.method + ")";
       }
       return "-"
     },
@@ -381,8 +448,23 @@ export default {
       let cur = approvals && approvals.length || 0;
       return cur + "/" + this.multisigAccount.meta.threshold;
     },
-    getExtrinsicStatus() {
-      return this.$t("status.pending");
+    getExtrinsicActions(row) {
+      let actions = [];
+      if (row.approvals && row.approvals.length === this.multisigAccount.meta.threshold) {
+        actions.push("pending");
+      } else {
+        let injectedAddressList = _.map(this.injectedAccountList, "address");
+        let multisigPairAddressList = _.map(this.multisigAccount.meta.addressPair, "address");
+        if (injectedAddressList.indexOf(row.depositor) > -1) {
+          actions.push("cancel")
+        }
+        let localAccountInMultisigPairList = _.intersection(injectedAddressList, multisigPairAddressList);
+        let approvedLocalAccountList = _.intersection(localAccountInMultisigPairList, row.approvals);
+        if (approvedLocalAccountList.length !== localAccountInMultisigPairList.length) {
+          actions.push("approve");
+        }
+      }
+      return actions;
     },
     extractExternal(accountId) {
       if (!accountId) {
@@ -415,12 +497,19 @@ export default {
       this.debounceCalc();
     },
     async calcFee() {
-      if (this.form.dest && this.form.value) {
-        let multiRoot = this.multisigAccount.address;
-        let tx = this.$polkaApi.tx.balances.transferKeepAlive(
+      let tx = null;
+      let multiRoot = null;
+      if (this.extrinsicDialogVisible && this.form.dest && this.form.value) {
+        multiRoot = this.multisigAccount.address;
+        tx = this.$polkaApi.tx.balances.transferKeepAlive(
           this.form.dest,
           this.getBn(this.form.value)
         );
+      }
+      if (this.approveDialogVisible && this.approveForm.callData) {
+        tx = this.getApproveTransaction();
+      }
+      if (tx && multiRoot) {
         const { partialFee } = await tx.paymentInfo(multiRoot);
         this.fee =
           accuracyFormat(partialFee.toJSON(), this.tokenDecimal) +
@@ -428,7 +517,22 @@ export default {
           this.tokenSymbol;
       }
     },
-    async sendTransction() {
+    approveTransction() {
+      this.approveDialogVisible = false;
+    },
+    getApproveTransaction() {
+      // let signAddress = this.form.account;
+      // let api = this.$polkaApi;
+      // let tx = this.isMultiCall
+      // ? multiModule.asMulti.meta.args.length === 6
+      //   ? multiModule.asMulti(threshold, others, timepoint, tx.method.toHex(), true, weight)
+      //   : multiModule.asMulti(threshold, others, timepoint, tx.method)
+      // : multiModule.approveAsMulti.meta.args.length === 5
+      //   ? multiModule.approveAsMulti(threshold, others, timepoint, tx.method.hash, weight)
+      //   : multiModule.approveAsMulti(threshold, others, timepoint, tx.method.hash);
+
+    },
+    async sendTransaction() {
       let multiRoot = this.multisigAccount.address;
       let signAddress = this.form.account;
       let api = this.$polkaApi;
@@ -649,9 +753,7 @@ export default {
 .main {
   display: flex;
 }
-.deleteDialog,
-.submitDialog,
-.renameDialog {
+.dialog {
   .title {
     font-size: 20px;
     font-weight: 600;
@@ -687,7 +789,9 @@ export default {
     display: inline-block;
   }
 }
-.submitDialog {
+.submitDialog,
+.approveDialog,
+.cancelDialog {
   .split-line {
     margin: 20px 0 10px;
     background-color: #E7EAF3;

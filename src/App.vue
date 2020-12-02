@@ -78,7 +78,6 @@
 import Navbar from "Views/Layout/Navbar";
 import FooterBar from "Views/Layout/FooterBar";
 import { web3Enable, isWeb3Injected } from "@polkadot/extension-dapp";
-
 const queryString = require("query-string");
 import { mapState } from "vuex";
 import { NETWORK_LIST } from "Config";
