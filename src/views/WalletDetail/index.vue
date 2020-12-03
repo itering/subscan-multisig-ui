@@ -643,8 +643,11 @@ export default {
           this.tokenSymbol;
       }
     },
-    cancelTransction() {
-      this.cancelDialogVisible = false;
+    async cancelTransction() {
+      await this.signAndSend(this.getCancelTransaction(), this.cancelForm.account, ()=> {
+        this.getAccountMultisigs();
+        this.cancelDialogVisible = false;
+      });
     },
     getCancelTransaction() {
       let multiRoot = this.multisigAccount.address;
@@ -719,13 +722,15 @@ export default {
         tx.method.hash,
         weight
       );
-      this.signAndSend(tx);
+      this.signAndSend(tx, this.form.account, ()=>{
+        this.extrinsicDialogVisible = false;
+      });
     },
-    async signAndSend(tx) {
+    async signAndSend(tx, signAddress, callback) {
       try {
-        const injector = await web3FromAddress(this.form.account);
+        const injector = await web3FromAddress(signAddress);
         this.$polkaApi.setSigner(injector.signer);
-        await tx.signAndSend(this.form.account, ({ events = [] }) => {
+        await tx.signAndSend(signAddress, ({ events = [] }) => {
           events.forEach(({ event: { data, method, section } }) => {
             if (method === "ExtrinsicSuccess" && section === "system") {
               this.$notify({
@@ -733,7 +738,7 @@ export default {
                 message: this.$t("transaction_success_content"),
                 type: "success",
               });
-              this.extrinsicDialogVisible = false;
+              callback && callback();
             }
             if (method === "ExtrinsicFailed" && section === "system") {
               const [dispatchError] = data;
