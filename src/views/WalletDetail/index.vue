@@ -178,7 +178,7 @@
                   :key="action"
                 >
                   <div v-if="action.indexOf('pending') > -1">
-                    {{ $t("pending") }}
+                    {{ $t("status.pending") }}
                   </div>
                   <div
                     class="button"
@@ -390,7 +390,7 @@ export default {
       cancelForm: {
         account: "",
         hash: "",
-        when: null
+        when: null,
       },
       isLoading: false,
       fee: "0",
@@ -487,8 +487,8 @@ export default {
       this.cancelForm = {
         account: row.depositor,
         hash: row.callHash,
-        when: row.when
-      }
+        when: row.when,
+      };
       this.calcFee();
     },
     handleApproveBtnClick(row) {
@@ -556,33 +556,34 @@ export default {
     },
     getExtrinsicActions(row) {
       let actions = [];
+      let injectedAddressList = _.map(this.injectedAccountList, "address");
+      let multisigPairAddressList = _.map(
+        this.multisigAccount.meta.addressPair,
+        "address"
+      );
+      if (injectedAddressList.indexOf(row.depositor) > -1) {
+        actions.push("cancel");
+      }
+      let localAccountInMultisigPairList = _.intersection(
+        injectedAddressList,
+        multisigPairAddressList
+      );
+      let approvedLocalAccountList = _.intersection(
+        localAccountInMultisigPairList,
+        row.approvals
+      );
       if (
-        row.approvals &&
-        row.approvals.length === this.multisigAccount.meta.threshold
+        approvedLocalAccountList.length !==
+        localAccountInMultisigPairList.length
       ) {
-        actions.push("pending");
-      } else {
-        let injectedAddressList = _.map(this.injectedAccountList, "address");
-        let multisigPairAddressList = _.map(
-          this.multisigAccount.meta.addressPair,
-          "address"
-        );
-        if (injectedAddressList.indexOf(row.depositor) > -1) {
-          actions.push("cancel");
-        }
-        let localAccountInMultisigPairList = _.intersection(
-          injectedAddressList,
-          multisigPairAddressList
-        );
-        let approvedLocalAccountList = _.intersection(
-          localAccountInMultisigPairList,
-          row.approvals
-        );
+        actions.push("approve");
+      }
+      if (actions.length === 0) {
         if (
-          approvedLocalAccountList.length !==
-          localAccountInMultisigPairList.length
+          row.approvals &&
+          row.approvals.length === this.multisigAccount.meta.threshold
         ) {
-          actions.push("approve");
+          actions.push("pending");
         }
       }
       return actions;
@@ -644,17 +645,26 @@ export default {
       }
     },
     async cancelTransction() {
-      await this.signAndSend(this.getCancelTransaction(), this.cancelForm.account, ()=> {
-        this.getAccountMultisigs();
-        this.cancelDialogVisible = false;
-      });
+      await this.signAndSend(
+        this.getCancelTransaction(),
+        this.cancelForm.account,
+        () => {
+          this.getAccountMultisigs();
+          this.cancelDialogVisible = false;
+        }
+      );
     },
     getCancelTransaction() {
       let multiRoot = this.multisigAccount.address;
       let signAddress = this.cancelForm.account;
       const { threshold, who } = this.extractExternal(multiRoot);
       const others = who.filter((w) => w !== signAddress);
-      return this.$polkaApi.tx.multisig.cancelAsMulti(threshold, others, this.cancelForm.when, this.cancelForm.hash);
+      return this.$polkaApi.tx.multisig.cancelAsMulti(
+        threshold,
+        others,
+        this.cancelForm.when,
+        this.cancelForm.hash
+      );
     },
     approveTransction() {
       this.approveDialogVisible = false;
@@ -722,7 +732,7 @@ export default {
         tx.method.hash,
         weight
       );
-      this.signAndSend(tx, this.form.account, ()=>{
+      this.signAndSend(tx, this.form.account, () => {
         this.extrinsicDialogVisible = false;
       });
     },
