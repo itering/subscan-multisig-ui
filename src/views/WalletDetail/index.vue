@@ -169,10 +169,12 @@
           </el-table-column>
           <el-table-column min-width="80" :label="$t('status.index')" fit>
             <template slot-scope="props">
-              <div v-for="action in getExtrinsicActions(props.row)" :key="action">
-                <div v-if="action.indexOf('pending') > -1">{{action}}</div>
-                <div class="button" v-else-if="action.indexOf('cancel') > -1" @click="cancelDialogVisible=true">{{action}}</div>
-                <div class="button" v-else-if="action.indexOf('approve') > -1" @click="handleApproveBtnClick(props.row)">{{action}}</div>
+              <div class="cell-btns">
+                <div v-for="action in getExtrinsicActions(props.row)" :key="action">
+                  <div v-if="action.indexOf('pending') > -1">{{$t("pending")}}</div>
+                  <div class="button" v-else-if="action.indexOf('cancel') > -1" @click="handleCancelBtnClick(props.row)">{{$t("cancel")}}</div>
+                  <div class="button" v-else-if="action.indexOf('approve') > -1" @click="handleApproveBtnClick(props.row)">{{$t("approve")}}</div>
+                </div>
               </div>
               <el-dialog
                 class="dialog approveDialog"
@@ -213,6 +215,7 @@
                     <el-input v-model="approveForm.callData" @input="handleInputChange"></el-input>
                   </el-form-item>
                 </el-form>
+                <div class="dialog-tip">{{$t("multisig.approval_tip")}}</div>
                 <div class="split-line"></div>
                 <div class="footer">
                   <div class="fee">{{ $t("fee", {num: fee}) }}</div>
@@ -221,6 +224,39 @@
                       {{ $t("approve") }}
                     </div>
                     <div class="button white-btn" @click="approveDialogVisible = false">
+                      {{ $t("cancel") }}
+                    </div>
+                  </div>
+                </div>
+                <span slot="footer" class="dialog-footer"> </span>
+              </el-dialog>
+              <el-dialog
+                class="dialog cancelDialog"
+                title=""
+                :show-close="false"
+                :close-on-click-modal="false"
+                :visible.sync="cancelDialogVisible"
+                width="670px"
+              >
+                <div class="title">{{ $t("multisig.cancel") }}</div>
+                <div class="split-line"></div>
+                <el-form label-width="80px" label-position="top">
+                  <el-form-item :label="$t('pending_hash')">
+                    <div>{{props.row.callHash}}</div>
+                  </el-form-item>
+                  <el-form-item :label="$t('account')">
+                    <div>{{props.row.depositor}}</div>
+                  </el-form-item>
+                </el-form>
+                <div class="dialog-tip">{{$t("multisig.cancel_tip")}}</div>
+                <div class="split-line"></div>
+                <div class="footer">
+                  <div class="fee">{{ $t("fee", {num: fee}) }}</div>
+                  <div class="btns">
+                    <div class="button black-btn" @click="cancelTransction">
+                      {{ $t("submit") }}
+                    </div>
+                    <div class="button white-btn" @click="cancelDialogVisible = false">
                       {{ $t("cancel") }}
                     </div>
                   </div>
@@ -249,7 +285,6 @@
                       <address-display
                         customCls="address-display-cls"
                         :iconSize="30"
-                        :hasCopyBtn="false"
                         :hasDisplayName="false"
                         :address="props.row.address"
                       ></address-display>
@@ -395,6 +430,10 @@ export default {
         }
       });
     },
+    handleCancelBtnClick() {
+      this.cancelDialogVisible = true;
+      // this.calcFee();
+    },
     handleApproveBtnClick(row) {
       this.approveForm.callData = row.callData;
       this.approveDialogVisible = true;
@@ -516,6 +555,9 @@ export default {
           " " +
           this.tokenSymbol;
       }
+    },
+    cancelTransction() {
+      this.cancelDialogVisible = false;
     },
     approveTransction() {
       this.approveDialogVisible = false;
@@ -698,6 +740,17 @@ export default {
       .table-title {
         margin: 10px 0;
       }
+      .cell-btns {
+        display: flex;
+        > div {
+          margin-right: 10px;
+        }
+        .button {
+          padding: 2px 15px;
+          border: 1px solid var(--main-color);
+          color: var(--main-color);
+        }
+      }
     }
     &.account-intro {
       height: 70px;
@@ -793,7 +846,7 @@ export default {
 .approveDialog,
 .cancelDialog {
   .split-line {
-    margin: 20px 0 10px;
+    margin: 10px 0;
     background-color: #E7EAF3;
     height: 1px;
   }
@@ -805,11 +858,19 @@ export default {
     display: flex;
     align-items: center;
   }
+  .dialog-tip {
+    color: #FF475D;
+    font-weight: 600;
+  }
   /deep/ .el-dialog__body {
     padding: 10px 60px;
     .el-form-item__label {
       font-weight: 600;
+      line-height: 20px;
       color: var(--black-color);
+    }
+    .el-form-item {
+      margin-bottom: 15px;
     }
     .el-select {
       width: 100%;

@@ -534,6 +534,7 @@ body {
   }
   .button {
     border-radius: 2px;
+    cursor: pointer;
     &.black-btn {
       border: 1px solid var(--black-color);
       background: var(--black-color);
