@@ -365,6 +365,8 @@ import { web3FromAddress } from "@polkadot/extension-dapp";
 import { accuracyFormat, toThousandslsFilter } from "Utils/filters";
 import { getTokenDecimalByCurrency } from "../../utils/tools";
 import BN from "bn.js";
+const EMPTY_STATE = [new BN(0), 0];
+const ZERO_ACCOUNT = "5CAUdnwecHGxxyr5vABevAfZ34Fi4AaraDRMwfDQXQ52PXqg";
 export default {
   name: "Home",
   components: {
@@ -383,6 +385,7 @@ export default {
         call: "transferKeepAlive",
         value: "",
       },
+      waitingNotify: null,
       approveForm: {
         account: "",
         callData: "",
@@ -433,10 +436,7 @@ export default {
       return _.filter(this.multisigAccount.meta?.addressPair, (item) => {
         return item.isInjected;
       });
-    },
-    isMultiCall() {
-      return false;
-    },
+    }
   },
   created() {
     this.address = this.$route.params.key;
@@ -454,6 +454,9 @@ export default {
         address: item.address,
         display: item.name,
       };
+    },
+    isMultiCall(multisig) {
+      return  (multisig.approvals.length + 1) >= this.multisigAccount.threshold;
     },
     getMultisigAccount() {
       this.multisigAccount = {};
@@ -503,6 +506,7 @@ export default {
     async getAccountMultisigs() {
       this.isLoading = true;
       let callHashs = [];
+      this.extrinsics = [];
       const info = await this.$polkaApi.query["multisig"].multisigs.entries(
         this.multisigAccount.address
       );
@@ -644,13 +648,23 @@ export default {
           this.tokenSymbol;
       }
     },
+    showLoadingNotify() {
+      this.waitingNotify = this.$notify({
+        title: this.$t("transaction_waiting_title"),
+        message: this.$t("transaction_waiting_content"),
+        duration: 0
+      });
+    },
+    closeLoadingNotify() {
+      this.waitingNotify && this.waitingNotify.close();
+    },
     async cancelTransction() {
+      this.cancelDialogVisible = false;
       await this.signAndSend(
         this.getCancelTransaction(),
         this.cancelForm.account,
         () => {
           this.getAccountMultisigs();
-          this.cancelDialogVisible = false;
         }
       );
     },
@@ -665,6 +679,15 @@ export default {
         this.cancelForm.when,
         this.cancelForm.hash
       );
+    },
+    //https://github.com/polkadot-js/apps/blob/master/packages/react-hooks/src/useWeight.ts
+    async getWeight(call) {
+      let weight = EMPTY_STATE;
+      if (call) {
+        let result = await this.$polkaApi.tx(call).paymentInfo(ZERO_ACCOUNT);
+        weight = [result, call.encodedLength];
+      }
+      return weight;
     },
     approveTransction() {
       this.approveDialogVisible = false;
@@ -700,8 +723,7 @@ export default {
       if (info.isSome) {
         timepoint = info.unwrap().when;
       }
-      tx = this.isMultiCall
-        ? multiModule.asMulti.meta.args.length === 6
+      tx = multiModule.asMulti.meta.args.length === 6
           ? multiModule.asMulti(
               threshold,
               others,
@@ -711,44 +733,26 @@ export default {
               weight
             )
           : multiModule.asMulti(threshold, others, timepoint, tx.method)
-        : multiModule.approveAsMulti.meta.args.length === 5
-        ? multiModule.approveAsMulti(
-            threshold,
-            others,
-            timepoint,
-            tx.method.hash,
-            weight
-          )
-        : multiModule.approveAsMulti(
-            threshold,
-            others,
-            timepoint,
-            tx.method.hash
-          );
-      this.$polkaApi.tx.multisig.approveAsMulti(
-        threshold,
-        others,
-        timepoint,
-        tx.method.hash,
-        weight
-      );
+      this.extrinsicDialogVisible = false;
       this.signAndSend(tx, this.form.account, () => {
-        this.extrinsicDialogVisible = false;
+        this.getAccountMultisigs();
       });
     },
     async signAndSend(tx, signAddress, callback) {
       try {
         const injector = await web3FromAddress(signAddress);
         this.$polkaApi.setSigner(injector.signer);
+        this.showLoadingNotify();
         await tx.signAndSend(signAddress, ({ events = [] }) => {
           events.forEach(({ event: { data, method, section } }) => {
             if (method === "ExtrinsicSuccess" && section === "system") {
+              callback && callback();
+              this.closeLoadingNotify();
               this.$notify({
                 title: this.$t("transaction_success_title"),
                 message: this.$t("transaction_success_content"),
                 type: "success",
               });
-              callback && callback();
             }
             if (method === "ExtrinsicFailed" && section === "system") {
               const [dispatchError] = data;
