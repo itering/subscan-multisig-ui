@@ -240,7 +240,16 @@
                       </el-option>
                     </el-select>
                   </el-form-item>
-                  <el-form-item :label="$t('call')">
+                  <el-form-item
+                    v-if="isCallDataValid(props.row)"
+                    :label="$t('multisig.from_chain')"
+                  >
+                    <el-input
+                      v-model="approveForm.callData"
+                      @input="handleInputChange"
+                    ></el-input>
+                  </el-form-item>
+                  <el-form-item v-else :label="$t('multisig.customize')">
                     <el-input
                       v-model="approveForm.callData"
                       @input="handleInputChange"
@@ -365,7 +374,7 @@ import { web3FromAddress } from "@polkadot/extension-dapp";
 import { accuracyFormat, toThousandslsFilter } from "Utils/filters";
 import { getTokenDecimalByCurrency } from "../../utils/tools";
 import BN from "bn.js";
-const EMPTY_STATE = [new BN(0), 0];
+const EMPTY_STATE = new BN(0);
 const ZERO_ACCOUNT = "5CAUdnwecHGxxyr5vABevAfZ34Fi4AaraDRMwfDQXQ52PXqg";
 export default {
   name: "Home",
@@ -387,7 +396,9 @@ export default {
       },
       waitingNotify: null,
       approveForm: {
+        isMultiCall: false,
         account: "",
+        hash: "",
         callData: "",
       },
       cancelForm: {
@@ -436,7 +447,7 @@ export default {
       return _.filter(this.multisigAccount.meta?.addressPair, (item) => {
         return item.isInjected;
       });
-    }
+    },
   },
   created() {
     this.address = this.$route.params.key;
@@ -456,7 +467,9 @@ export default {
       };
     },
     isMultiCall(multisig) {
-      return  (multisig.approvals.length + 1) >= this.multisigAccount.threshold;
+      return (
+        multisig.approvals.length + 1 >= this.multisigAccount.meta.threshold
+      );
     },
     getMultisigAccount() {
       this.multisigAccount = {};
@@ -495,7 +508,12 @@ export default {
       this.calcFee();
     },
     handleApproveBtnClick(row) {
-      this.approveForm.callData = row.callData;
+      this.approveForm = {
+        account: this.approveForm.account,
+        hash: row.callHash,
+        callData: row.callData,
+        isMultiCall: this.isMultiCall(row),
+      };
       this.approveDialogVisible = true;
     },
     hasApproved(address, approveList) {
@@ -525,12 +543,9 @@ export default {
       _.forEach(callInfos, (item, index) => {
         let call = item.toHuman();
         if (call) {
-          const callDataInfoJSON = this.$registry
-            .createType("Call", call[0])
-            .toJSON();
-          const callDataInfo = this.$registry
-            .createType("Call", call[0])
-            .toHuman();
+          const callData = this.$registry.createType("Call", call[0]);
+          const callDataInfoJSON = callData.toJSON();
+          const callDataInfo = callData.toHuman();
           let meta = this.$polkaApi.tx[callDataInfo.section][
             callDataInfo.method
           ].meta.toJSON();
@@ -547,6 +562,16 @@ export default {
         }
       });
       this.isLoading = false;
+    },
+    isCallDataValid(row) {
+      let result = false;
+      if (row.callData) {
+        const callData = this.$registry.createType("Call", row.callData);
+        if (callData.hash && callData.hash.eq(row.callHash)) {
+          result = true;
+        }
+      }
+      return result;
     },
     getAction(row) {
       if (row.section && row.method) {
@@ -638,7 +663,7 @@ export default {
         tx = this.getCancelTransaction();
       }
       if (this.approveDialogVisible && this.approveForm.callData) {
-        tx = this.getApproveTransaction();
+        tx = await this.getApproveTransaction();
       }
       if (tx && multiRoot) {
         const { partialFee } = await tx.paymentInfo(multiRoot);
@@ -652,7 +677,7 @@ export default {
       this.waitingNotify = this.$notify({
         title: this.$t("transaction_waiting_title"),
         message: this.$t("transaction_waiting_content"),
-        duration: 0
+        duration: 0,
       });
     },
     closeLoadingNotify() {
@@ -682,26 +707,68 @@ export default {
     },
     //https://github.com/polkadot-js/apps/blob/master/packages/react-hooks/src/useWeight.ts
     async getWeight(call) {
-      let weight = EMPTY_STATE;
+      let result = EMPTY_STATE;
       if (call) {
-        let result = await this.$polkaApi.tx(call).paymentInfo(ZERO_ACCOUNT);
-        weight = [result, call.encodedLength];
+        let { weight } = await this.$polkaApi
+          .tx(call)
+          .paymentInfo(ZERO_ACCOUNT);
+        result = weight;
       }
-      return weight;
+      return result;
     },
-    approveTransction() {
+    async approveTransction() {
       this.approveDialogVisible = false;
+      let tx = await this.getApproveTransaction();
+      await this.signAndSend(tx, this.approveForm.account, () => {
+        this.getAccountMultisigs();
+      });
     },
-    getApproveTransaction() {
-      // let signAddress = this.form.account;
-      // let api = this.$polkaApi;
-      // let tx = this.isMultiCall
-      // ? multiModule.asMulti.meta.args.length === 6
-      //   ? multiModule.asMulti(threshold, others, timepoint, tx.method.toHex(), true, weight)
-      //   : multiModule.asMulti(threshold, others, timepoint, tx.method)
-      // : multiModule.approveAsMulti.meta.args.length === 5
-      //   ? multiModule.approveAsMulti(threshold, others, timepoint, tx.method.hash, weight)
-      //   : multiModule.approveAsMulti(threshold, others, timepoint, tx.method.hash);
+    async getApproveTransaction() {
+      let multiRoot = this.multisigAccount.address;
+      let signAddress = this.approveForm.account;
+      let api = this.$polkaApi;
+      let multiModule = api.tx.multisig;
+      const info = await api.query["multisig"].multisigs(
+        multiRoot,
+        this.approveForm.hash
+      );
+      let callData = null;
+      if (this.approveForm.callData) {
+        callData = this.$registry.createType("Call", this.approveForm.callData);
+      }
+      let weight = await this.getWeight(callData);
+      const { threshold, who } = this.extractExternal(multiRoot);
+      const others = who.filter((w) => w !== signAddress);
+      let timepoint = null;
+      if (info.isSome) {
+        timepoint = info.unwrap().when;
+      }
+      let tx = this.approveForm.isMultiCall
+        ? multiModule.asMulti.meta.args.length === 6
+          ? multiModule.asMulti(
+              threshold,
+              others,
+              timepoint,
+              callData.toHex(),
+              true,
+              weight
+            )
+          : multiModule.asMulti(threshold, others, timepoint, callData)
+        : multiModule.approveAsMulti.meta.args.length === 5
+        ? multiModule.approveAsMulti(
+            threshold,
+            others,
+            timepoint,
+            this.approveForm.hash,
+            weight
+          )
+        : multiModule.approveAsMulti(
+            threshold,
+            others,
+            timepoint,
+            this.approveForm.hash
+          );
+      return tx;
     },
     async sendTransaction() {
       let multiRoot = this.multisigAccount.address;
@@ -723,7 +790,8 @@ export default {
       if (info.isSome) {
         timepoint = info.unwrap().when;
       }
-      tx = multiModule.asMulti.meta.args.length === 6
+      tx =
+        multiModule.asMulti.meta.args.length === 6
           ? multiModule.asMulti(
               threshold,
               others,
@@ -732,7 +800,7 @@ export default {
               true,
               weight
             )
-          : multiModule.asMulti(threshold, others, timepoint, tx.method)
+          : multiModule.asMulti(threshold, others, timepoint, tx.method);
       this.extrinsicDialogVisible = false;
       this.signAndSend(tx, this.form.account, () => {
         this.getAccountMultisigs();
@@ -745,9 +813,9 @@ export default {
         this.showLoadingNotify();
         await tx.signAndSend(signAddress, ({ events = [] }) => {
           events.forEach(({ event: { data, method, section } }) => {
+            this.closeLoadingNotify();
             if (method === "ExtrinsicSuccess" && section === "system") {
               callback && callback();
-              this.closeLoadingNotify();
               this.$notify({
                 title: this.$t("transaction_success_title"),
                 message: this.$t("transaction_success_content"),
