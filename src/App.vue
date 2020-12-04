@@ -532,6 +532,10 @@ body {
   .token-symbol {
     margin-left: 4px;
   }
+  .link {
+    cursor: pointer;
+    color: var(--link-color);
+  }
   .button {
     border-radius: 2px;
     cursor: pointer;
