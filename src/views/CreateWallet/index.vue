@@ -5,11 +5,17 @@
     </div>
     <div class="subscan-container subscan-card">
       <div class="create-section">
-        <el-form label-width="80px" :model="form" label-position="top">
+        <el-form
+          label-width="80px"
+          :model="form"
+          ref="form"
+          :rules="formRules"
+          label-position="top"
+        >
           <el-form-item :label="$t('name')">
             <el-input v-model="form.name"></el-input>
           </el-form-item>
-          <el-form-item :label="$t('threshold')">
+          <el-form-item prop="threshold" :label="$t('threshold')">
             <el-input v-model="form.threshold"></el-input>
           </el-form-item>
           <el-form-item :label="$t('members')">
@@ -48,7 +54,7 @@
           </el-form-item>
           <el-form-item>
             <div class="btns">
-              <div class="button black" @click="addMultiAccount">
+              <div class="button black" @click="onSubmit">
                 {{ $t("create") }}
               </div>
               <router-link to="/" tag="div" class="button">
@@ -92,7 +98,25 @@ export default {
             address: "",
             name: "",
             key: 2,
-          }
+          },
+        ],
+      },
+      formRules: {
+        threshold: [
+          {
+            trigger: "submit",
+            validator: (rule, value, callback) => {
+              if (
+                value &&
+                value > 1 &&
+                value <= this.form.dynamicAccounts.length
+              ) {
+                callback();
+              } else {
+                callback(new Error(this.$t("error.threshold")));
+              }
+            },
+          },
         ],
       },
     };
@@ -101,7 +125,7 @@ export default {
     ...mapState({
       sourceSelected: (state) => state.global.sourceSelected,
       language: (state) => state.global.language,
-    })
+    }),
   },
   created() {
     this.init();
@@ -117,6 +141,13 @@ export default {
     isMobile() {
       return isMobile();
     },
+    onSubmit() {
+      this.$refs["form"].validate((valid) => {
+        if (valid) {
+          this.addMultiAccount();
+        }
+      });
+    },
     addMultiAccount() {
       let signatories = [];
       _.forEach(this.form.dynamicAccounts, (account) => {
@@ -126,18 +157,18 @@ export default {
         keyring.addMultisig(signatories, this.form.threshold, {
           name: this.form.name,
           genesisHash: this.genesisHash,
-          addressPair: this.form.dynamicAccounts
+          addressPair: this.form.dynamicAccounts,
         });
         // const { address } = result.pair;
         this.$message({
           type: "success",
           message: this.$t("success"),
         });
-        this.$router.push('/');
+        this.$router.push("/");
       } catch (error) {
         this.$message({
           type: "error",
-          message: error.message
+          message: error.message,
         });
       }
     },

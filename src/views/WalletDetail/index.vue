@@ -208,6 +208,8 @@
                 <div class="split-line"></div>
                 <el-form
                   label-width="80px"
+                  ref="approveForm"
+                  :rules="approveFormRules"
                   :model="approveForm"
                   label-position="top"
                 >
@@ -249,7 +251,7 @@
                       @input="handleInputChange"
                     ></el-input>
                   </el-form-item>
-                  <el-form-item v-else :label="$t('multisig.customize')">
+                  <el-form-item v-else prop="callData" :label="$t('multisig.customize')">
                     <el-input
                       v-model="approveForm.callData"
                       @input="handleInputChange"
@@ -400,6 +402,20 @@ export default {
         account: "",
         hash: "",
         callData: "",
+      },
+      approveFormRules: {
+        callData: [
+          {
+            trigger: "submit",
+            validator: (rule, value, callback) => {
+              if (value) {
+                callback();
+              } else {
+                callback(new Error(this.$t("error.call_data")));
+              }
+            },
+          },
+        ],
       },
       cancelForm: {
         account: "",
@@ -717,11 +733,15 @@ export default {
       return result;
     },
     async approveTransction() {
-      this.approveDialogVisible = false;
-      let tx = await this.getApproveTransaction();
-      await this.signAndSend(tx, this.approveForm.account, () => {
-        this.getAccountMultisigs();
-      });
+      this.$refs["approveForm"].validate(async valid => {
+        if (valid) {
+          this.approveDialogVisible = false;
+          let tx = await this.getApproveTransaction();
+          await this.signAndSend(tx, this.approveForm.account, () => {
+            this.getAccountMultisigs();
+          });
+        }
+      })
     },
     async getApproveTransaction() {
       let multiRoot = this.multisigAccount.address;

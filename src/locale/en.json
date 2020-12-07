@@ -22,7 +22,12 @@
   "donate": "Donate",
   "donate_unit": "Donate ({unit}) :",
   "donate_other": "Donate Other Token",
-  "error": "Error",
+  "error": {
+    "404": "Not Found",
+    "call_data": "Call Data error",
+    "index": "Error",
+    "threshold": "Threshold number error"
+  },
   "explorer": "Explorer",
   "external": "External",
   "extrinsic": "Extrinsic",

@@ -37,7 +37,7 @@
             :visible.sync="dialogVisible"
             width="560px"
           >
-            <div class="title">{{ $t("error") }}</div>
+            <div class="title">{{ $t("error.index") }}</div>
             <div class="text">{{ $t("polkadot.download_tip") }}</div>
             <div class="btns">
               <a class="button" target="_blank" :href="polkadotInstallLink">
