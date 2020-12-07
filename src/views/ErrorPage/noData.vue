@@ -162,6 +162,7 @@ export default {
 </script>
 <style lang="scss" scoped>
 .error-page-wrapper {
+  flex: 1 1 auto;
   .search-input {
     height: 50px;
   }
