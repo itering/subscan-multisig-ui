@@ -1,6 +1,3 @@
-const BigNumber = require('bignumber.js')
-import _ from "lodash"
-
 export function assert(condition, msg) {
   if (!condition) throw new Error(`[Apior] ${msg}`)
 }
@@ -21,26 +18,9 @@ export function getCurrencyTokenDetail(token, sourceSelected, currency) {
   }
   return {};
 }
-
-export function getTokenDetail(token, sourceSelected) {
-  if (token && token.detail && token.token) {
-    if (sourceSelected !== "crab" && sourceSelected !== "darwinia") {
-      return token.detail[token.token[0]];
-    } else {
-      return token.detail['POWER'];
-    }
-  }
-  return {};
-}
 export function getTokenDecimalByCurrency(token) {
   if (token) {
     return token.tokenDecimals;
-  }
-  return 0;
-}
-export function getTokenDecimal(token) {
-  if (token) {
-    return token.token_decimals;
   }
   return 0;
 }
