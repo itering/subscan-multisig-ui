@@ -1,3 +1,4 @@
+![grants_badge](./grants_badge.png)
 # Subscan Multisig UI
 
 ![License: GPL](https://img.shields.io/badge/license-GPL-blue.svg)
