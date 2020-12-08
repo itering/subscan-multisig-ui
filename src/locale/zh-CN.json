@@ -1,7 +1,7 @@
 {
   "about": "关于",
   "account": "账户",
-  "accounts": "Acc账户ounts",
+  "accounts": "账户",
   "action": "Action",
   "add_members": "Add Members",
   "address": "Address",
@@ -28,14 +28,14 @@
     "index": "错误",
     "threshold": "Threshold number error"
   },
-  "explorer": "Explorer",
+  "explorer": "浏览器",
   "external": "External",
   "extrinsic": "交易",
   "extrinsic_index": "交易ID",
   "fee": "*手续费: {num}",
   "id": "ID",
   "injected": "Injected",
-  "language_demo": "Language",
+  "language_demo": "语言",
   "loading": "Loading",
   "local_account": "Local Account",
   "members": "Members",
@@ -43,15 +43,15 @@
     "delete": "Are you sure to delete ？"
   },
   "module": "Module",
-  "multisig": {
-    "approval": "Multisig approval",
+  "Multi-sig": {
+    "approval": "Multi-sig approval",
     "approval_tip": "Please check the transaction information carefully and confirm it before approve",
-    "cancel": "Multisig Cancel",
+    "cancel": "Multi-sig Cancel",
     "cancel_tip": "Only the sender can cancel this extrinsic",
     "customize": "Call Data (Customize)",
     "from_chain": "Call Data (Caught from the chain storage)",
-    "index": "Multisig",
-    "intro": "Polka Multisig is the most secure way to manage multisig wallet and extrinsic"
+    "index": "多签钱包",
+    "intro": "Subscan Multi-sig is the most secure way to manage Multi-sig wallet and extrinsic"
   },
   "name": "Name",
   "network": "Network",
@@ -98,8 +98,8 @@
     "delete": "Delete Wallet",
     "delete_confirm": "Are you sure to delete “{name}” ？",
     "deploy": "Deploy Wallet",
-    "empty": "Please create Multisig wallet first",
+    "empty": "Please create Multi-sig wallet first",
     "index": "Wallet",
-    "list": "Multisig list"
+    "list": "Multi-sig list"
   }
 }
