@@ -41,7 +41,7 @@ yarn && yarn serve
 ### Test
 
 ```bash
-yarn && yarn test
+yarn && yarn test:unit
 ```
 
 
