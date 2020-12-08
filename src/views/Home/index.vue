@@ -20,12 +20,12 @@
           </el-table-column>
           <el-table-column min-width="300" :label="$t('address')" fit>
             <template slot-scope="props">
-              <router-link class="link" :to="`/wallet/${props.row.address}`" tag="a">
+              <a class="link" :href="getNetworkHref(`/account/${props.row.address}`)" target="_blank">
                 {{props.row.address}}
-              </router-link>
+              </a>
             </template>
           </el-table-column>
-          <el-table-column min-width="200" :label="$t('balance')" fit>
+          <el-table-column min-width="150" :label="$t('balance')" fit>
             <template slot-scope="props">
               <div>
                 <span>{{ props.row.balance | accuracyFormat(tokenDecimal) }}</span>
@@ -42,7 +42,19 @@
               </div>
             </template>
           </el-table-column>
-          <el-table-column width="100" type="expand" :label="$t('action')">
+          <el-table-column :label="$t('action')">
+            <template slot-scope="props">
+              <div class="btns">
+                <div class="expand-btn aciton-btn" @click="handleRuntimeExpand(props.row)">
+                  <icon-svg class="icon" icon-class="users"></icon-svg>
+                </div>
+                <router-link class="detail-btn aciton-btn" :to="`/wallet/${props.row.address}`" tag="div">
+                  <icon-svg class="icon" icon-class="triangle"></icon-svg>
+                </router-link>
+              </div>
+            </template>
+          </el-table-column>
+          <el-table-column type="expand">
             <template slot-scope="props">
               <div class="expand-form">
                 <el-table
@@ -201,6 +213,12 @@ export default {
         }
       });
     },
+    getNetworkHref(path) {
+      return this.$const[`SYMBOL/${this.sourceSelected}`]["domain"]["value"] + path;
+    },
+    handleRuntimeExpand(row) {
+      this.$refs["accountTable"] && this.$refs["accountTable"].toggleRowExpansion(row);
+    },
     isMobile() {
       return isMobile();
     },
@@ -262,7 +280,37 @@ export default {
       }
       /deep/ .address-display-cls {
         .address-wrapper-address {
-          pointer-events: none;
+          // pointer-events: none;
+        }
+      }
+      /deep/ .el-table {
+        .btns {
+          display: flex;
+          .aciton-btn {
+            width: 50px;
+            height: 26px;
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+          }
+          .expand-btn {
+            border: 1px solid #DBDBDB;
+            margin-right: 8px;
+            color: #98959F;
+            font-size: 16px;
+          }
+          .detail-btn {
+            border: 1px solid var(--main-color);
+            color: var(--main-color);
+            font-size: 12px;
+          }
+        }
+        .el-table__expand-column {
+          .cell {
+            display: none;
+          }
         }
       }
     }

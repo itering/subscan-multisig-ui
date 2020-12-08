@@ -920,7 +920,7 @@ export default {
     min-height: 500px;
     /deep/ .address-display-cls {
       .address-wrapper-address {
-        pointer-events: none;
+        // pointer-events: none;
       }
     }
     .create-section {

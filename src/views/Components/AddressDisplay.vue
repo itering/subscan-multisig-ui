@@ -16,18 +16,10 @@
         </div>
         <Tooltip customCls="item" effect="light" :content="address" placement="top-start">
           <div v-if="displayName" class="nick-name">
-            <router-link v-if="isWaiting" :to="`/waiting/${address}`">
+            <a :href="getNetworkHref(`/account/${address}`)" target="_blank">
               <span v-if="hasHashFormat">{{displayName | hashFormat}}</span>
               <span v-else>{{displayName}}</span>
-            </router-link>
-            <router-link v-else-if="isValidate" :to="`/validator/${address}`">
-              <span v-if="hasHashFormat">{{displayName | hashFormat}}</span>
-              <span v-else>{{displayName}}</span>
-            </router-link>
-            <router-link v-else :to="`/account/${address}`">
-              <span v-if="hasHashFormat">{{displayName | hashFormat}}</span>
-              <span v-else>{{displayName}}</span>
-            </router-link>
+            </a>
           </div>
         </Tooltip>
         <!-- <div v-if="displayName" class="nick-name">{{displayName}}</div> -->
@@ -44,36 +36,20 @@
           placement="top-start"
         >
           <div class="name-wrapper-address">
-            <router-link v-if="isWaiting" :to="`/waiting/${address}`">
+            <a :href="getNetworkHref(`/account/${address}`)" target="_blank">
               <span v-if="hasHashFormat">{{address | hashFormat}}</span>
               <span v-else>{{address}}</span>
-            </router-link>
-            <router-link v-else-if="isValidate" :to="`/validator/${address}`">
-              <span v-if="hasHashFormat">{{address | hashFormat}}</span>
-              <span v-else>{{address}}</span>
-            </router-link>
-            <router-link v-else :to="`/account/${address}`">
-              <span v-if="hasHashFormat">{{address | hashFormat}}</span>
-              <span v-else>{{address}}</span>
-            </router-link>
+            </a>
           </div>
         </Tooltip>
       </div>
       <div class="address-wrapper" v-if="hasAddressWrapper">
         <div v-if="hasAddressInAddressWrapper" class="address-wrapper-address">
-          <router-link v-if="isWaiting" :to="`/waiting/${address}`">
-            <span v-if="hasHashFormat">{{address | hashFormat}}</span>
-            <span v-else>{{address}}</span>
-          </router-link>
-          <router-link v-else-if="isValidate" :to="`/validator/${address}`">
-            <span v-if="hasHashFormat">{{address | hashFormat}}</span>
-            <span v-else>{{address}}</span>
-          </router-link>
-          <router-link v-else :to="`/account/${address}`">
+          <a :href="getNetworkHref(`/account/${address}`)" target="_blank">
             <span v-if="hasHashFormat && hasBracket">{{'('}}{{address | hashFormat}}{{')'}}</span>
             <span v-else-if="hasHashFormat">{{address | hashFormat}}</span>
             <span v-else>{{address}}</span>
-          </router-link>
+          </a>
         </div>
         <div
           class="copy-btn copy-icon"
@@ -95,6 +71,7 @@ import clipboard from "Directives/clipboard";
 import { hashFormat } from "Utils/filters";
 import Tooltip from "@/views/Components/Tooltip";
 import _ from "lodash";
+import { mapState } from "vuex";
 export default {
   name: "address-display",
   components: {
@@ -196,6 +173,9 @@ export default {
     };
   },
   computed: {
+    ...mapState({
+      sourceSelected: (state) => state.global.sourceSelected
+    }),
     judgementContent() {
       let result = '';
       let judgementText = [];
@@ -256,6 +236,9 @@ export default {
           this.judgements.push(item.judgement);
         });
       }
+    },
+    getNetworkHref(path) {
+      return this.$const[`SYMBOL/${this.sourceSelected}`]["domain"]["value"] + path;
     },
     getDisplayName() {
       let key = this.address;
