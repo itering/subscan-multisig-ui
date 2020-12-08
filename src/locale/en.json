@@ -43,7 +43,7 @@
     "delete": "Are you sure to delete it？"
   },
   "module": "Module",
-  "Multi-sig": {
+  "multisig": {
     "approval": "Multi-sig approval",
     "approval_tip": "Please check the transaction information carefully and confirm it before approving",
     "cancel": "Multi-sig Cancel",

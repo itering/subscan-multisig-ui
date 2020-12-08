@@ -50,6 +50,7 @@
                 </div>
                 <router-link class="detail-btn aciton-btn" :to="`/wallet/${props.row.address}`" tag="div">
                   <icon-svg class="icon" icon-class="triangle"></icon-svg>
+                  <div class="red-dot" v-if="props.row.hasInfo && props.row.isAvailable"></div>
                 </router-link>
               </div>
             </template>
@@ -209,9 +210,20 @@ export default {
             address: address,
             meta: meta,
             isAvailable: isAvailable,
+            hasInfo: false
           });
         }
       });
+      this.checkMultisigInfos();
+    },
+    checkMultisigInfos() {
+      let multisigAddressList = _.map(this.multisigAccounts, "address");
+      _.forEach(multisigAddressList, async (address, index) => {
+        const info = await this.$polkaApi.query["multisig"].multisigs.entries(
+          address
+        );
+        this.multisigAccounts[index]["hasInfo"] = info && info.length > 0;
+      })
     },
     getNetworkHref(path) {
       return this.$const[`SYMBOL/${this.sourceSelected}`]["domain"]["value"] + path;
@@ -285,6 +297,7 @@ export default {
       }
       /deep/ .el-table {
         .btns {
+          padding: 6px 0;
           display: flex;
           .aciton-btn {
             width: 50px;
@@ -302,9 +315,19 @@ export default {
             font-size: 16px;
           }
           .detail-btn {
+            position: relative;
             border: 1px solid var(--main-color);
             color: var(--main-color);
             font-size: 12px;
+            .red-dot {
+              position: absolute;
+              top: -6px;
+              right: -6px;
+              width: 12px;
+              height: 12px;
+              background: #FF475D;
+              border-radius: 50%;
+            }
           }
         }
         .el-table__expand-column {
