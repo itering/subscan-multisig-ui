@@ -94,7 +94,13 @@
       >
         <div class="title">{{ $t("submit_extrinsic") }}</div>
         <div class="split-line"></div>
-        <el-form label-width="80px" :model="form" label-position="top">
+        <el-form
+          label-width="80px"
+          :model="form"
+          ref="form"
+          :rules="formRules"
+          label-position="top"
+        >
           <el-form-item :label="$t('account')">
             <el-select placeholder v-model="form.account" class="select">
               <el-option
@@ -127,7 +133,7 @@
           <el-form-item :label="$t('dest')">
             <el-input v-model="form.dest" @input="handleInputChange"></el-input>
           </el-form-item>
-          <el-form-item :label="$t('value')">
+          <el-form-item prop="value" :label="$t('value')">
             <el-input
               v-model="form.value"
               @input="handleInputChange"
@@ -138,7 +144,7 @@
         <div class="footer">
           <div class="fee">{{ $t("fee", { num: fee }) }}</div>
           <div class="btns">
-            <div class="button black-btn" @click="sendTransaction">
+            <div class="button black-btn" @click="submitTransction">
               {{ $t("send") }}
             </div>
             <div
@@ -224,7 +230,7 @@
                       @change="handleInputChange"
                     >
                       <el-option
-                        v-for="item in injectedAccountList"
+                        v-for="item in getUnapprovedInjectedList(props.row)"
                         :key="item.address"
                         class="popover-option"
                         :label="item.name"
@@ -401,6 +407,16 @@ export default {
         call: "transferKeepAlive",
         value: "",
       },
+      formRules: {
+        value: [
+          {
+            trigger: "submit",
+            validator: (rule, value, callback) => {
+              callback();
+            },
+          },
+        ],
+      },
       waitingNotify: null,
       approveForm: {
         isMultiCall: false,
@@ -529,8 +545,10 @@ export default {
       this.calcFee();
     },
     handleApproveBtnClick(row) {
+      let accountList = this.getUnapprovedInjectedAddressList(row);
+      let account = accountList && accountList[0] || "";
       this.approveForm = {
-        account: this.approveForm.account,
+        account: account,
         hash: row.callHash,
         callData: row.callData,
         isMultiCall: this.isMultiCall(row),
@@ -604,23 +622,47 @@ export default {
       let cur = (approvals && approvals.length) || 0;
       return cur + "/" + this.multisigAccount.meta.threshold;
     },
-    getExtrinsicActions(row) {
-      let actions = [];
+    getUnapprovedInjectedList(row) {
+      let list = this.getUnapprovedInjectedAddressList(row);
+      return _.filter(this.injectedAccountList, item => {
+        return list.indexOf(item.address) > -1;
+      })
+    },
+    getUnapprovedInjectedAddressList(row) {
+      let localAccountInMultisigPairList = this.getLocalAccountInMultisigPairList();
+      let approvedLocalAccountList = this.getApprovedLocalAccountList(
+        localAccountInMultisigPairList,
+        row
+      );
+      return _.difference(localAccountInMultisigPairList, approvedLocalAccountList);
+    },
+    getLocalAccountInMultisigPairList() {
       let injectedAddressList = _.map(this.injectedAccountList, "address");
       let multisigPairAddressList = _.map(
         this.multisigAccount.meta.addressPair,
         "address"
       );
-      if (injectedAddressList.indexOf(row.depositor) > -1) {
-        actions.push("cancel");
-      }
-      let localAccountInMultisigPairList = _.intersection(
+      return _.intersection(
         injectedAddressList,
         multisigPairAddressList
       );
-      let approvedLocalAccountList = _.intersection(
+    },
+    getApprovedLocalAccountList(localAccountInMultisigPairList, row) {
+      return _.intersection(
         localAccountInMultisigPairList,
-        row.approvals
+        row && row.approvals
+      );
+    },
+    getExtrinsicActions(row) {
+      let actions = [];
+      let injectedAddressList = _.map(this.injectedAccountList, "address");
+      if (injectedAddressList.indexOf(row.depositor) > -1) {
+        actions.push("cancel");
+      }
+      let localAccountInMultisigPairList = this.getLocalAccountInMultisigPairList();
+      let approvedLocalAccountList = this.getApprovedLocalAccountList(
+        localAccountInMultisigPairList,
+        row
       );
       if (
         approvedLocalAccountList.length !==
@@ -803,6 +845,13 @@ export default {
           );
       return tx;
     },
+    submitTransction() {
+      this.$refs["form"].validate((valid) => {
+        if (valid) {
+          this.sendTransaction();
+        }
+      });
+    },
     async sendTransaction() {
       let multiRoot = this.multisigAccount.address;
       let signAddress = this.form.account;
@@ -837,6 +886,13 @@ export default {
           : multiModule.asMulti(threshold, others, timepoint, tx.method);
       this.extrinsicDialogVisible = false;
       this.signAndSend(tx, this.form.account, () => {
+        this.form = {
+          account: "",
+          dest: "",
+          module: "balances",
+          call: "transferKeepAlive",
+          value: "",
+        };
         this.getAccountMultisigs();
       });
     },

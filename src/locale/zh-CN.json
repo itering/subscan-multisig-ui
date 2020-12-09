@@ -27,7 +27,8 @@
     "call_data": "Call Data error",
     "index": "错误",
     "member": "多签成员不可重复",
-    "threshold": "阈值至少为2"
+    "threshold": "阈值至少为2",
+    "value": "Value error"
   },
   "explorer": "浏览器",
   "external": "External",

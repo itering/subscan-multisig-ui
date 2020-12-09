@@ -27,7 +27,8 @@
     "call_data": "Call Data error",
     "index": "Error",
     "member": "The members of a multisig cannot be repeated",
-    "threshold": "Threshold number is at least 2"
+    "threshold": "Threshold number is at least 2",
+    "value": "Value error"
   },
   "explorer": "Explorer",
   "external": "External",
