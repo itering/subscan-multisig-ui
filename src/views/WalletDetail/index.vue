@@ -251,7 +251,11 @@
                       @input="handleInputChange"
                     ></el-input>
                   </el-form-item>
-                  <el-form-item v-else prop="callData" :label="$t('multisig.customize')">
+                  <el-form-item
+                    v-else
+                    prop="callData"
+                    :label="$t('multisig.customize')"
+                  >
                     <el-input
                       v-model="approveForm.callData"
                       @input="handleInputChange"
@@ -376,6 +380,7 @@ import { web3FromAddress } from "@polkadot/extension-dapp";
 import { accuracyFormat, toThousandslsFilter } from "Utils/filters";
 import { getTokenDecimalByCurrency } from "../../utils/tools";
 import BN from "bn.js";
+import { BigNumber } from "bignumber.js";
 const EMPTY_STATE = new BN(0);
 const ZERO_ACCOUNT = "5CAUdnwecHGxxyr5vABevAfZ34Fi4AaraDRMwfDQXQ52PXqg";
 export default {
@@ -655,11 +660,19 @@ export default {
       return keyring.encodeAddress(keyring.decodeAddress(address));
     },
     getBn(input) {
-      let BN_TEN = new BN(10);
-      let num = new BN(input.replace(/[^\d]/g, "")).mul(
-        BN_TEN.pow(new BN(this.tokenDecimal))
-      );
-      return num;
+      try {
+        let bignumber = new BigNumber(input)
+          .shiftedBy(this.tokenDecimal)
+          .integerValue()
+          .toString();
+        let num = new BN(bignumber);
+        return num;
+      } catch (error) {
+        this.$message({
+          type: "error",
+          message: error.message,
+        });
+      }
     },
     handleInputChange() {
       this.fee = this.$t("calculating");
@@ -669,11 +682,11 @@ export default {
       let tx = null;
       let multiRoot = this.multisigAccount.address;
       if (this.extrinsicDialogVisible && this.form.dest && this.form.value) {
-        multiRoot = this.multisigAccount.address;
-        tx = this.$polkaApi.tx.balances.transferKeepAlive(
-          this.form.dest,
-          this.getBn(this.form.value)
-        );
+        let bn = this.getBn(this.form.value);
+        if (bn) {
+          multiRoot = this.multisigAccount.address;
+          tx = this.$polkaApi.tx.balances.transferKeepAlive(this.form.dest, bn);
+        }
       }
       if (this.cancelDialogVisible) {
         tx = this.getCancelTransaction();
@@ -733,7 +746,7 @@ export default {
       return result;
     },
     async approveTransction() {
-      this.$refs["approveForm"].validate(async valid => {
+      this.$refs["approveForm"].validate(async (valid) => {
         if (valid) {
           this.approveDialogVisible = false;
           let tx = await this.getApproveTransaction();
@@ -741,7 +754,7 @@ export default {
             this.getAccountMultisigs();
           });
         }
-      })
+      });
     },
     async getApproveTransaction() {
       let multiRoot = this.multisigAccount.address;
@@ -794,10 +807,11 @@ export default {
       let multiRoot = this.multisigAccount.address;
       let signAddress = this.form.account;
       let api = this.$polkaApi;
-      let tx = api.tx.balances.transferKeepAlive(
-        this.form.dest,
-        this.getBn(this.form.value)
-      );
+      let bn = this.getBn(this.form.value);
+      if (!bn) {
+        return;
+      }
+      let tx = api.tx.balances.transferKeepAlive(this.form.dest, bn);
       let multiModule = api.tx.multisig;
       const info = await api.query["multisig"].multisigs(
         multiRoot,
@@ -835,12 +849,12 @@ export default {
           events.forEach(({ event: { data, method, section } }) => {
             this.closeLoadingNotify();
             if (method === "ExtrinsicSuccess" && section === "system") {
-              callback && callback();
               this.$notify({
                 title: this.$t("transaction_success_title"),
                 message: this.$t("transaction_success_content"),
                 type: "success",
               });
+              callback && callback();
             }
             if (method === "ExtrinsicFailed" && section === "system") {
               const [dispatchError] = data;
