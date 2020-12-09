@@ -143,10 +143,22 @@ export default {
     },
     onSubmit() {
       this.$refs["form"].validate((valid) => {
-        if (valid) {
+        if (valid && this.checkDuplicateMembers()) {
           this.addMultiAccount();
         }
       });
+    },
+    checkDuplicateMembers() {
+      let result = true;
+      let addressList = _.map(this.form.dynamicAccounts, "address");
+      if (addressList.length !== _.uniq(addressList).length) {
+        result = false;
+        this.$message({
+          type: "error",
+          message: this.$t("error.member"),
+        })
+      }
+      return result;
     },
     addMultiAccount() {
       let signatories = [];
