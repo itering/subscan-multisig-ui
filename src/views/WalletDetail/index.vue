@@ -160,7 +160,7 @@
     </div>
     <div class="subscan-container subscan-card extrinsic-list">
       <div class="list-section" v-show="!isLoading">
-        <el-table :data="extrinsics" style="width: 100%" ref="accountTable">
+        <el-table default-expand-all row-key="callHash" :data="extrinsics" style="width: 100%" ref="accountTable">
           <el-table-column min-width="200" :label="$t('call_hash')" fit>
             <template slot-scope="props">
               <div>{{ props.row.callHash }}</div>
