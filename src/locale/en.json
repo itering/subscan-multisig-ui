@@ -26,7 +26,8 @@
     "404": "Not Found",
     "call_data": "Call Data error",
     "index": "Error",
-    "threshold": "Threshold number error"
+    "member": "The members of a multisig cannot be repeated",
+    "threshold": "Threshold number is at least 2"
   },
   "explorer": "Explorer",
   "external": "External",

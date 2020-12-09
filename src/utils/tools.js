@@ -8,16 +8,6 @@ export function isMobile() {
       !!u.match(/AppleWebKit.*Mobile.*/)) ||
     window.innerWidth <= 768;
 }
-export function getCurrencyTokenDetail(token, sourceSelected, currency) {
-  if (token && token.detail && token.token) {
-    if (sourceSelected !== "crab" && sourceSelected !== "darwinia") {
-      return token.detail[token.token[0]];
-    } else {
-      return token.detail[currency.toUpperCase()] || token.detail['C' + currency.toUpperCase()];
-    }
-  }
-  return {};
-}
 export function getTokenDecimalByCurrency(token) {
   if (token) {
     return token.tokenDecimals;

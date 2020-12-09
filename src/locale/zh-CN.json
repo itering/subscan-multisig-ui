@@ -26,7 +26,8 @@
     "404": "没有找到相关信息",
     "call_data": "Call Data error",
     "index": "错误",
-    "threshold": "Threshold number error"
+    "member": "多签成员不可重复",
+    "threshold": "阈值至少为2"
   },
   "explorer": "浏览器",
   "external": "External",

@@ -130,7 +130,7 @@ export default {
     init() {
       this.initPolkadotJs();
       this.initChainState();
-      this.initWebSocket();
+      // this.initWebSocket();
     },
     async initChainState() {
       const chainState = await this.$polkaApi.rpc.system.properties();
