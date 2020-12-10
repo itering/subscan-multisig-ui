@@ -3,7 +3,7 @@
   "account": "账户",
   "accounts": "账户",
   "action": "Action",
-  "add_members": "Add Members",
+  "add_members": "Add a Member",
   "address": "Address",
   "approve": "Approve",
   "available": "Available",
@@ -17,7 +17,7 @@
   "copy_right": "Subscan © {year} - 由 Subscan 团队开发维护",
   "create": "Create",
   "delete": "Delete",
-  "dest": "Dest",
+  "dest": "Destination",
   "destination": "Destination",
   "donate": "捐赠",
   "donate_unit": "捐赠 ({unit}) :",
@@ -42,18 +42,18 @@
   "local_account": "Local Account",
   "members": "Members",
   "msg": {
-    "delete": "Are you sure to delete ？"
+    "delete": "Are you sure to delete it？"
   },
   "module": "Module",
   "multisig": {
     "approval": "Multi-sig approval",
-    "approval_tip": "Please check the transaction information carefully and confirm it before approve",
+    "approval_tip": "Please check the transaction information carefully and confirm it before approving",
     "cancel": "Multi-sig Cancel",
-    "cancel_tip": "Only the sender can cancel this extrinsic",
+    "cancel_tip": "Only the initiator can cancel this extrinsic",
     "customize": "Call Data (Customize)",
-    "from_chain": "Call Data (Caught from the chain storage)",
+    "from_chain": "Call Data (scanned from the chain storage)",
     "index": "多签钱包",
-    "intro": "Subscan Multi-sig is the most secure way to manage Multi-sig wallet and extrinsic"
+    "intro": "Subscan Multi-sig is the most secure way to manage Multi-sig wallets and extrinsics"
   },
   "name": "Name",
   "network": "Network",
@@ -67,7 +67,7 @@
     "download": "Download polkadot{.js} extension",
     "download_tip": "polkadot{.js} extension not installed, please download and install first",
     "none": "未从 polkadot{.js} extension 获取到账号",
-    "waiting": "Waiting for authorization from the extension. Please open the installed extension and approve or reject access."
+    "waiting": "Waiting for authorization from the extension. Please open the installed extension and approve access."
   },
   "privacy_policy": "隐私协议",
   "progress": "Progress",
@@ -96,10 +96,10 @@
   "version_history": "Version History",
   "view_in_subscan": "View in Subscan",
   "wallet": {
-    "add": "Add Wallet",
+    "add": "Create Wallet",
     "delete": "Delete Wallet",
     "delete_confirm": "Are you sure to delete “{name}” ？",
-    "deploy": "Deploy Wallet",
+    "deploy": "Create Wallet",
     "empty": "Please create Multi-sig wallet first",
     "index": "Wallet",
     "list": "Multi-sig list"
