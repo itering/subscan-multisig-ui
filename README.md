@@ -70,7 +70,7 @@ If you have installed the polkadot.js extension, you will be automatically conne
 * View the members of multi-sig account
   <p align="left">
     Click
-    <img src="./docs/btn_member.png" style="width:30px";>
+    <img src="./docs/btn_member.png" width="30px">
     to show/hide the members of the multi-sig account (include remark name, account, status)
   </p>
 
@@ -85,7 +85,7 @@ If you have installed the polkadot.js extension, you will be automatically conne
 * Manage multi-sig accounts
   <p align="left">
     1. Click
-    <img src="./docs/btn_detail.png" style="width:30px";>
+    <img src="./docs/btn_detail.png" width="30px">
     to enter multi-sig account details
   </p>
 
@@ -118,7 +118,7 @@ If you have installed the polkadot.js extension, you will be automatically conne
 #### 2.Authorize a multi-sig transfer
   * <p align="left">
     As shown in the figure,
-    <img src="./docs/btn_pending.png" style="width:30px";>
+    <img src="./docs/btn_pending.png" width="30px">
     a red badge on the button indicates there is at least one pending transaction in this wallet.
   </p>
 

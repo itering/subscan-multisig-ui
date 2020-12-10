@@ -43,7 +43,7 @@
 * 查看多签账号成员
   <p align="left">
     点击
-    <img src="./docs/btn_member.png" style="width:30px";>
+    <img src="./docs/btn_member.png" width="30px">
     可显示/隐藏 多签账号的成员（备注名，账号，状态）
   </p>
 
@@ -58,7 +58,7 @@
 * 管理多签账号
   <p align="left">
     1. 点击
-    <img src="./docs/btn_detail.png" style="width:30px";>
+    <img src="./docs/btn_detail.png" width="30px">
     进入多签账号详情
   </p>
 
@@ -91,7 +91,7 @@
 #### 2.授权 多签转账
   * <p align="left">
     如图所示，
-    <img src="./docs/btn_pending.png" style="width:30px";>
+    <img src="./docs/btn_pending.png" width="30px">
     上有红点，表示该多签账户有未完成交易。
   </p>
 
