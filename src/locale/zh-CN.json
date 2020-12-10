@@ -81,7 +81,7 @@
     "pending": "Pending"
   },
   "submit": "Submit",
-  "submit_extrinsic": "Submit Extrinsic",
+  "submit_extrinsic": "Initiate Extrinsic",
   "success": "Success",
   "term_of_use": "使用协议",
   "threshold": "Threshold",
