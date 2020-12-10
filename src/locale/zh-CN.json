@@ -75,7 +75,7 @@
   "rename": "重命名",
   "send": "发送",
   "status": {
-    "approved": "批准",
+    "approved": "已批准",
     "cancel": "取消",
     "index": "状态",
     "pending": "等待批准"
