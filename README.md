@@ -164,7 +164,11 @@ yarn && yarn serve
 ### Test
 
 ```bash
-yarn && yarn test:unit
+//unit
+yarn test:unit
+//e2e
+yarn test:e2e
+
 ```
 
 
