@@ -81,7 +81,7 @@
         <span slot="footer" class="dialog-footer"> </span>
       </el-dialog>
       <div class="placeholder"></div>
-      <div v-if="multisigAccount.isAvailable" class="button" @click="extrinsicDialogVisible = true">
+      <div v-if="multisigAccount.isAvailable" class="button" @click="handleSubmitBtnClick">
         {{ $t("submit_extrinsic") }}
       </div>
       <el-dialog
@@ -534,6 +534,11 @@ export default {
           return false;
         }
       });
+    },
+    handleSubmitBtnClick() {
+      this.extrinsicDialogVisible = true;
+      let localAccountInMultisigPairList = this.getLocalAccountInMultisigPairList();
+      this.form.account = localAccountInMultisigPairList && localAccountInMultisigPairList[0];
     },
     handleCancelBtnClick(row) {
       this.cancelDialogVisible = true;
