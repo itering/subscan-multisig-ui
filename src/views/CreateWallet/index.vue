@@ -16,7 +16,7 @@
             <el-input v-model="form.name"></el-input>
           </el-form-item>
           <el-form-item prop="threshold" :label="$t('threshold')">
-            <el-input v-model="form.threshold"></el-input>
+            <el-input @input="handleThresholdInputChange" v-model="form.threshold"></el-input>
           </el-form-item>
           <el-form-item :label="$t('members')">
             <div class="column-header">
@@ -183,6 +183,9 @@ export default {
           message: error.message,
         });
       }
+    },
+    handleThresholdInputChange(value) {
+      this.form.threshold = value.replace(/[^\d]/g, '');
     },
     removeAccountRow(item) {
       var index = this.form.dynamicAccounts.indexOf(item);

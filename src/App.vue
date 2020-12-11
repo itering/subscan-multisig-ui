@@ -622,6 +622,12 @@ body {
       }
     }
   }
+  .el-input-number {
+    width: 100%;
+    .el-input__inner {
+      text-align: left;
+    }
+  }
   .link {
     a {
       color: var(--link-color);

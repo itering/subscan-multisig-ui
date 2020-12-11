@@ -81,7 +81,7 @@
         <span slot="footer" class="dialog-footer"> </span>
       </el-dialog>
       <div class="placeholder"></div>
-      <div class="button" @click="extrinsicDialogVisible = true">
+      <div v-if="multisigAccount.isAvailable" class="button" @click="extrinsicDialogVisible = true">
         {{ $t("submit_extrinsic") }}
       </div>
       <el-dialog
@@ -136,7 +136,7 @@
           <el-form-item prop="value" :label="$t('value')">
             <el-input
               v-model="form.value"
-              @input="handleInputChange"
+              @input="handleValueInputChange"
             ></el-input>
           </el-form-item>
         </el-form>
@@ -715,6 +715,11 @@ export default {
           message: error.message,
         });
       }
+    },
+    handleValueInputChange(value) {
+      this.fee = this.$t("calculating");
+      this.form.value = value.replace(/[^\d.]/g, '');
+      this.debounceCalc();
     },
     handleInputChange() {
       this.fee = this.$t("calculating");
