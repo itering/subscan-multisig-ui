@@ -1,4 +1,5 @@
 import {bnShift, bn2str} from "./format";
+import { encodeAddress } from "@polkadot/util-crypto";
 export function toThousandslsFilter(num) {
   return (num || 0)
     .toString()
@@ -13,6 +14,13 @@ export function accuracyFormat(num, accuracy) {
   } else {
     return '';
   }
+}
+
+export function encodeAddressByType(address, addressType) {
+  if (!address) {
+    return "";
+  }
+  return encodeAddress(address, addressType);
 }
 
 export function hashFormat(hash) {

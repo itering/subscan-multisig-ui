@@ -291,6 +291,7 @@
 <script>
 import { mapState } from "vuex";
 import { formatSymbol, isMobile } from "Utils/tools";
+import { encodeAddressByType } from "Utils/filters";
 import AddressDisplay from "@/views/Components/AddressDisplay";
 import { web3Accounts } from "@polkadot/extension-dapp";
 import _ from "lodash";
@@ -298,6 +299,9 @@ export default {
   name: "NavBar",
   components: {
     AddressDisplay,
+  },
+  filters: {
+    encodeAddressByType
   },
   data() {
     return {
@@ -367,6 +371,9 @@ export default {
     },
     async getExtensionAccounts() {
       const allAccounts = await web3Accounts();
+      _.forEach(allAccounts, account => {
+        account.address = encodeAddressByType(account.address, this.token.ss58Format);
+      })
       this.$store.dispatch("SetExtensionAccountList", allAccounts || []);
     },
     getAccountDisplayInfo(item) {

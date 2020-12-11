@@ -24,7 +24,7 @@ if (language_bak == null) {
 const global = {
   state: {
     language, // 当前UI语言
-    sourceSelected: getLocalStore("polka_source") || "crab",
+    sourceSelected: getLocalStore("polka_source") || "polkadot",
     extensionAccountList: [],
     isPolkadotConnect: false,
     isKeyringLoaded: false
