@@ -4,10 +4,7 @@ import Cookies from 'js-cookie'
  */
 export const getHostName = () => {
   let host = window.location && window.location.hostname;
-  if (host === 'localhost') {
-    return host;
-  }
-  return '.subscan.io'
+  return host;
 }
 /**
  * 存储cookie
