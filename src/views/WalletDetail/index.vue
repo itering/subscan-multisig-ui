@@ -389,6 +389,7 @@ import BN from "bn.js";
 import { BigNumber } from "bignumber.js";
 const EMPTY_STATE = new BN(0);
 const ZERO_ACCOUNT = "5CAUdnwecHGxxyr5vABevAfZ34Fi4AaraDRMwfDQXQ52PXqg";
+const SUBSTRATE_PREFIX = 42;
 export default {
   name: "Home",
   components: {
@@ -909,7 +910,7 @@ export default {
     },
     async signAndSend(tx, signAddress, callback) {
       try {
-        const injector = await web3FromAddress(encodeAddressByType(signAddress, 42));
+        const injector = await web3FromAddress(encodeAddressByType(signAddress, SUBSTRATE_PREFIX));
         this.$polkaApi.setSigner(injector.signer);
         this.showLoadingNotify();
         await tx.signAndSend(signAddress, ({ events = [] }) => {
