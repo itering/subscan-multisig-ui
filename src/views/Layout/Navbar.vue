@@ -293,7 +293,6 @@ import { mapState } from "vuex";
 import { formatSymbol, isMobile } from "Utils/tools";
 import { encodeAddressByType } from "Utils/filters";
 import AddressDisplay from "@/views/Components/AddressDisplay";
-import { web3Accounts } from "@polkadot/extension-dapp";
 import _ from "lodash";
 export default {
   name: "NavBar",
@@ -355,7 +354,7 @@ export default {
       sourceSelected: (state) => state.global.sourceSelected,
       extensionAccountList: (state) => state.global.extensionAccountList,
       isPolkadotConnect: (state) => state.global.isPolkadotConnect,
-      token: (state) => state.polka.token,
+      token: (state) => state.global.token,
       language: (state) => state.global.language,
     }),
   },
@@ -365,16 +364,9 @@ export default {
   beforeDestroy() {},
   methods: {
     async init() {
-      if (this.isPolkadotConnect) {
-        this.getExtensionAccounts();
-      }
     },
     async getExtensionAccounts() {
-      const allAccounts = await web3Accounts();
-      _.forEach(allAccounts, account => {
-        account.address = encodeAddressByType(account.address, this.token.ss58Format);
-      })
-      this.$store.dispatch("SetExtensionAccountList", allAccounts || []);
+      this.$store.dispatch("SetExtensionAccountList");
     },
     getAccountDisplayInfo(item) {
       return {

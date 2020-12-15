@@ -1,14 +1,10 @@
 export default {
   state: {
-    metadata: {},
-    token: {},
+    metadata: {}
   },
   mutations: {
     SET_METADATA: (state, data) => {
       state.metadata = data;
-    },
-    SET_TOKEN: (state, data) => {
-      state.token = data;
     }
   },
   actions: {

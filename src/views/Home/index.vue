@@ -133,11 +133,8 @@ export default {
       const_symbol: const_symbol,
       currentTime: Date.now(),
       drawer: false,
-      network: "polkadot",
       multisigAccounts: [],
       extensionAddressList: [],
-      tokens: {},
-      metadata: {},
       sourceList: this.$const["COMMON/networkList"]["all"].value,
     };
   },
@@ -156,7 +153,7 @@ export default {
     ...mapState({
       sourceSelected: (state) => state.global.sourceSelected,
       language: (state) => state.global.language,
-      token: (state) => state.polka.token,
+      token: (state) => state.global.token,
       extensionAccountList: (state) => state.global.extensionAccountList,
       isKeyringLoaded: (state) => state.global.isKeyringLoaded,
     }),

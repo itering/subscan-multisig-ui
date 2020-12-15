@@ -95,6 +95,9 @@ export default {
         "https://chrome.google.com/webstore/detail/polkadot%7Bjs%7D-extension/mopnmbcafieddcagagdcbnhejhlodfdd",
     };
   },
+  watch: {
+    isKeyringLoaded: "getExtensionAccounts"
+  },
   computed: {
     ...mapState({
       sourceSelected: (state) => state.global.sourceSelected,
@@ -129,8 +132,15 @@ export default {
   methods: {
     init() {
       this.initPolkadotJs();
-      this.initChainState();
+      // this.initChainState();
       // this.initWebSocket();
+    },
+    async getExtensionAccounts() {
+      this.$store.dispatch("SetExtensionAccountList").then(()=>{
+        if (isWeb3Injected) {
+          this.$store.dispatch("SetIsPolkadotConnect", true);
+        }
+      });
     },
     async initChainState() {
       const chainState = await this.$polkaApi.rpc.system.properties();
@@ -144,9 +154,9 @@ export default {
         this.dialogVisible = true;
         return;
       }
-      if (isWeb3Injected) {
-        this.$store.dispatch("SetIsPolkadotConnect", true);
-      }
+      // if (isWeb3Injected) {
+      //   this.$store.dispatch("SetIsPolkadotConnect", true);
+      // }
     },
     initWebSocket() {
       //初始化weosocket

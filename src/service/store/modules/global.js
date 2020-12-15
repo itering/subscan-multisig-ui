@@ -4,7 +4,9 @@ import {
   setLocalStore,
   getLocalStore
 } from "Utils/storage";
-
+import { encodeAddressByType } from "Utils/filters";
+import { web3Accounts } from "@polkadot/extension-dapp";
+import _  from "lodash";
 let language =
   getCookie("local_language") ||
   (navigator.browserLanguage ? navigator.browserLanguage : navigator.language);
@@ -27,7 +29,8 @@ const global = {
     sourceSelected: getLocalStore("polka_source") || "polkadot",
     extensionAccountList: [],
     isPolkadotConnect: false,
-    isKeyringLoaded: false
+    isKeyringLoaded: false,
+    token: {},
   },
   mutations: {
     SET_IS_POLKADOT_CONNECT: (state, status) => {
@@ -44,6 +47,9 @@ const global = {
     },
     SET_SOURCE_SELECTED: (state, source) => {
       state.sourceSelected = source;
+    },
+    SET_TOKEN: (state, data) => {
+      state.token = data;
     }
   },
   actions: {
@@ -56,9 +62,25 @@ const global = {
       });
     },
     SetExtensionAccountList({
-      commit
-    }, list) {
-      commit("SET_EXTENSION_ACCOUNT_LIST", list);
+      commit, state
+    }) {
+      return new Promise((resolve, reject) => {
+        if (state.extensionAccountList.length > 0) {
+          resolve(state.extensionAccountList);
+          return;
+        } else {
+          web3Accounts().then((res)=>{
+            const allAccounts = res || [];
+            _.forEach(allAccounts, account => {
+              account.address = encodeAddressByType(account.address, state.token.ss58Format);
+            })
+            commit("SET_EXTENSION_ACCOUNT_LIST", allAccounts);
+            resolve(allAccounts);
+          }).catch((err)=>{
+            reject(err);
+          });
+        }
+      })
     },
     SetIsPolkadotConnect({
       commit

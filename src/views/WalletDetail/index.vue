@@ -383,7 +383,7 @@ import StructTable from "@/views/Components/StructTable";
 import keyring from "@polkadot/ui-keyring";
 import AddressDisplay from "@/views/Components/AddressDisplay";
 import { web3FromAddress } from "@polkadot/extension-dapp";
-import { accuracyFormat, toThousandslsFilter } from "Utils/filters";
+import { accuracyFormat, toThousandslsFilter, encodeAddressByType } from "Utils/filters";
 import { getTokenDecimalByCurrency } from "../../utils/tools";
 import BN from "bn.js";
 import { BigNumber } from "bignumber.js";
@@ -458,6 +458,7 @@ export default {
   filters: {
     accuracyFormat,
     toThousandslsFilter,
+    encodeAddressByType
   },
   watch: {
     isKeyringLoaded(newValue) {
@@ -470,7 +471,7 @@ export default {
     ...mapState({
       sourceSelected: (state) => state.global.sourceSelected,
       language: (state) => state.global.language,
-      token: (state) => state.polka.token,
+      token: (state) => state.global.token,
       extensionAccountList: (state) => state.global.extensionAccountList,
       isKeyringLoaded: (state) => state.global.isKeyringLoaded,
     }),
@@ -908,7 +909,7 @@ export default {
     },
     async signAndSend(tx, signAddress, callback) {
       try {
-        const injector = await web3FromAddress(signAddress);
+        const injector = await web3FromAddress(encodeAddressByType(signAddress, 42));
         this.$polkaApi.setSigner(injector.signer);
         this.showLoadingNotify();
         await tx.signAndSend(signAddress, ({ events = [] }) => {
@@ -943,6 +944,7 @@ export default {
           });
         });
       } catch (error) {
+        this.closeLoadingNotify();
         this.$message({
           type: "error",
           message: error.message,
