@@ -153,7 +153,7 @@ export default {
     ...mapState({
       sourceSelected: state => state.global.sourceSelected,
       metadata: state => state.polka.metadata,
-      token: state => state.polka.token
+      token: state => state.global.token
     }),
     tokenDecimal() {
       return getTokenDecimalByCurrency(this.token);
