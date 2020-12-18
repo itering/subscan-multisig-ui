@@ -103,6 +103,16 @@
         >
           <el-form-item :label="$t('account')">
             <el-select placeholder v-model="form.account" class="select">
+              <address-display
+                slot="prefix"
+                customCls="address-display-cls"
+                :hasAddressWrapper="true"
+                :iconSize="30"
+                :address="form.account"
+                :hasCopyBtn="false"
+                :hasDisplayNameInfo="true"
+                :displayNameInfo="getDisplayInfoByAddress(form.account)"
+              ></address-display>
               <el-option
                 v-for="item in injectedAccountList"
                 :key="item.address"
@@ -229,6 +239,16 @@
                       class="select"
                       @change="handleInputChange"
                     >
+                      <address-display
+                        slot="prefix"
+                        customCls="address-display-cls"
+                        :hasAddressWrapper="true"
+                        :iconSize="30"
+                        :address="approveForm.account"
+                        :hasCopyBtn="false"
+                        :hasDisplayNameInfo="true"
+                        :displayNameInfo="getDisplayInfoByAddress(approveForm.account)"
+                      ></address-display>
                       <el-option
                         v-for="item in getUnapprovedInjectedList(props.row)"
                         :key="item.address"
@@ -504,6 +524,15 @@ export default {
         address: item.address,
         display: item.name,
       };
+    },
+    getDisplayInfoByAddress(address) {
+      let result = {};
+      _.forEach(this.injectedAccountList, account => {
+        if(account.address === address) {
+          result = this.getAccountDisplayInfo(account);
+        }
+      })
+      return result;
     },
     isMultiCall(multisig) {
       return (
@@ -1181,6 +1210,14 @@ export default {
     }
     .el-select {
       width: 100%;
+      &.select {
+        .el-input__inner {
+          color: transparent;
+        }
+        .el-input__prefix {
+          pointer-events: none;
+        }
+      }
     }
   }
 }
