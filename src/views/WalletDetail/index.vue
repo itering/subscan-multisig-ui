@@ -15,9 +15,13 @@
           <icon-svg class="iconfont" icon-class="setting" />
         </div>
         <el-dropdown-menu slot="dropdown" class="setting-dropdown-menu">
-          <el-dropdown-item class="menu-item">{{
-            $t("view_in_subscan")
-          }}</el-dropdown-item>
+          <el-dropdown-item class="menu-item">
+            <a target="_blank" :href="getNetworkHref(`/account/${address}`)">
+              {{
+                $t("view_in_subscan")
+              }}
+            </a>
+          </el-dropdown-item>
           <el-dropdown-item
             class="menu-item"
             @click.native="renameDialogVisible = true"
@@ -1015,6 +1019,9 @@ export default {
           message: error.message,
         });
       }
+    },
+    getNetworkHref(path) {
+      return this.$const[`SYMBOL/${this.sourceSelected}`]["domain"]["value"] + path;
     },
     isMobile() {
       return isMobile();
