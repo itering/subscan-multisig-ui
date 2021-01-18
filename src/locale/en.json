@@ -78,6 +78,8 @@
   "status": {
     "approved": "Approved",
     "cancel": "Cancel",
+    "cancelled": "Cancelled",
+    "executed": "Executed",
     "index": "Status",
     "pending": "Pending"
   },

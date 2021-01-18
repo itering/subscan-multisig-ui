@@ -174,7 +174,7 @@
     </div>
     <div class="subscan-container subscan-card extrinsic-list">
       <div class="list-section" v-if="!isLoading">
-        <el-table default-expand-all row-key="callHash" :data="extrinsics" style="width: 100%" ref="accountTable">
+        <el-table default-expand-all row-key="created_at" :data="extrinsics" style="width: 100%" ref="accountTable">
           <el-table-column min-width="200" :label="$t('call_hash')" fit>
             <template slot-scope="props">
               <div>{{ props.row.callHash }}</div>
@@ -192,7 +192,9 @@
           </el-table-column>
           <el-table-column min-width="80" :label="$t('status.index')" fit>
             <template slot-scope="props">
-              <div class="cell-btns">
+              <div v-if="props.row.status === 'cancelled'" >{{ $t("status.cancelled") }}</div>
+              <div v-else-if="props.row.status === 'executed'" >{{ $t("status.executed") }}</div>
+              <div v-else class="cell-btns">
                 <div
                   v-for="action in getExtrinsicActions(props.row)"
                   :key="action"
@@ -404,6 +406,7 @@ import const_symbol from "Service/const/symbol";
 import { mapState } from "vuex";
 import { isMobile } from "Utils/tools";
 import StructTable from "@/views/Components/StructTable";
+import API_CONFIG from "Service/api";
 import keyring from "@polkadot/ui-keyring";
 import AddressDisplay from "@/views/Components/AddressDisplay";
 import { web3FromAddress } from "@polkadot/extension-dapp";
@@ -622,9 +625,7 @@ export default {
       _.forEach(callInfos, (item, index) => {
         let call = item.toHuman();
         if (call) {
-          const callData = this.$registry.createType("Call", call[0]);
-          const callDataInfoJSON = callData.toJSON();
-          const callDataInfo = callData.toHuman();
+          let {callDataInfoJSON, callDataInfo} = this.getInfoFromCallData(call[0]);
           let meta = this.$polkaApi.tx[callDataInfo.section][
             callDataInfo.method
           ].meta.toJSON();
@@ -634,13 +635,67 @@ export default {
           this.extrinsics[index] = {
             ...this.extrinsics[index],
             ...callDataInfo,
+            created_at: this.extrinsics[index]["when"]["height"],
             params: meta.args,
             callData: call[0],
             callInfo: call,
           };
         }
       });
+      let historyCalls = await this.getHistoryCalls();
+      this.extrinsics = _.concat(this.extrinsics, historyCalls);
       this.isLoading = false;
+    },
+    async getHistoryCalls() {
+      let result = [];
+      let callApi = _.find(API_CONFIG["global"], (item) => {
+        return item.name === "getCallsByAddress";
+      });
+      try {
+        let calls = await this.$ajax({
+          url: callApi.path,
+          method: callApi.method,
+          params: {
+            multisig_address: this.multisigAccount.address
+          }
+        });
+        result = _.map(calls, call => {
+          let {address, approvals, call_data, call_hash, status, created_at} = call.item;
+          let {callDataInfoJSON, callDataInfo} = this.getInfoFromCallData(call_data);
+          let meta = this.$polkaApi.tx[callDataInfo.section][
+            callDataInfo.method
+          ].meta.toJSON();
+          _.forEach(meta.args, (arg) => {
+            arg.value = callDataInfoJSON.args[arg.name];
+          });
+          return {
+            address,
+            approvals,
+            status,
+            created_at,
+            ...callDataInfo,
+            params: meta.args,
+            callData: call_data,
+            callHash: call_hash
+          }
+        })
+        result = _.filter(result, item => {
+          return item.status !== "created"
+        })
+      } catch (error) {
+        console.log(error);
+      }
+      return result;
+    },
+    getInfoFromCallData(data) {
+      const callData = this.$registry.createType("Call", data);
+      const callDataInfoJSON = callData.toJSON();
+      const callDataInfo = callData.toHuman();
+      return {
+        callData,
+        callDataInfoJSON,
+        callDataInfo
+      }
     },
     isCallDataValid(row) {
       let result = false;

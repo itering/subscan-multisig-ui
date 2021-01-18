@@ -19,6 +19,9 @@ export function requestFailFunc(requestError) {
 export function responseSuccessFunc(responseObj) {
   // 自定义响应成功逻辑，全局拦截接口，根据不同业务做不同处理，响应成功监控等
   let resData = responseObj.data;
+  if (responseObj.config.method === "get") {
+    return resData;
+  }
   let { code } = resData;
   switch (code) {
     case 0: // 如果业务成功，直接进成功回调

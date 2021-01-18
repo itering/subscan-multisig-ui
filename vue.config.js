@@ -63,5 +63,8 @@ module.exports = {
         data: `@import "@/assets/style/global.scss";`
       }
     }
+  },
+  devServer: {
+    proxy: 'http://localhost:9000'
   }
 };

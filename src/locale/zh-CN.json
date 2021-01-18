@@ -78,6 +78,8 @@
   "status": {
     "approved": "已批准",
     "cancel": "取消",
+    "cancelled": "已取消",
+    "executed": "已执行",
     "index": "状态",
     "pending": "等待批准"
   },
