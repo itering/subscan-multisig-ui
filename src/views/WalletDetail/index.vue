@@ -657,7 +657,8 @@ export default {
           baseUrl: callApi.baseURL,
           method: callApi.method,
           params: {
-            multisig_address: this.multisigAccount.address
+            multisig_address: this.multisigAccount.address,
+            chain: this.$const[`SYMBOL/${this.sourceSelected}`]["chain"]
           }
         });
         result = _.map(calls, call => {
