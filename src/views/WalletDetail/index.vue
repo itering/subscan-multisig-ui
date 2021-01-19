@@ -662,14 +662,17 @@ export default {
           }
         });
         result = _.map(calls, call => {
+          let callDataInfo = {}, meta = {};
           let {address, approvals, call_data, call_hash, status, created_at} = call.item;
-          let {callDataInfoJSON, callDataInfo} = this.getInfoFromCallData(call_data);
-          let meta = this.$polkaApi.tx[callDataInfo.section][
-            callDataInfo.method
-          ].meta.toJSON();
-          _.forEach(meta.args, (arg) => {
-            arg.value = callDataInfoJSON.args[arg.name];
-          });
+          if (call_data) {
+            let {callDataInfoJSON, callDataInfo} = this.getInfoFromCallData(call_data);
+            let meta = this.$polkaApi.tx[callDataInfo.section][
+              callDataInfo.method
+            ].meta.toJSON();
+            _.forEach(meta.args, (arg) => {
+              arg.value = callDataInfoJSON.args[arg.name];
+            });
+          }
           return {
             address,
             approvals,

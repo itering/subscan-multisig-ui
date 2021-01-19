@@ -65,6 +65,6 @@ module.exports = {
     }
   },
   devServer: {
-    proxy: 'https://multisig.api.subscan.io'
+    proxy: 'https://multisig.api.subscan.io.l2me.com'
   }
 };
