@@ -31,13 +31,7 @@ export const VUEX_DEFAULT_CONFIG = {
   strict: process.env.NODE_ENV !== 'production'
 }
 function getBaseURL() {
-  let result = '/api';
-  if (process.env.NODE_ENV === 'production') {
-    if (location && location.origin) {
-      let href = location.origin + '/api';
-      result = href.replace('subscan.cn', 'subscan.io');
-    }
-  }
+  let result = 'https://multisig.api.subscan.io';
   return result;
 }
 // API 默认配置
