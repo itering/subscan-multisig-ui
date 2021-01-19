@@ -654,7 +654,7 @@ export default {
       try {
         let calls = await this.$ajax({
           url: callApi.path,
-          baseUrl: callApi.baseURL,
+          baseURL: callApi.baseURL,
           method: callApi.method,
           params: {
             multisig_address: this.multisigAccount.address,
