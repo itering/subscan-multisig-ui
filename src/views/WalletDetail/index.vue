@@ -663,7 +663,8 @@ export default {
         });
         result = _.map(calls, call => {
           let callDataInfo = {}, meta = {};
-          let {address, approvals, call_data, call_hash, status, created_at} = call.item;
+          let created_at = call.created_at;
+          let {address, approvals, call_data, call_hash, status} = call.item;
           if (call_data) {
             let {callDataInfoJSON, callDataInfo} = this.getInfoFromCallData(call_data);
             let meta = this.$polkaApi.tx[callDataInfo.section][
