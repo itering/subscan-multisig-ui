@@ -1007,36 +1007,38 @@ export default {
         const injector = await web3FromAddress(encodeAddressByType(signAddress, SUBSTRATE_PREFIX));
         this.$polkaApi.setSigner(injector.signer);
         this.showLoadingNotify();
-        await tx.signAndSend(signAddress, ({ events = [] }) => {
-          events.forEach(({ event: { data, method, section } }) => {
-            this.closeLoadingNotify();
-            if (method === "ExtrinsicSuccess" && section === "system") {
-              this.$notify({
-                title: this.$t("transaction_success_title"),
-                message: this.$t("transaction_success_content"),
-                type: "success",
-              });
-              callback && callback();
-            }
-            if (method === "ExtrinsicFailed" && section === "system") {
-              const [dispatchError] = data;
-              let message = dispatchError.type;
-              if (dispatchError.isModule) {
-                try {
-                  const mod = dispatchError.asModule;
-                  const error = dispatchError.registry.findMetaError(mod);
-                  message = `${error.section}.${error.name}`;
-                } catch (error) {
-                  // swallow
-                }
+        await tx.signAndSend(signAddress, ({ events = [], status }) => {
+          if (status.isFinalized) {
+            events.forEach(({ event: { data, method, section } }) => {
+              this.closeLoadingNotify();
+              if (method === "ExtrinsicSuccess" && section === "system") {
+                this.$notify({
+                  title: this.$t("transaction_success_title"),
+                  message: this.$t("transaction_success_content"),
+                  type: "success",
+                });
+                callback && callback();
               }
-              this.$notify({
-                title: this.$t("transaction_failed_title"),
-                message: message,
-                type: "error",
-              });
-            }
-          });
+              if (method === "ExtrinsicFailed" && section === "system") {
+                const [dispatchError] = data;
+                let message = dispatchError.type;
+                if (dispatchError.isModule) {
+                  try {
+                    const mod = dispatchError.asModule;
+                    const error = dispatchError.registry.findMetaError(mod);
+                    message = `${error.section}.${error.name}`;
+                  } catch (error) {
+                    // swallow
+                  }
+                }
+                this.$notify({
+                  title: this.$t("transaction_failed_title"),
+                  message: message,
+                  type: "error",
+                });
+              }
+            });
+          }
         });
       } catch (error) {
         this.closeLoadingNotify();
