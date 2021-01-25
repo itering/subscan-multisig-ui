@@ -662,11 +662,12 @@ export default {
           }
         });
         result = _.map(calls, call => {
-          let callDataInfo = {}, meta = {};
-          let created_at = call.created_at;
-          let {address, approvals, call_data, call_hash, status} = call.item;
+          let callDataInfo = {}, callDataInfoJSON= {}, meta = {};
+          let {approvals, call_data, call_hash, status} = call;
           if (call_data) {
-            let {callDataInfoJSON, callDataInfo} = this.getInfoFromCallData(call_data);
+            let infoResult = this.getInfoFromCallData(call_data);
+            callDataInfoJSON = infoResult.callDataInfoJSON;
+            callDataInfo = infoResult.callDataInfo;
             let meta = this.$polkaApi.tx[callDataInfo.section][
               callDataInfo.method
             ].meta.toJSON();
@@ -675,10 +676,10 @@ export default {
             });
           }
           return {
-            address,
             approvals,
             status,
-            created_at,
+            address: call.multisig_address,
+            created_at: call.when && call.when.height,
             ...callDataInfo,
             params: meta.args,
             callData: call_data,
