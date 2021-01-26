@@ -687,7 +687,7 @@ export default {
           }
         })
         result = _.filter(result, item => {
-          return item.status !== "created"
+          return item.status !== "created" && item.status !== "approving"
         })
       } catch (error) {
         console.log(error);
