@@ -71,6 +71,7 @@
 import const_symbol from "Service/const/symbol";
 import { mapState } from "vuex";
 import { isMobile } from "Utils/tools";
+import { encodeAddressByType } from "Utils/filters";
 import keyring from "@polkadot/ui-keyring";
 import _ from "lodash";
 export default {
@@ -125,6 +126,7 @@ export default {
     ...mapState({
       sourceSelected: (state) => state.global.sourceSelected,
       language: (state) => state.global.language,
+      token: (state) => state.global.token,
     }),
   },
   created() {
@@ -165,6 +167,13 @@ export default {
       _.forEach(this.form.dynamicAccounts, (account) => {
         signatories.push(account.address);
       });
+      let addressPair = [];
+      _.forEach(this.form.dynamicAccounts, (account) => {
+        addressPair.push({
+          ...account,
+          address: encodeAddressByType(account.address, this.token.ss58Format)
+        })
+      })
       try {
         keyring.addMultisig(signatories, this.form.threshold, {
           name: this.form.name,

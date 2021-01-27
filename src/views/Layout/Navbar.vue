@@ -755,6 +755,8 @@ export default {
 }
 .polka-account-list {
   padding: 20px;
+  max-height: 400px;
+  overflow: scroll;
   .empty {
     display: flex;
     flex-direction: column;
