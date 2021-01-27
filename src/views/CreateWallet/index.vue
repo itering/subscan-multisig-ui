@@ -178,7 +178,7 @@ export default {
         keyring.addMultisig(signatories, this.form.threshold, {
           name: this.form.name,
           genesisHash: this.genesisHash,
-          addressPair: this.form.dynamicAccounts,
+          addressPair: addressPair,
         });
         // const { address } = result.pair;
         this.$message({
