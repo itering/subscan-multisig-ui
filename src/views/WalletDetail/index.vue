@@ -1009,7 +1009,7 @@ export default {
         this.$polkaApi.setSigner(injector.signer);
         this.showLoadingNotify();
         await tx.signAndSend(signAddress, ({ events = [], status }) => {
-          if (status.isInBlock) {
+          if (status.isFinalized) {
             events.forEach(({ event: { data, method, section } }) => {
               this.closeLoadingNotify();
               if (method === "ExtrinsicSuccess" && section === "system") {
