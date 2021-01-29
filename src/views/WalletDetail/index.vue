@@ -679,7 +679,7 @@ export default {
             approvals,
             status,
             address: call.multisig_address,
-            created_at: call.when && call.when.height,
+            created_at: call.when,
             ...callDataInfo,
             params: meta.args,
             callData: call_data,
