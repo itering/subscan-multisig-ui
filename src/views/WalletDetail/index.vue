@@ -504,7 +504,7 @@ export default {
       isKeyringLoaded: (state) => state.global.isKeyringLoaded,
     }),
     tokenSymbol() {
-      return this.token.tokenSymbol;
+      return this.token.tokenSymbol && this.token.tokenSymbol[0] ;
     },
     tokenDecimal() {
       return getTokenDecimalByCurrency(this.token);
@@ -806,7 +806,7 @@ export default {
     getBn(input) {
       try {
         let bignumber = new BigNumber(input)
-          .shiftedBy(this.tokenDecimal)
+          .shiftedBy(+this.tokenDecimal)
           .integerValue()
           .toString();
         let num = new BN(bignumber);

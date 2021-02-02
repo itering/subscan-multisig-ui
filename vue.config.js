@@ -5,6 +5,7 @@ function resolve(dir) {
 }
 module.exports = {
   assetsDir: "static",
+  runtimeCompiler: true,
   chainWebpack: config => {
     // 添加别名
     config.resolve.alias
@@ -21,6 +22,14 @@ module.exports = {
       .set("Utils", resolve("src/utils"))
       .set("Views", resolve("src/views"))
       .set("Locale", resolve("src/locale"))
+
+    config.module
+      .rule('mjs')
+      .test(/\.mjs$/)
+      .include.add(/node_modules/)
+      .end()
+      .type('javascript/auto')
+      .end()
 
     // 修改svg loader
     config.module

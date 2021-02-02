@@ -10,7 +10,7 @@ export function isMobile() {
 }
 export function getTokenDecimalByCurrency(token) {
   if (token) {
-    return token.tokenDecimals;
+    return token.tokenDecimals && token.tokenDecimals[0];
   }
   return 0;
 }

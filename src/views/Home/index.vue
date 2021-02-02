@@ -158,7 +158,7 @@ export default {
       isKeyringLoaded: (state) => state.global.isKeyringLoaded,
     }),
     tokenSymbol() {
-      return this.token.tokenSymbol;
+      return this.token.tokenSymbol && this.token.tokenSymbol[0] ;
     },
     tokenDecimal() {
       return getTokenDecimalByCurrency(this.token);
