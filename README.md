@@ -5,6 +5,9 @@
 
 Subscan Multisig UI is a web Multisignature management tool. It's developed by the Subscan team.
 Developers are free to use the codebase to extend functionalities and develop unique user experiences for their audiences.
+
+The backend project stores historical calls can be found [here](https://github.com/itering/subscan-multisig-backend), and call data retrieved will be parsed and verified on the frontend.
+
 ## Contents
 
 - [Feature](#Feature)
