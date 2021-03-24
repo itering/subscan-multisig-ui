@@ -1269,7 +1269,7 @@ export default {
     color: #ff475d;
     font-weight: 600;
   }
-  /deep/ .el-dialog__body {
+  .el-dialog__body {
     padding: 10px 60px;
     .el-form-item__label {
       font-weight: 600;
