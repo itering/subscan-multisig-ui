@@ -8,12 +8,14 @@ export function isMobile() {
       !!u.match(/AppleWebKit.*Mobile.*/)) ||
     window.innerWidth <= 768;
 }
+
 export function getTokenDecimalByCurrency(token) {
   if (token) {
     return token.tokenDecimals && token.tokenDecimals[0];
   }
   return 0;
 }
+
 export function formatSymbol(module, $const, sourceSelected, params={}) {
   if (!$const[`SYMBOL/${sourceSelected}`]) {
     return "";
@@ -23,4 +25,11 @@ export function formatSymbol(module, $const, sourceSelected, params={}) {
   } else {
     return $const[`SYMBOL/${sourceSelected}`][module] && $const[`SYMBOL/${sourceSelected}`][module].value || "";
   }
+}
+
+/**
+ * first char uppercase
+ */
+ export function toUpperCaseFirst(str) {
+  return str.charAt(0).toUpperCase() + str.slice(1);
 }

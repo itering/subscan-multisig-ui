@@ -487,6 +487,23 @@ body {
       rgba(230, 1, 122, 1) 100%
     );
   }
+
+  &.pangolin {
+    --main-color: #5745de;
+    --main-color-light: #5745de80; //50%
+    --main-color-super-light: #5745de4d; //30%
+    --main-color-bg-light: #5745de33; //20%
+    --main-color-white: #5745de0d;
+    --main-button-color: #5745de;
+    --link-color: #4572de;
+    --navbar-bg: linear-gradient(
+      315deg,
+      rgba(254, 56, 118, 1) 0%,
+      rgba(124, 48, 221, 1) 71%,
+      rgba(58, 48, 221, 1) 100%
+    );
+  }
+
   .el-select-dropdown__item.selected {
     color: inherit;
     font-weight: inherit;

@@ -720,7 +720,7 @@ export default {
 }
 </style>
 <style lang="scss">
-@each $theme in kusama, darwinia, crab, polkadot {
+@each $theme in kusama, darwinia, crab, polkadot, pangolin {
   .#{$theme} {
     > .nav-bar-wrapper {
       background: var(--navbar-bg);
