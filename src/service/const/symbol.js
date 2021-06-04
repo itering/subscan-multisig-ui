@@ -1,11 +1,14 @@
 const cring_icon = require('./../../assets/images/cring.svg')
 const ring_icon = require('./../../assets/images/ring.svg')
+const pring_icon = require('./../../assets/images/pring.svg')
 const ckton_icon = require('./../../assets/images/ckton.svg')
 const kton_icon = require('./../../assets/images/kton.svg')
 const crab_button = require('./../../assets/images/crab-button.png')
 const crab_m_button = require('./../../assets/images/crab-button-mobile.png')
 const darwinia_button = require('./../../assets/images/darwinia-button.png')
 const darwinia_m_button = require('./../../assets/images/darwinia-button-mobile.png')
+const pangolin_button = require('./../../assets/images/pangolin-button.png')
+const pangolin_m_button = require('./../../assets/images/pangolin-button-mobile.png')
 const ksm_icon = require('./../../assets/images/kusama.svg')
 const kusama_button = require('./../../assets/images/kusama-button.png')
 const kusama_m_button = require('./../../assets/images/kusama-button-mobile.png')
@@ -226,6 +229,62 @@ export default [{
       },
       donate: {
         address: '5FVFSCANyotNxJM4Crm1LQfsmNQSw3p8H7CRbegN7d5Ex91y'
+      }
+    }
+  },
+  {
+    name: 'pangolin',
+    value: { 
+      balances: {
+        value: "PRING",
+        icon: pring_icon
+      },
+      hasPrice: true,
+      inflation: "4",
+      hasKton: true,
+      button: pangolin_button,
+      mobileButton: pangolin_m_button,
+      label: "Pangolin",
+      network: "pangolin",
+      chain: "pangolin",
+      type: "mainnet",
+      color: "#5745DE",
+      arrowColor: "#5745DE",
+      colorMap: ["#5745DE", "#A894EB", "#d7d7d7"],
+      kton: {
+        value: "PKTON",
+        icon: kton_icon
+      },
+      power: {
+        value: "POWER",
+        icon: pring_icon
+      },
+      domain: {
+        value: 'https://pangolin.subscan.io'
+      },
+      ws: {
+        value: "wss://pangolin.subscan.io/socket"
+      },
+      official_site: {
+        value: 'https://darwinia.network/'
+      },
+      white_paper: {
+        value: 'https://evolution.l2me.com/darwinia/Darwinia_Genepaper_EN.pdf'
+      },
+      white_paper_zh: {
+        value: 'https://evolution.l2me.com/darwinia/Darwinia_Genepaper_CN.pdf'
+      },
+      telegram: {
+        value: 'https://t.me/DarwiniaNetwork',
+      },
+      twitter: {
+        value: 'https://twitter.com/DarwiniaNetwork',
+      },
+      github: {
+        value: 'https://github.com/darwinia-network'
+      },
+      donate: {
+        address: '2rbREPAhkptwCtdvU5eSGnHgFiyPcehdkXuGqFF916oYCJ7s'
       }
     }
   }

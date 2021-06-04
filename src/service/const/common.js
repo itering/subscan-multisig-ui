@@ -16,7 +16,7 @@ export default [{
           type: "mainnet",
         },
         {
-          label: "Darwinia CC1",
+          label: "Darwinia",
           network: "darwinia-cc1",
           value: "darwinia",
           type: "mainnet",
@@ -25,6 +25,12 @@ export default [{
           label: "Darwinia Crab",
           network: "crab",
           value: "crab",
+          type: "mainnet",
+        },
+        {
+          label: "Pangolin",
+          network: "pangolin",
+          value: "pangolin",
           type: "mainnet",
         }
       ]
@@ -135,6 +141,10 @@ export default [{
         },
         chainx: {
           prefix: 44
+        },
+        pangolin: {
+          prefix: 18,
+          network: 'pangolin',
         }
       }
     }

@@ -1,5 +1,4 @@
-import crabRegistryType from "Service/const/registryType/crab";
-import darwiniaRegistryType from "Service/const/registryType/darwinia";
+import { typesBundleForPolkadot } from '@darwinia/types/mix';
 
 // 路由默认配置，路由表并不从此注入
 export const ROUTER_DEFAULT_CONFIG = {
@@ -63,6 +62,10 @@ export const NETWORK_LIST = [
   {
     key: "polkadot",
     value: "polkadot"
+  },
+  {
+    key: 'pangolin',
+    value: 'pangolin',
   }
 ]
 
@@ -78,13 +81,21 @@ export const ENDPOINTS_MAP = {
     types: {}
   },
   crab: {
-    wss: 'wss://crab.darwinia.network',
+    wss: 'wss://crab-rpc.darwinia.network',
     prefix: 42,
-    types: crabRegistryType
+    types: typesBundleForPolkadot.spec.crab,
+    isDarwinia: true,
   },
   darwinia: {
-    wss: 'wss://cc1.darwinia.network',
+    wss: 'wss://rpc.darwinia.network',
     prefix: 18,
-    types: darwiniaRegistryType
+    types: typesBundleForPolkadot.spec.darwinia,
+    isDarwinia: true,
+  },
+  pangolin: {
+    wss: 'wss://pangolin-rpc.darwinia.network',
+    prefix: 18,
+    types: typesBundleForPolkadot.spec.pangolin,
+    isDarwinia: true,
   }
 }
