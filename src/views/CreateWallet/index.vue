@@ -12,13 +12,31 @@
           :rules="formRules"
           label-position="top"
         >
-          <el-form-item :label="$t('name')">
+          <el-form-item>
+            <template slot="label">
+              <span>{{$t('name')}}</span>
+              <el-tooltip content="Wallet name, tap any name you like" placement="right" effect="light">
+                <i class="el-icon-question"></i>
+              </el-tooltip>
+            </template>
             <el-input v-model="form.name"></el-input>
           </el-form-item>
-          <el-form-item prop="threshold" :label="$t('threshold')">
+          <el-form-item prop="threshold">
+            <template slot="label">
+              <span>{{$t('threshold')}}</span>
+              <el-tooltip content="The minimum number of accounts approve for transactions" placement="right" effect="light">
+                <i class="el-icon-question"></i>
+              </el-tooltip>
+            </template>
             <el-input @input="handleThresholdInputChange" v-model="form.threshold"></el-input>
           </el-form-item>
-          <el-form-item :label="$t('members')">
+          <el-form-item>
+            <template slot="label">
+              <span>{{$t('members')}}</span>
+              <el-tooltip content="Each member is a general substrate account" placement="right" effect="light">
+                <i class="el-icon-question"></i>
+              </el-tooltip>
+            </template>
             <div class="column-header">
               <div class="column column-1">{{ $t("id") }}</div>
               <div class="column column-2">{{ $t("name") }}</div>
@@ -36,10 +54,17 @@
                 class="column column-2"
                 v-model="account.name"
               ></el-input>
-              <el-input
+              <el-autocomplete
                 class="column column-3"
                 v-model="account.address"
-              ></el-input>
+                value-key="address"
+                :fetch-suggestions="querySearch"
+                @select="handleSelect"
+              >
+                <template slot="suffix">
+                  <i class="el-icon-arrow-down"></i>
+                </template>
+              </el-autocomplete>
               <div class="column column-4" @click="removeAccountRow(account)">
                 <icon-svg icon-class="delete" class="icon" />
               </div>
@@ -127,6 +152,7 @@ export default {
       sourceSelected: (state) => state.global.sourceSelected,
       language: (state) => state.global.language,
       token: (state) => state.global.token,
+      extensionAccountList: (state) => state.global.extensionAccountList,
     }),
   },
   created() {
@@ -209,6 +235,19 @@ export default {
         key: Date.now(),
       });
     },
+
+    querySearch(_, cb) {
+      const result = this.extensionAccountList?.filter(({ address }) => !this.form.dynamicAccounts.find((acc => acc.address === address))) 
+
+      cb(result);
+    },
+
+    handleSelect(account) { 
+      const { meta: { name }, address } = account;
+      const index = this.form.dynamicAccounts.findIndex(item => item.address === address);
+
+      this.form.dynamicAccounts[index].name = name;
+    },
   },
 };
 </script>
@@ -263,6 +302,19 @@ export default {
             line-height: 20px;
             font-weight: 600;
             color: var(--black-color);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+
+              i {
+                color: var(--main-color);
+                opacity: .5;
+                cursor: help;
+                
+                &:hover {
+                  opacity: .8;
+                }
+              }
           }
           .el-input {
             input {

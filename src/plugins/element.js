@@ -1,5 +1,6 @@
 import Vue from "vue";
 import {
+  Autocomplete,
   Loading,
   MessageBox,
   Notification,
@@ -59,6 +60,7 @@ Vue.prototype.$prompt = MessageBox.prompt;
 Vue.prototype.$notify = Notification;
 Vue.prototype.$message = Message;
 
+Vue.use(Autocomplete);
 Vue.use(Button);
 Vue.use(Collapse);
 Vue.use(CollapseItem);
