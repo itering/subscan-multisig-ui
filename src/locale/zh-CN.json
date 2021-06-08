@@ -55,7 +55,11 @@
     "from_chain": "Call Data (从链存储中读取)",
     "index": "多签钱包",
     "intro": "Subscan Multi-sig 安全便捷的多签钱包管理和交易工具",
-    "sending_transaction": "发送交易 {transaction}"
+    "sending_transaction": "发送交易 {transaction}",
+    "In Progress": "待确认",
+    "Confirmed Extrinsic": "已确认",
+    "Threshold": "阈值",
+    "Members": "成员数"
   },
   "name": "名称",
   "network": "网络",
