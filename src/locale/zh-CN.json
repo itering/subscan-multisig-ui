@@ -21,8 +21,8 @@
   "dest": "接收地址",
   "destination": "接收地址",
   "donate": "捐赠",
-  "donate_unit": "捐赠 ({unit}) :",
   "donate_other": "捐赠其他网络通证",
+  "donate_unit": "捐赠 ({unit}) :",
   "error": {
     "404": "没有找到相关信息",
     "call_data": "Call Data 错误",
@@ -42,10 +42,10 @@
   "loading": "加载中",
   "local_account": "本地账号",
   "members": "成员",
+  "module": "模块",
   "msg": {
     "delete": "确认删除吗？"
   },
-  "module": "模块",
   "multisig": {
     "approval": "批准多签交易",
     "approval_tip": "请确认交易信息无误后，再批准交易",
@@ -54,7 +54,8 @@
     "customize": "Call Data (自定义)",
     "from_chain": "Call Data (从链存储中读取)",
     "index": "多签钱包",
-    "intro": "Subscan Multi-sig 安全便捷的多签钱包管理和交易工具"
+    "intro": "Subscan Multi-sig 安全便捷的多签钱包管理和交易工具",
+    "sending_transaction": "发送交易 {transaction}"
   },
   "name": "名称",
   "network": "网络",
@@ -88,12 +89,12 @@
   "success": "成功",
   "term_of_use": "使用协议",
   "threshold": "阈值",
-  "transaction_waiting_title": "等待",
-  "transaction_waiting_content": "等待交易反馈",
-  "transaction_success_content": "交易成功",
   "transaction_failed_content": "交易失败",
-  "transaction_success_title": "成功",
   "transaction_failed_title": "失败",
+  "transaction_success_content": "交易成功",
+  "transaction_success_title": "成功",
+  "transaction_waiting_content": "等待交易反馈",
+  "transaction_waiting_title": "等待",
   "unavailable": "不可用",
   "value": "数量",
   "version_history": "版本历史",

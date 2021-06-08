@@ -21,8 +21,8 @@
   "dest": "Destination",
   "destination": "Destination",
   "donate": "Donate",
-  "donate_unit": "Donate ({unit}) :",
   "donate_other": "Donate Other Token",
+  "donate_unit": "Donate ({unit}) :",
   "error": {
     "404": "Not Found",
     "call_data": "Call Data error",
@@ -42,10 +42,10 @@
   "loading": "Loading",
   "local_account": "Local Account",
   "members": "Members",
+  "module": "Module",
   "msg": {
     "delete": "Are you sure to delete it？"
   },
-  "module": "Module",
   "multisig": {
     "approval": "Multi-sig approval",
     "approval_tip": "Please check the transaction information carefully and confirm it before approving",
@@ -54,7 +54,8 @@
     "customize": "Call Data (Customize)",
     "from_chain": "Call Data (scanned from the chain storage)",
     "index": "Multi-sig",
-    "intro": "Subscan Multi-sig is the most secure way to manage Multi-sig wallets and extrinsics"
+    "intro": "Subscan Multi-sig is the most secure way to manage Multi-sig wallets and extrinsics",
+    "sending_transaction": "Sending transaction {transaction}"
   },
   "name": "Name",
   "network": "Network",
@@ -88,12 +89,12 @@
   "success": "Success",
   "term_of_use": "Terms of Use",
   "threshold": "Threshold",
-  "transaction_waiting_title": "Waiting",
-  "transaction_waiting_content": "Transaction Pending",
-  "transaction_success_content": "Transaction Success",
   "transaction_failed_content": "Transaction Failed",
-  "transaction_success_title": "Success",
   "transaction_failed_title": "Failed",
+  "transaction_success_content": "Transaction Success",
+  "transaction_success_title": "Success",
+  "transaction_waiting_content": "Transaction Pending",
+  "transaction_waiting_title": "Waiting",
   "unavailable": "Unavailable",
   "value": "Value",
   "version_history": "Version History",
