@@ -695,7 +695,7 @@ export default {
       return result;
     },
     getInfoFromCallData(data) {
-      const callData = this.$registry.createType("Call", data);
+      const callData = this.$polkaApi.registry.createType("Call", data);
       const callDataInfoJSON = callData.toJSON();
       const callDataInfo = callData.toHuman();
       return {
@@ -707,7 +707,7 @@ export default {
     isCallDataValid(row) {
       let result = false;
       if (row.callData) {
-        const callData = this.$registry.createType("Call", row.callData);
+        const callData = this.$polkaApi.registry.createType("Call", row.callData);
         if (callData.hash && callData.hash.eq(row.callHash)) {
           result = true;
         }
@@ -916,7 +916,7 @@ export default {
       );
       let callData = null;
       if (this.approveForm.callData) {
-        callData = this.$registry.createType("Call", this.approveForm.callData);
+        callData = this.$polkaApi.registry.createType("Call", this.approveForm.callData);
       }
       let weight = await this.getWeight(callData);
       const { threshold, who } = this.extractExternal(multiRoot);
