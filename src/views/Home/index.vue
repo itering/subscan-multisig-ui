@@ -58,38 +58,7 @@
           <el-table-column type="expand">
             <template slot-scope="props">
               <div class="expand-form">
-                <el-table
-                  :data="props.row.meta.addressPair"
-                  border
-                  :show-header="false"
-                  style="width: 100%"
-                >
-                  <el-table-column prop="name" width="160">
-                    <template slot-scope="props">
-                      <div>{{ props.row.name }}</div>
-                    </template>
-                  </el-table-column>
-                  <el-table-column prop="address">
-                    <template slot-scope="props">
-                      <address-display
-                        customCls="address-display-cls"
-                        :iconSize="30"
-                        :hasCopyBtn="false"
-                        :hasDisplayName="false"
-                        :address="props.row.address"
-                      ></address-display>
-                    </template>
-                  </el-table-column>
-                  <el-table-column prop="type" width="200">
-                    <template slot-scope="props">
-                      <div>
-                        {{
-                          props.row.isInjected ? $t("injected") : $t("external")
-                        }}
-                      </div>
-                    </template>
-                  </el-table-column>
-                </el-table>
+                <Accounts :accounts="props.row.meta.addressPair" />
               </div>
             </template>
           </el-table-column>
@@ -120,13 +89,14 @@ import const_symbol from "Service/const/symbol";
 import { mapState } from "vuex";
 import { isMobile } from "Utils/tools";
 import keyring from "@polkadot/ui-keyring";
-import AddressDisplay from "@/views/Components/AddressDisplay";
 import { accuracyFormat, toThousandslsFilter } from "Utils/filters";
 import { getTokenDecimalByCurrency } from "../../utils/tools";
+import Accounts from '@/views/Components/Accounts.vue';
+
 export default {
   name: "Home",
   components: {
-    AddressDisplay,
+    Accounts,
   },
   data() {
     return {

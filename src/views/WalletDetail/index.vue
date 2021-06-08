@@ -1,39 +1,90 @@
 <template>
   <div class="dashboard-wrapper subscan-content">
     <div class="subscan-container subscan-card account-intro">
-      <div class="name">
-        {{ multisigAccount.meta && multisigAccount.meta.name }}
-      </div>
-      <address-display
-        customCls="address-display-cls"
-        :hasIdenticon="false"
-        :hasDisplayName="false"
-        :address="address"
-      ></address-display>
-      <el-dropdown class="dropdown" trigger="click" placement="bottom">
-        <div class="icon-wrapper">
-          <icon-svg class="iconfont" icon-class="setting" />
+      <div class="account">
+        <div>
+          <div class="name">
+            {{ multisigAccount.meta && multisigAccount.meta.name }}
+          </div>
+          <address-display
+            customCls="address-display-cls"
+            :hasIdenticon="false"
+            :hasDisplayName="false"
+            :address="address"
+          ></address-display>
+          <el-dropdown class="dropdown" trigger="click" placement="bottom">
+            <div class="icon-wrapper">
+              <icon-svg class="iconfont" icon-class="setting" />
+            </div>
+            <el-dropdown-menu slot="dropdown" class="setting-dropdown-menu">
+              <el-dropdown-item class="menu-item">
+                <a
+                  target="_blank"
+                  :href="getNetworkHref(`/account/${address}`)"
+                >
+                  {{ $t("view_in_subscan") }}
+                </a>
+              </el-dropdown-item>
+              <el-dropdown-item
+                class="menu-item"
+                @click.native="renameDialogVisible = true"
+                >{{ $t("rename") }}</el-dropdown-item
+              >
+              <el-dropdown-item
+                class="menu-item"
+                @click.native="deleteDialogVisible = true"
+                >{{ $t("delete") }}</el-dropdown-item
+              >
+            </el-dropdown-menu>
+          </el-dropdown>
         </div>
-        <el-dropdown-menu slot="dropdown" class="setting-dropdown-menu">
-          <el-dropdown-item class="menu-item">
-            <a target="_blank" :href="getNetworkHref(`/account/${address}`)">
-              {{
-                $t("view_in_subscan")
-              }}
-            </a>
-          </el-dropdown-item>
-          <el-dropdown-item
-            class="menu-item"
-            @click.native="renameDialogVisible = true"
-            >{{ $t("rename") }}</el-dropdown-item
+
+        <div
+          v-if="multisigAccount.isAvailable"
+          class="button black-btn"
+          @click="handleSubmitBtnClick"
+        >
+          {{ $t("submit_extrinsic") }}
+        </div>
+      </div>
+
+      <div class="accounts">
+        <div>
+          <span
+            v-for="item in [
+              { label: 'multisig.In Progress', count: extrinsics.length },
+              { label: 'multisig.Confirmed Extrinsic', count: NaN },
+              {
+                label: 'multisig.Threshold',
+                count: multisigAccount.meta.threshold
+              },
+              {
+                label: 'multisig.Members',
+                count: multisigAccount.meta.who.length
+              }
+            ]"
+            :key="item.label"
           >
-          <el-dropdown-item
-            class="menu-item"
-            @click.native="deleteDialogVisible = true"
-            >{{ $t("delete") }}</el-dropdown-item
-          >
-        </el-dropdown-menu>
-      </el-dropdown>
+            <b>{{ $t(item.label) }}: </b>
+            <span>{{ item.count }}</span>
+          </span>
+
+          <el-button
+            size="small"
+            :icon="
+              isAccountsDisplay ? 'el-icon-arrow-up' : 'el-icon-arrow-down'
+            "
+            @click="isAccountsDisplay = !isAccountsDisplay"
+          ></el-button>
+        </div>
+
+        <Accounts
+          class="account-list"
+          v-if="isAccountsDisplay"
+          :accounts="multisigAccount.meta.addressPair"
+        />
+      </div>
+
       <el-dialog
         class="dialog deleteDialog"
         title=""
@@ -46,7 +97,7 @@
         <div class="message">
           {{
             $t("wallet.delete_confirm", {
-              name: multisigAccount.meta && multisigAccount.meta.name,
+              name: multisigAccount.meta && multisigAccount.meta.name
             })
           }}
         </div>
@@ -60,6 +111,7 @@
         </div>
         <span slot="footer" class="dialog-footer"> </span>
       </el-dialog>
+
       <el-dialog
         class="dialog renameDialog"
         title=""
@@ -84,10 +136,7 @@
         </div>
         <span slot="footer" class="dialog-footer"> </span>
       </el-dialog>
-      <div class="placeholder"></div>
-      <div v-if="multisigAccount.isAvailable" class="button black-btn" @click="handleSubmitBtnClick">
-        {{ $t("submit_extrinsic") }}
-      </div>
+
       <el-dialog
         class="dialog submitDialog"
         title=""
@@ -172,9 +221,25 @@
         <span slot="footer" class="dialog-footer"> </span>
       </el-dialog>
     </div>
+
     <div class="subscan-container subscan-card extrinsic-list">
+      <el-tabs @tab-click="tabChange">
+        <el-tab-pane>
+          <span slot="label">{{$t("multisig.In Progress")}} ({{extrinsics.length}})</span>
+        </el-tab-pane>
+        <el-tab-pane>
+          <span slot="label">{{$t("multisig.Confirmed Extrinsic")}} ({{NaN}})</span>
+        </el-tab-pane>
+      </el-tabs>
+
       <div class="list-section" v-if="!isLoading">
-        <el-table default-expand-all row-key="created_at" :data="extrinsics" style="width: 100%" ref="accountTable">
+        <el-table
+          default-expand-all
+          row-key="created_at"
+          :data="tabSourceData"
+          style="width: 100%"
+          ref="accountTable"
+        >
           <el-table-column min-width="200" :label="$t('call_hash')" fit>
             <template slot-scope="props">
               <div>{{ props.row.callHash }}</div>
@@ -192,8 +257,12 @@
           </el-table-column>
           <el-table-column min-width="80" :label="$t('status.index')" fit>
             <template slot-scope="props">
-              <div v-if="props.row.status === 'cancelled'" >{{ $t("status.cancelled") }}</div>
-              <div v-else-if="props.row.status === 'executed'" >{{ $t("status.executed") }}</div>
+              <div v-if="props.row.status === 'cancelled'">
+                {{ $t("status.cancelled") }}
+              </div>
+              <div v-else-if="props.row.status === 'executed'">
+                {{ $t("status.executed") }}
+              </div>
               <div v-else class="cell-btns">
                 <div
                   v-for="action in getExtrinsicActions(props.row)"
@@ -253,7 +322,9 @@
                         :address="approveForm.account"
                         :hasCopyBtn="false"
                         :hasDisplayNameInfo="true"
-                        :displayNameInfo="getDisplayInfoByAddress(approveForm.account)"
+                        :displayNameInfo="
+                          getDisplayInfoByAddress(approveForm.account)
+                        "
                         :isLink="false"
                       ></address-display>
                       <el-option
@@ -298,12 +369,18 @@
                 </el-form>
 
                 <div class="approve-detail">
-                  <h4>{{ $t('multisig.sending_transaction', { transaction: currentTransaction }) }}</h4>
+                  <h4>
+                    {{
+                      $t("multisig.sending_transaction", {
+                        transaction: currentTransaction
+                      })
+                    }}
+                  </h4>
                   <p>{{ currentTransactionDoc }}</p>
 
                   <div v-for="item in currentApproval" :key="item.name">
-                      <h4>{{item.name}}: {{item.type}}</h4>
-                      <p>{{item.value}}</p>
+                    <h4>{{ item.name }}: {{ item.type }}</h4>
+                    <p>{{ item.value }}</p>
                   </div>
                 </div>
 
@@ -423,10 +500,16 @@ import API_CONFIG from "Service/api";
 import keyring from "@polkadot/ui-keyring";
 import AddressDisplay from "@/views/Components/AddressDisplay";
 import { web3FromAddress } from "@polkadot/extension-dapp";
-import { accuracyFormat, toThousandslsFilter, encodeAddressByType } from "Utils/filters";
+import {
+  accuracyFormat,
+  toThousandslsFilter,
+  encodeAddressByType
+} from "Utils/filters";
 import { getTokenDecimalByCurrency } from "../../utils/tools";
 import BN from "bn.js";
 import { BigNumber } from "bignumber.js";
+import Accounts from "@/views/Components/Accounts.vue";
+
 const EMPTY_STATE = new BN(0);
 const ZERO_ACCOUNT = "5CAUdnwecHGxxyr5vABevAfZ34Fi4AaraDRMwfDQXQ52PXqg";
 const SUBSTRATE_PREFIX = 42;
@@ -435,6 +518,7 @@ export default {
   components: {
     AddressDisplay,
     StructTable,
+    Accounts
   },
   data() {
     return {
@@ -446,7 +530,7 @@ export default {
         dest: "",
         module: "balances",
         call: "transferKeepAlive",
-        value: "",
+        value: ""
       },
       formRules: {
         value: [
@@ -454,16 +538,16 @@ export default {
             trigger: "submit",
             validator: (rule, value, callback) => {
               callback();
-            },
-          },
-        ],
+            }
+          }
+        ]
       },
       waitingNotify: null,
       approveForm: {
         isMultiCall: false,
         account: "",
         hash: "",
-        callData: "",
+        callData: ""
       },
       approveFormRules: {
         callData: [
@@ -475,14 +559,14 @@ export default {
               } else {
                 callback(new Error(this.$t("error.call_data")));
               }
-            },
-          },
-        ],
+            }
+          }
+        ]
       },
       cancelForm: {
         account: "",
         hash: "",
-        when: null,
+        when: null
       },
       isLoading: false,
       fee: "0",
@@ -494,6 +578,8 @@ export default {
       renameDialogVisible: false,
       tokens: {},
       metadata: {},
+      isAccountsDisplay: false,
+      activeTabIndex: 0,
     };
   },
   filters: {
@@ -506,63 +592,85 @@ export default {
       if (newValue) {
         this.getMultisigAccounts();
       }
-    },
+    }
   },
   computed: {
     ...mapState({
-      sourceSelected: (state) => state.global.sourceSelected,
-      language: (state) => state.global.language,
-      token: (state) => state.global.token,
-      extensionAccountList: (state) => state.global.extensionAccountList,
-      isKeyringLoaded: (state) => state.global.isKeyringLoaded,
+      sourceSelected: state => state.global.sourceSelected,
+      language: state => state.global.language,
+      token: state => state.global.token,
+      extensionAccountList: state => state.global.extensionAccountList,
+      isKeyringLoaded: state => state.global.isKeyringLoaded
     }),
     tokenSymbol() {
-      return this.token.tokenSymbol && this.token.tokenSymbol[0] ;
+      return this.token.tokenSymbol && this.token.tokenSymbol[0];
     },
     tokenDecimal() {
       return getTokenDecimalByCurrency(this.token);
     },
     injectedAccountList() {
-      return _.filter(this.multisigAccount.meta?.addressPair, (item) => {
+      return _.filter(this.multisigAccount.meta?.addressPair, item => {
         return item.isInjected;
       });
     },
 
-    currentApproval() {
-      const target = this.extrinsics.find(item => item.callHash === this.approveForm.hash);
+    tabSourceData() { 
+      return this.activeTabIndex === 1 ? [] : this.extrinsics;
+    },
 
-      if(!target) {
+    currentApproval() {
+      const target = this.extrinsics.find(
+        item => item.callHash === this.approveForm.hash
+      );
+
+      if (!target) {
         return [];
       }
 
       const { params, args } = target;
 
-      return params.map(({ name, type }, index) => ({ name, type, value: typeof args[index] === 'object' ? Object.values(args[index]).join(' ') : args[index]}));
+      return params.map(({ name, type }, index) => ({
+        name,
+        type,
+        value:
+          typeof args[index] === "object"
+            ? Object.values(args[index]).join(" ")
+            : args[index]
+      }));
     },
 
     currentTransaction() {
-      const target = this.extrinsics.find(item => item.callHash === this.approveForm.hash);
+      const target = this.extrinsics.find(
+        item => item.callHash === this.approveForm.hash
+      );
 
-      if(!target) {
-        return { };
+      if (!target) {
+        return {};
       }
 
       const { params, section, method } = target;
 
-      return `${section}.${method}(${params.map(({ name }) => name).join(',')})`;
+      return `${section}.${method}(${params
+        .map(({ name }) => name)
+        .join(",")})`;
     },
-   
-    currentTransactionDoc() {
-      const target = this.extrinsics.find(item => item.callHash === this.approveForm.hash);
 
-      if(!target) {
-        return '';
+    currentTransactionDoc() {
+      const target = this.extrinsics.find(
+        item => item.callHash === this.approveForm.hash
+      );
+
+      if (!target) {
+        return "";
       }
 
       const { callData } = target;
-      const { callData: result  } = this.getInfoFromCallData(callData);
-      
-      return result.meta.get('documentation').toHuman().join('');
+      const { callData: result } = this.getInfoFromCallData(callData);
+
+      return result.meta
+        .get("documentation")
+        .toHuman()
+        .join("");
     }
   },
   created() {
@@ -579,16 +687,16 @@ export default {
     getAccountDisplayInfo(item) {
       return {
         address: item.address,
-        display: item.name,
+        display: item.name
       };
     },
     getDisplayInfoByAddress(address) {
       let result = {};
       _.forEach(this.injectedAccountList, account => {
-        if(account.address === address) {
+        if (account.address === address) {
           result = this.getAccountDisplayInfo(account);
         }
-      })
+      });
       return result;
     },
     isMultiCall(multisig) {
@@ -600,13 +708,13 @@ export default {
       this.multisigAccount = {};
       const accounts = keyring.getAccounts();
       let extensionAddressList = [];
-      _.forEach(this.extensionAccountList, (item) => {
+      _.forEach(this.extensionAccountList, item => {
         extensionAddressList.push(item.address);
       });
       _.forEach(accounts, ({ address, meta }) => {
         if (meta.isMultisig && address === this.address) {
           let isAvailable = false;
-          _.forEach(meta.addressPair, (item) => {
+          _.forEach(meta.addressPair, item => {
             if (extensionAddressList.indexOf(item.address) > -1) {
               item.isInjected = true;
               isAvailable = true;
@@ -617,7 +725,7 @@ export default {
           this.multisigAccount = {
             address: address,
             meta: meta,
-            isAvailable: isAvailable,
+            isAvailable: isAvailable
           };
           return false;
         }
@@ -626,25 +734,26 @@ export default {
     handleSubmitBtnClick() {
       this.extrinsicDialogVisible = true;
       let localAccountInMultisigPairList = this.getLocalAccountInMultisigPairList();
-      this.form.account = localAccountInMultisigPairList && localAccountInMultisigPairList[0];
+      this.form.account =
+        localAccountInMultisigPairList && localAccountInMultisigPairList[0];
     },
     handleCancelBtnClick(row) {
       this.cancelDialogVisible = true;
       this.cancelForm = {
         account: row.depositor,
         hash: row.callHash,
-        when: row.when,
+        when: row.when
       };
       this.calcFee();
     },
     handleApproveBtnClick(row) {
       let accountList = this.getUnapprovedInjectedAddressList(row);
-      let account = accountList && accountList[0] || "";
+      let account = (accountList && accountList[0]) || "";
       this.approveForm = {
         account: account,
         hash: row.callHash,
         callData: row.callData,
-        isMultiCall: this.isMultiCall(row),
+        isMultiCall: this.isMultiCall(row)
       };
       this.approveDialogVisible = true;
     },
@@ -660,11 +769,11 @@ export default {
       const info = await this.$polkaApi.query["multisig"].multisigs.entries(
         this.multisigAccount.address
       );
-      _.forEach(info, (item) => {
+      _.forEach(info, item => {
         let extrinsic = {
           ...item[1].toJSON(),
           address: item[0].toHuman()[0],
-          callHash: item[0].toHuman()[1],
+          callHash: item[0].toHuman()[1]
         };
         callHashs.push(extrinsic.callHash);
         this.extrinsics.push(extrinsic);
@@ -675,11 +784,13 @@ export default {
       _.forEach(callInfos, (item, index) => {
         let call = item.toHuman();
         if (call) {
-          let {callDataInfoJSON, callDataInfo} = this.getInfoFromCallData(call[0]);
+          let { callDataInfoJSON, callDataInfo } = this.getInfoFromCallData(
+            call[0]
+          );
           let meta = this.$polkaApi.tx[callDataInfo.section][
             callDataInfo.method
           ].meta.toJSON();
-          _.forEach(meta.args, (arg) => {
+          _.forEach(meta.args, arg => {
             arg.value = callDataInfoJSON.args[arg.name];
           });
           this.extrinsics[index] = {
@@ -688,7 +799,7 @@ export default {
             created_at: this.extrinsics[index]["when"]["height"],
             params: meta.args,
             callData: call[0],
-            callInfo: call,
+            callInfo: call
           };
         }
       });
@@ -698,7 +809,7 @@ export default {
     },
     async getHistoryCalls() {
       let result = [];
-      let callApi = _.find(API_CONFIG["global"], (item) => {
+      let callApi = _.find(API_CONFIG["global"], item => {
         return item.name === "getCallsByAddress";
       });
       try {
@@ -712,8 +823,10 @@ export default {
           }
         });
         result = _.map(calls, call => {
-          let callDataInfo = {}, callDataInfoJSON= {}, meta = {};
-          let {approvals, call_data, call_hash, status} = call;
+          let callDataInfo = {},
+            callDataInfoJSON = {},
+            meta = {};
+          let { approvals, call_data, call_hash, status } = call;
           if (call_data) {
             let infoResult = this.getInfoFromCallData(call_data);
             callDataInfoJSON = infoResult.callDataInfoJSON;
@@ -721,7 +834,7 @@ export default {
             let meta = this.$polkaApi.tx[callDataInfo.section][
               callDataInfo.method
             ].meta.toJSON();
-            _.forEach(meta.args, (arg) => {
+            _.forEach(meta.args, arg => {
               arg.value = callDataInfoJSON.args[arg.name];
             });
           }
@@ -734,11 +847,11 @@ export default {
             params: meta.args,
             callData: call_data,
             callHash: call_hash
-          }
-        })
+          };
+        });
         result = _.filter(result, item => {
-          return item.status !== "created" && item.status !== "approving"
-        })
+          return item.status !== "created" && item.status !== "approving";
+        });
       } catch (error) {
         console.log(error);
       }
@@ -752,12 +865,15 @@ export default {
         callData,
         callDataInfoJSON,
         callDataInfo
-      }
+      };
     },
     isCallDataValid(row) {
       let result = false;
       if (row.callData) {
-        const callData = this.$polkaApi.registry.createType("Call", row.callData);
+        const callData = this.$polkaApi.registry.createType(
+          "Call",
+          row.callData
+        );
         if (callData.hash && callData.hash.eq(row.callHash)) {
           result = true;
         }
@@ -778,7 +894,7 @@ export default {
       let list = this.getUnapprovedInjectedAddressList(row);
       return _.filter(this.injectedAccountList, item => {
         return list.indexOf(item.address) > -1;
-      })
+      });
     },
     getUnapprovedInjectedAddressList(row) {
       let localAccountInMultisigPairList = this.getLocalAccountInMultisigPairList();
@@ -786,7 +902,10 @@ export default {
         localAccountInMultisigPairList,
         row
       );
-      return _.difference(localAccountInMultisigPairList, approvedLocalAccountList);
+      return _.difference(
+        localAccountInMultisigPairList,
+        approvedLocalAccountList
+      );
     },
     getLocalAccountInMultisigPairList() {
       let injectedAddressList = _.map(this.injectedAccountList, "address");
@@ -794,10 +913,7 @@ export default {
         this.multisigAccount.meta.addressPair,
         "address"
       );
-      return _.intersection(
-        injectedAddressList,
-        multisigPairAddressList
-      );
+      return _.intersection(injectedAddressList, multisigPairAddressList);
     },
     getApprovedLocalAccountList(localAccountInMultisigPairList, row) {
       return _.intersection(
@@ -847,7 +963,7 @@ export default {
       return {
         isMultisig: !!pair.meta.isMultisig,
         threshold: pair.meta.threshold || 0,
-        who: (pair.meta.who || []).map(this.recodeAddress),
+        who: (pair.meta.who || []).map(this.recodeAddress)
       };
     },
     recodeAddress(address) {
@@ -864,13 +980,13 @@ export default {
       } catch (error) {
         this.$message({
           type: "error",
-          message: error.message,
+          message: error.message
         });
       }
     },
     handleValueInputChange(value) {
       this.fee = this.$t("calculating");
-      this.form.value = value.replace(/[^\d.]/g, '');
+      this.form.value = value.replace(/[^\d.]/g, "");
       this.debounceCalc();
     },
     handleInputChange() {
@@ -905,7 +1021,7 @@ export default {
       this.waitingNotify = this.$notify({
         title: this.$t("transaction_waiting_title"),
         message: this.$t("transaction_waiting_content"),
-        duration: 0,
+        duration: 0
       });
     },
     closeLoadingNotify() {
@@ -925,7 +1041,7 @@ export default {
       let multiRoot = this.multisigAccount.address;
       let signAddress = this.cancelForm.account;
       const { threshold, who } = this.extractExternal(multiRoot);
-      const others = who.filter((w) => w !== signAddress);
+      const others = who.filter(w => w !== signAddress);
       return this.$polkaApi.tx.multisig.cancelAsMulti(
         threshold,
         others,
@@ -945,7 +1061,7 @@ export default {
       return result;
     },
     async approveTransction() {
-      this.$refs["approveForm"].validate(async (valid) => {
+      this.$refs["approveForm"].validate(async valid => {
         if (valid) {
           this.approveDialogVisible = false;
           let tx = await this.getApproveTransaction();
@@ -966,11 +1082,14 @@ export default {
       );
       let callData = null;
       if (this.approveForm.callData) {
-        callData = this.$polkaApi.registry.createType("Call", this.approveForm.callData);
+        callData = this.$polkaApi.registry.createType(
+          "Call",
+          this.approveForm.callData
+        );
       }
       let weight = await this.getWeight(callData);
       const { threshold, who } = this.extractExternal(multiRoot);
-      const others = who.filter((w) => w !== signAddress);
+      const others = who.filter(w => w !== signAddress);
       let timepoint = null;
       if (info.isSome) {
         timepoint = info.unwrap().when;
@@ -1003,7 +1122,7 @@ export default {
       return tx;
     },
     submitTransction() {
-      this.$refs["form"].validate((valid) => {
+      this.$refs["form"].validate(valid => {
         if (valid) {
           this.sendTransaction();
         }
@@ -1024,7 +1143,7 @@ export default {
         tx.method.hash
       );
       const { threshold, who } = this.extractExternal(multiRoot);
-      const others = who.filter((w) => w !== signAddress);
+      const others = who.filter(w => w !== signAddress);
       const { weight } = await tx.paymentInfo(multiRoot);
       let timepoint = null;
       if (info.isSome) {
@@ -1048,14 +1167,16 @@ export default {
           dest: "",
           module: "balances",
           call: "transferKeepAlive",
-          value: "",
+          value: ""
         };
         this.getAccountMultisigs();
       });
     },
     async signAndSend(tx, signAddress, callback) {
       try {
-        const injector = await web3FromAddress(encodeAddressByType(signAddress, SUBSTRATE_PREFIX));
+        const injector = await web3FromAddress(
+          encodeAddressByType(signAddress, SUBSTRATE_PREFIX)
+        );
         this.$polkaApi.setSigner(injector.signer);
         this.showLoadingNotify();
         await tx.signAndSend(signAddress, ({ events = [], status }) => {
@@ -1066,7 +1187,7 @@ export default {
                 this.$notify({
                   title: this.$t("transaction_success_title"),
                   message: this.$t("transaction_success_content"),
-                  type: "success",
+                  type: "success"
                 });
                 callback && callback();
               }
@@ -1085,7 +1206,7 @@ export default {
                 this.$notify({
                   title: this.$t("transaction_failed_title"),
                   message: message,
-                  type: "error",
+                  type: "error"
                 });
               }
             });
@@ -1095,7 +1216,7 @@ export default {
         this.closeLoadingNotify();
         this.$message({
           type: "error",
-          message: error.message,
+          message: error.message
         });
       }
     },
@@ -1104,18 +1225,18 @@ export default {
         const pair = keyring.getPair(this.address);
         keyring.saveAccountMeta(pair, {
           name: this.form.name,
-          whenEdited: Date.now(),
+          whenEdited: Date.now()
         });
         this.$message({
           type: "success",
-          message: this.$t("success"),
+          message: this.$t("success")
         });
         this.renameDialogVisible = false;
         this.getMultisigAccount();
       } catch (error) {
         this.$message({
           type: "error",
-          message: error.message,
+          message: error.message
         });
       }
     },
@@ -1124,23 +1245,29 @@ export default {
         keyring.forgetAccount(this.address);
         this.$message({
           type: "success",
-          message: this.$t("success"),
+          message: this.$t("success")
         });
         this.$router.push("/");
       } catch (error) {
         this.$message({
           type: "error",
-          message: error.message,
+          message: error.message
         });
       }
     },
     getNetworkHref(path) {
-      return this.$const[`SYMBOL/${this.sourceSelected}`]["domain"]["value"] + path;
+      return (
+        this.$const[`SYMBOL/${this.sourceSelected}`]["domain"]["value"] + path
+      );
     },
     isMobile() {
       return isMobile();
     },
-  },
+
+    tabChange(event) {
+      this.activeTabIndex = +event.index;
+    },
+  }
 };
 </script>
 <style lang="scss" scoped>
@@ -1150,7 +1277,7 @@ export default {
   flex: 1 1 auto;
   .subscan-card {
     position: relative;
-    min-height: 500px;
+
     /deep/ .address-display-cls {
       .address-wrapper-address {
         // pointer-events: none;
@@ -1192,8 +1319,14 @@ export default {
         }
       }
     }
+
+    .el-tabs {
+      padding: 1em 2em 0;
+    }
+
     .list-section {
-      margin: 30px;
+      padding: 1em 2em;
+      
       .table-title {
         margin: 10px 0;
       }
@@ -1209,13 +1342,50 @@ export default {
         }
       }
     }
+
     &.account-intro {
-      height: 70px;
-      min-height: auto;
-      margin-bottom: 20px;
-      display: flex;
-      align-items: center;
       padding: 0 20px;
+      margin-bottom: 20px;
+
+      .account {
+        height: 70px;
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        position: relative;
+
+        & > div:first-child {
+          display: flex;
+          align-items: center;
+        }
+
+        &::after {
+          content: "";
+          position: absolute;
+          bottom: 0;
+          padding: 0 20px;
+          height: 1px;
+          width: 100%;
+          background-color: #f3f5f9;
+        }
+      }
+
+      .accounts {
+        & > div:first-child {
+          display: inline-flex;
+          gap: 2em;
+          align-items: center;
+          margin: 0 0 1em 0;
+        }
+
+        .account-list {
+          background: #f3f5f9;
+          padding: 1em;
+          margin: 0 0 1em 0;
+        }
+      }
+
       .name {
         font-size: 14px;
         line-height: 22px;
@@ -1240,9 +1410,7 @@ export default {
         margin: 0 10px;
         cursor: pointer;
       }
-      .placeholder {
-        flex: 1 1 auto;
-      }
+
       .button {
         font-size: 14px;
         cursor: pointer;
