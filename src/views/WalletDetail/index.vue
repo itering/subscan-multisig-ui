@@ -254,6 +254,7 @@
                         :hasCopyBtn="false"
                         :hasDisplayNameInfo="true"
                         :displayNameInfo="getDisplayInfoByAddress(approveForm.account)"
+                        :isLink="false"
                       ></address-display>
                       <el-option
                         v-for="item in getUnapprovedInjectedList(props.row)"
@@ -270,6 +271,7 @@
                           :hasCopyBtn="false"
                           :hasDisplayNameInfo="true"
                           :displayNameInfo="getAccountDisplayInfo(item)"
+                          :isLink="false"
                         ></address-display>
                       </el-option>
                     </el-select>
@@ -294,6 +296,17 @@
                     ></el-input>
                   </el-form-item>
                 </el-form>
+
+                <div class="approve-detail">
+                  <h4>{{ $t('multisig.sending_transaction', { transaction: currentTransaction }) }}</h4>
+                  <p>{{ currentTransactionDoc }}</p>
+
+                  <div v-for="item in currentApproval" :key="item.name">
+                      <h4>{{item.name}}: {{item.type}}</h4>
+                      <p>{{item.value}}</p>
+                  </div>
+                </div>
+
                 <div class="dialog-tip">{{ $t("multisig.approval_tip") }}</div>
                 <div class="split-line"></div>
                 <div class="footer">
@@ -514,6 +527,43 @@ export default {
         return item.isInjected;
       });
     },
+
+    currentApproval() {
+      const target = this.extrinsics.find(item => item.callHash === this.approveForm.hash);
+
+      if(!target) {
+        return [];
+      }
+
+      const { params, args } = target;
+
+      return params.map(({ name, type }, index) => ({ name, type, value: typeof args[index] === 'object' ? Object.values(args[index]).join(' ') : args[index]}));
+    },
+
+    currentTransaction() {
+      const target = this.extrinsics.find(item => item.callHash === this.approveForm.hash);
+
+      if(!target) {
+        return { };
+      }
+
+      const { params, section, method } = target;
+
+      return `${section}.${method}(${params.map(({ name }) => name).join(',')})`;
+    },
+   
+    currentTransactionDoc() {
+      const target = this.extrinsics.find(item => item.callHash === this.approveForm.hash);
+
+      if(!target) {
+        return '';
+      }
+
+      const { callData } = target;
+      const { callData: result  } = this.getInfoFromCallData(callData);
+      
+      return result.meta.get('documentation').toHuman().join('');
+    }
   },
   created() {
     this.address = this.$route.params.key;
@@ -1208,6 +1258,27 @@ export default {
     }
   }
 }
+
+.approve-detail {
+  padding: 1em;
+  background: #f3f5f9;
+  border-radius: 4px;
+
+  & > div {
+    background: #fff;
+    border-radius: 4px;
+    padding: 5px 10px;
+    margin: 1em 0;
+  }
+
+  h4 {
+    color: var(--black-color);
+  }
+
+  p {
+    margin: 5px 0;
+  }
+}
 </style>
 <style lang="scss">
 .main {
@@ -1249,6 +1320,7 @@ export default {
     display: inline-block;
   }
 }
+
 .submitDialog,
 .approveDialog,
 .cancelDialog {

@@ -16,10 +16,14 @@
         </div>
         <Tooltip customCls="item" effect="light" :content="address" placement="top-start">
           <div v-if="displayName" class="nick-name">
-            <a :href="getNetworkHref(`/account/${address}`)" target="_blank">
+            <a v-if="isLink" :href="getNetworkHref(`/account/${address}`)" target="_blank">
               <span v-if="hasHashFormat">{{displayName | hashFormat}}</span>
               <span v-else>{{displayName}}</span>
             </a>
+            <span v-else>
+              <span v-if="hasHashFormat">{{displayName | hashFormat}}</span>
+              <span v-else>{{displayName}}</span>
+            </span>
           </div>
         </Tooltip>
         <!-- <div v-if="displayName" class="nick-name">{{displayName}}</div> -->
@@ -36,20 +40,29 @@
           placement="top-start"
         >
           <div class="name-wrapper-address">
-            <a :href="getNetworkHref(`/account/${address}`)" target="_blank">
+            <a v-if="isLink" :href="getNetworkHref(`/account/${address}`)" target="_blank">
               <span v-if="hasHashFormat">{{address | hashFormat}}</span>
               <span v-else>{{address}}</span>
             </a>
+            <span v-else>
+              <span v-if="hasHashFormat">{{address | hashFormat}}</span>
+              <span v-else>{{address}}</span>
+            </span>
           </div>
         </Tooltip>
       </div>
       <div class="address-wrapper" v-if="hasAddressWrapper">
         <div v-if="hasAddressInAddressWrapper" class="address-wrapper-address">
-          <a :href="getNetworkHref(`/account/${address}`)" target="_blank">
+          <a v-if="isLink" :href="getNetworkHref(`/account/${address}`)" target="_blank">
             <span v-if="hasHashFormat && hasBracket">{{'('}}{{address | hashFormat}}{{')'}}</span>
             <span v-else-if="hasHashFormat">{{address | hashFormat}}</span>
             <span v-else>{{address}}</span>
           </a>
+          <span v-else>
+            <span v-if="hasHashFormat && hasBracket">{{'('}}{{address | hashFormat}}{{')'}}</span>
+            <span v-else-if="hasHashFormat">{{address | hashFormat}}</span>
+            <span v-else>{{address}}</span>
+          </span>
         </div>
         <div
           class="copy-btn copy-icon"
@@ -147,6 +160,10 @@ export default {
       type: Number,
       default: 10,
     },
+    isLink: { 
+      type: Boolean,
+      default: true,
+    }
   },
   directives: {
     clipboard,
@@ -309,6 +326,7 @@ export default {
   .address-wrapper {
     display: flex;
     align-items: center;
+    color: #606266;
   }
   .name-wrapper {
     display: flex;
