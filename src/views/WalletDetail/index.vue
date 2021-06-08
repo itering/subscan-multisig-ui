@@ -85,7 +85,7 @@
         <span slot="footer" class="dialog-footer"> </span>
       </el-dialog>
       <div class="placeholder"></div>
-      <div v-if="multisigAccount.isAvailable" class="button" @click="handleSubmitBtnClick">
+      <div v-if="multisigAccount.isAvailable" class="button black-btn" @click="handleSubmitBtnClick">
         {{ $t("submit_extrinsic") }}
       </div>
       <el-dialog
