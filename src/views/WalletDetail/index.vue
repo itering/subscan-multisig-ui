@@ -1407,7 +1407,6 @@ export default {
 
     .list-section {
       padding: 1em 2em;
-
       .table-title {
         margin: 10px 0;
       }
