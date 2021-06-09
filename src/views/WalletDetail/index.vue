@@ -53,7 +53,7 @@
           <span
             v-for="item in [
               { label: 'multisig.In Progress', count: extrinsics.length },
-              { label: 'multisig.Confirmed Extrinsic', count: NaN },
+              { label: 'multisig.Confirmed Extrinsic', count: confirmedTotal },
               {
                 label: 'multisig.Threshold',
                 count: multisigAccount.meta.threshold
@@ -225,10 +225,16 @@
     <div class="subscan-container subscan-card extrinsic-list">
       <el-tabs @tab-click="tabChange">
         <el-tab-pane>
-          <span slot="label">{{$t("multisig.In Progress")}} ({{extrinsics.length}})</span>
+          <span slot="label"
+            >{{ $t("multisig.In Progress") }} ({{ extrinsics.length }})</span
+          >
         </el-tab-pane>
         <el-tab-pane>
-          <span slot="label">{{$t("multisig.Confirmed Extrinsic")}} ({{NaN}})</span>
+          <span slot="label"
+            >{{ $t("multisig.Confirmed Extrinsic") }} ({{
+              confirmedTotal
+            }})</span
+          >
         </el-tab-pane>
       </el-tabs>
 
@@ -240,9 +246,9 @@
           style="width: 100%"
           ref="accountTable"
         >
-          <el-table-column min-width="200" :label="$t('call_hash')" fit>
+          <el-table-column min-width="200" :label="$t(activeTabIndex === 0 ? 'call_hash' : 'block_hash')" fit>
             <template slot-scope="props">
-              <div>{{ props.row.callHash }}</div>
+              <div>{{ activeTabIndex === 0 ? props.row.callHash : props.row.blockHash }}</div>
             </template>
           </el-table-column>
           <el-table-column min-width="80" :label="$t('action')" fit>
@@ -509,6 +515,7 @@ import { getTokenDecimalByCurrency } from "../../utils/tools";
 import BN from "bn.js";
 import { BigNumber } from "bignumber.js";
 import Accounts from "@/views/Components/Accounts.vue";
+import { transfers } from "Config";
 
 const EMPTY_STATE = new BN(0);
 const ZERO_ACCOUNT = "5CAUdnwecHGxxyr5vABevAfZ34Fi4AaraDRMwfDQXQ52PXqg";
@@ -571,6 +578,8 @@ export default {
       isLoading: false,
       fee: "0",
       extrinsics: [],
+      confirmedTotal: 0,
+      confirmedExtrinsics: [],
       extrinsicDialogVisible: false,
       approveDialogVisible: false,
       cancelDialogVisible: false,
@@ -579,7 +588,7 @@ export default {
       tokens: {},
       metadata: {},
       isAccountsDisplay: false,
-      activeTabIndex: 0,
+      activeTabIndex: 0
     };
   },
   filters: {
@@ -614,8 +623,10 @@ export default {
       });
     },
 
-    tabSourceData() { 
-      return this.activeTabIndex === 1 ? [] : this.extrinsics;
+    tabSourceData() {
+      return this.activeTabIndex === 1
+        ? this.confirmedExtrinsics
+        : this.extrinsics;
     },
 
     currentApproval() {
@@ -678,7 +689,11 @@ export default {
     this.init();
     this.debounceCalc = _.debounce(this.calcFee, 500);
   },
-  mounted() {},
+
+  mounted() {
+    this.getConfirmedExtrinsics();
+  },
+
   methods: {
     init() {
       this.getMultisigAccount();
@@ -1266,7 +1281,73 @@ export default {
 
     tabChange(event) {
       this.activeTabIndex = +event.index;
+
+      if (this.activeTabIndex === 1) {
+        this.getConfirmedExtrinsics();
+      }
     },
+
+    getConfirmedExtrinsics() {
+      const limit = 10;
+      const offset = 0;
+
+      this.$apollo.provider.clients[this.sourceSelected]
+        .query({
+          query: transfers,
+          variables: { offset, limit, account: this.address }
+        })
+        .then(res => {
+          const {
+            transfers: { totalCount, nodes }
+          } = res.data;
+
+          this.confirmedTotal = totalCount;
+          this.confirmedExtrinsics = nodes.map(node => {
+            const {
+              fromId,
+              timestamp,
+              block: {
+                id: blockHash,
+                extrinsics: { nodes }
+              }
+            } = node;
+
+            const target = nodes.find(item => item.section === "multisig");
+            const { args, signerId, isSuccess } = target;
+            const multisigArgs = JSON.parse(args);
+            const callData = multisigArgs.find(item => item.name === "call")
+              ?.value;
+            const { callDataInfoJSON, callDataInfo } = this.getInfoFromCallData(
+              callData
+            );
+            const meta = this.$polkaApi.tx[callDataInfo.section][
+              callDataInfo.method
+            ].meta.toJSON();
+
+            return {
+              ...callDataInfo,
+              callData,
+              blockHash,
+              address: fromId,
+              approvals: [
+                ...multisigArgs
+                  .find(item => item.name === "other_signatories")
+                  .value.slice(1), // 第1个是多签账号
+                signerId
+              ],
+              params: Object.entries(callDataInfoJSON.args).map(
+                ([key, value]) => ({
+                  name: key,
+                  value,
+                  type: meta.args.find(item => item.name === key)?.type
+                })
+              ),
+              status: isSuccess ? 'executed' : 'pending',
+              created_at: timestamp,
+            };
+          });
+        });
+    }
   }
 };
 </script>
@@ -1326,7 +1407,6 @@ export default {
 
     .list-section {
       padding: 1em 2em;
-      
       .table-title {
         margin: 10px 0;
       }
