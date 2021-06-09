@@ -13,12 +13,14 @@ import store from "Plugins/store";
 import inject from "Plugins/inject";
 import "Plugins/icons";
 import "Plugins/element";
+import { apolloClients, defaultClient } from "Plugins/apollo";
 // 引入国际化文件
 import enLocale from "Locale/en.json";
 import zhLocale from "Locale/zh-CN.json";
 import eleEnLocale from "element-ui/lib/locale/lang/en";
 import eleZhLocale from "element-ui/lib/locale/lang/zh-CN";
 import ElementLocale from "element-ui/lib/locale";
+import VueApollo from "vue-apollo";
 
 // 引入根组件
 import App from "./App";
@@ -41,6 +43,13 @@ const i18n = new VueI18n({
 });
 ElementLocale.i18n((key, value) => i18n.t(key, value));
 
+Vue.use(VueApollo);
+
+const apolloProvider = new VueApollo({
+  defaultClient,
+  clients: apolloClients
+});
+
 // 设置为 false 以阻止 vue 在启动时生成生产提示
 Vue.config.productionTip = false;
 Vue.config.performance = process.env.NODE_ENV !== "production";
@@ -49,5 +58,6 @@ new Vue({
   router,
   store,
   i18n,
+  apolloProvider,
   render: h => h(App)
 }).$mount("#app");
