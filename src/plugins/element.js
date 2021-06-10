@@ -32,6 +32,7 @@ import {
   Input,
   // Col,
   // Row,
+  Link,
   // Menu,
   // Submenu,
   // MenuItem,
@@ -87,6 +88,7 @@ Vue.use(CheckboxGroup);
 Vue.use(Tooltip);
 // Vue.use(Col)
 // Vue.use(Row)
+Vue.use(Link);
 // Vue.use(Menu)
 // Vue.use(Submenu)
 // Vue.use(MenuItem)
