@@ -246,9 +246,19 @@
           style="width: 100%"
           ref="accountTable"
         >
-          <el-table-column min-width="200" :label="$t(activeTabIndex === 0 ? 'call_hash' : 'block_hash')" fit>
+          <el-table-column
+            min-width="200"
+            :label="$t(activeTabIndex === 0 ? 'call_hash' : 'block_hash')"
+            fit
+          >
             <template slot-scope="props">
-              <div>{{ activeTabIndex === 0 ? props.row.callHash : props.row.blockHash }}</div>
+              <div>
+                {{
+                  activeTabIndex === 0
+                    ? props.row.callHash
+                    : props.row.blockHash
+                }}
+              </div>
             </template>
           </el-table-column>
           <el-table-column min-width="80" :label="$t('action')" fit>
@@ -473,10 +483,23 @@
                   </el-table-column>
                   <el-table-column prop="type" width="200">
                     <template slot-scope="props">
-                      <div>
-                        {{
+                      <div
+                        v-if="
                           hasApproved(props.row.address, scope.row.approvals)
-                        }}
+                        "
+                      >
+                        {{ $t("status.approved") }}
+                        <el-link
+                          type="primary"
+                          :underline="false"
+                          :href="getApprovedExtrinsicHref(scope.row.when)"
+                          target="__blank"
+                        >
+                          <i class="el-icon-document-copy"></i>
+                        </el-link>
+                      </div>
+                      <div v-else>
+                        {{ $t("status.pending") }}
                       </div>
                     </template>
                   </el-table-column>
@@ -773,10 +796,13 @@ export default {
       this.approveDialogVisible = true;
     },
     hasApproved(address, approveList) {
-      return approveList && approveList.indexOf(address) > -1
-        ? this.$t("status.approved")
-        : this.$t("status.pending");
+      return approveList && approveList.indexOf(address) > -1;
     },
+
+    getApprovedExtrinsicHref({ height, index }) {
+      return `https://${this.sourceSelected}.subscan.io/extrinsic/${height}-${index}`;
+    },
+
     async getAccountMultisigs() {
       this.isLoading = true;
       let callHashs = [];
@@ -1292,6 +1318,7 @@ export default {
       const offset = 0;
 
       this.$apollo.provider.clients[this.sourceSelected]
+      // this.$apollo.provider.defaultClient
         .query({
           query: transfers,
           variables: { offset, limit, account: this.address }
@@ -1323,6 +1350,9 @@ export default {
             const meta = this.$polkaApi.tx[callDataInfo.section][
               callDataInfo.method
             ].meta.toJSON();
+            const { height, index } = multisigArgs.find(
+              item => item.name === "maybe_timepoint"
+            )?.value;
 
             return {
               ...callDataInfo,
@@ -1342,8 +1372,9 @@ export default {
                   type: meta.args.find(item => item.name === key)?.type
                 })
               ),
-              status: isSuccess ? 'executed' : 'pending',
+              status: isSuccess ? "executed" : "pending",
               created_at: timestamp,
+              when: { height: +height.replace(",", ""), index: +index }
             };
           });
         });
@@ -1359,11 +1390,6 @@ export default {
   .subscan-card {
     position: relative;
 
-    /deep/ .address-display-cls {
-      .address-wrapper-address {
-        // pointer-events: none;
-      }
-    }
     .create-section {
       .create {
         position: absolute;
