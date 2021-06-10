@@ -18,6 +18,7 @@ import {
   CarouselItem,
   Checkbox,
   CheckboxGroup,
+  Col,
   Collapse,
   CollapseItem,
   // Carousel,
@@ -45,12 +46,14 @@ import {
   Tooltip,
   // Pagination,
   Popover,
+  Row,
   Select,
   Option,
   Pagination,
   Progress
   // Badge
 } from "element-ui";
+import Account from "../views/Components/form-control/Account.vue";
 // 按需引入element-ui的部分功能
 Vue.use(Loading.directive);
 Vue.prototype.$loading = Loading.service;
@@ -85,6 +88,7 @@ Vue.use(Input);
 Vue.use(Scrollbar);
 Vue.use(Checkbox);
 Vue.use(CheckboxGroup);
+Vue.use(Col);
 Vue.use(Tooltip);
 // Vue.use(Col)
 // Vue.use(Row)
@@ -103,4 +107,8 @@ Vue.use(Select);
 Vue.use(Option);
 Vue.use(Pagination);
 Vue.use(Progress);
+Vue.use(Row);
 // Vue.use(Badge)
+
+
+Vue.use(Account);

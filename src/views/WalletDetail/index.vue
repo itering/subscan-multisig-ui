@@ -165,6 +165,7 @@
                 :hasCopyBtn="false"
                 :hasDisplayNameInfo="true"
                 :displayNameInfo="getDisplayInfoByAddress(form.account)"
+                :isLink="false"
               ></address-display>
               <el-option
                 v-for="item in injectedAccountList"
@@ -181,28 +182,34 @@
                   :hasCopyBtn="false"
                   :hasDisplayNameInfo="true"
                   :displayNameInfo="getAccountDisplayInfo(item)"
+                  :isLink="false"
                 ></address-display>
               </el-option>
             </el-select>
           </el-form-item>
-          <el-form-item :label="$t('module')" class="module-item">
+
+          <!-- <el-form-item :label="$t('module')" class="module-item">
             <el-input v-model="form.module" :readonly="true"></el-input>
           </el-form-item>
+
           <el-form-item :label="$t('call')" class="call-item">
             <el-input v-model="form.call" :readonly="true"></el-input>
           </el-form-item>
-          <!-- <el-form-item :label="$t('parameters')">
-          </el-form-item> -->
+
           <el-form-item :label="$t('dest')">
             <el-input v-model="form.dest" @input="handleInputChange"></el-input>
           </el-form-item>
+
           <el-form-item prop="value" :label="$t('value')">
             <el-input
               v-model="form.value"
               @input="handleValueInputChange"
             ></el-input>
-          </el-form-item>
+          </el-form-item> -->
+
+          <InputExtrinsic />
         </el-form>
+
         <div class="split-line"></div>
         <div class="footer">
           <div class="fee">{{ $t("fee", { num: fee }) }}</div>
@@ -539,16 +546,19 @@ import BN from "bn.js";
 import { BigNumber } from "bignumber.js";
 import Accounts from "@/views/Components/Accounts.vue";
 import { transfers } from "Config";
+import InputExtrinsic from "@/views/Components/InputExtrinsic.vue";
 
 const EMPTY_STATE = new BN(0);
 const ZERO_ACCOUNT = "5CAUdnwecHGxxyr5vABevAfZ34Fi4AaraDRMwfDQXQ52PXqg";
 const SUBSTRATE_PREFIX = 42;
+
 export default {
   name: "Home",
   components: {
     AddressDisplay,
     StructTable,
-    Accounts
+    Accounts,
+    InputExtrinsic,
   },
   data() {
     return {
@@ -683,6 +693,7 @@ export default {
       }
 
       const { params, section, method } = target;
+      console.log('%c [ params ]-698', 'font-size:13px; background:pink; color:#bf2c9f;', params);
 
       return `${section}.${method}(${params
         .map(({ name }) => name)
@@ -1169,6 +1180,7 @@ export default {
         }
       });
     },
+
     async sendTransaction() {
       let multiRoot = this.multisigAccount.address;
       let signAddress = this.form.account;
@@ -1213,6 +1225,7 @@ export default {
         this.getAccountMultisigs();
       });
     },
+
     async signAndSend(tx, signAddress, callback) {
       try {
         const injector = await web3FromAddress(
@@ -1261,6 +1274,7 @@ export default {
         });
       }
     },
+    
     renameWallet() {
       try {
         const pair = keyring.getPair(this.address);

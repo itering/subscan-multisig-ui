@@ -14,8 +14,12 @@
         >
           <el-form-item>
             <template slot="label">
-              <span>{{$t('name')}}</span>
-              <el-tooltip content="Wallet name, tap any name you like" placement="right" effect="light">
+              <span>{{ $t("name") }}</span>
+              <el-tooltip
+                content="Wallet name, tap any name you like"
+                placement="right"
+                effect="light"
+              >
                 <i class="el-icon-question"></i>
               </el-tooltip>
             </template>
@@ -23,17 +27,28 @@
           </el-form-item>
           <el-form-item prop="threshold">
             <template slot="label">
-              <span>{{$t('threshold')}}</span>
-              <el-tooltip content="The minimum number of accounts approve for transactions" placement="right" effect="light">
+              <span>{{ $t("threshold") }}</span>
+              <el-tooltip
+                content="The minimum number of accounts approve for transactions"
+                placement="right"
+                effect="light"
+              >
                 <i class="el-icon-question"></i>
               </el-tooltip>
             </template>
-            <el-input @input="handleThresholdInputChange" v-model="form.threshold"></el-input>
+            <el-input
+              @input="handleThresholdInputChange"
+              v-model="form.threshold"
+            ></el-input>
           </el-form-item>
           <el-form-item>
             <template slot="label">
-              <span>{{$t('members')}}</span>
-              <el-tooltip content="Each member is a general substrate account" placement="right" effect="light">
+              <span>{{ $t("members") }}</span>
+              <el-tooltip
+                content="Each member is a general substrate account"
+                placement="right"
+                effect="light"
+              >
                 <i class="el-icon-question"></i>
               </el-tooltip>
             </template>
@@ -54,17 +69,17 @@
                 class="column column-2"
                 v-model="account.name"
               ></el-input>
-              <el-autocomplete
-                class="column column-3"
-                v-model="account.address"
-                value-key="address"
-                :fetch-suggestions="querySearch"
-                @select="handleSelect"
-              >
-                <template slot="suffix">
-                  <i class="el-icon-arrow-down"></i>
-                </template>
-              </el-autocomplete>
+              
+              <Account
+                valueKey="address"
+                className="column column-3"
+                :querySearch="querySearch"
+                @value-change="
+                  account.address = $event.address;
+                  handleSelect($event);
+                "
+              />
+
               <div class="column column-4" @click="removeAccountRow(account)">
                 <icon-svg icon-class="delete" class="icon" />
               </div>
@@ -99,9 +114,13 @@ import { isMobile } from "Utils/tools";
 import { encodeAddressByType } from "Utils/filters";
 import keyring from "@polkadot/ui-keyring";
 import _ from "lodash";
+import Account from "../Components/form-control/Account.vue";
+
 export default {
   name: "Home",
-  components: {},
+  components: {
+    Account
+  },
   data() {
     return {
       const_symbol: const_symbol,
@@ -118,14 +137,14 @@ export default {
           {
             address: "",
             name: "",
-            key: 1,
+            key: 1
           },
           {
             address: "",
             name: "",
-            key: 2,
-          },
-        ],
+            key: 2
+          }
+        ]
       },
       formRules: {
         threshold: [
@@ -141,19 +160,19 @@ export default {
               } else {
                 callback(new Error(this.$t("error.threshold")));
               }
-            },
-          },
-        ],
-      },
+            }
+          }
+        ]
+      }
     };
   },
   computed: {
     ...mapState({
-      sourceSelected: (state) => state.global.sourceSelected,
-      language: (state) => state.global.language,
-      token: (state) => state.global.token,
-      extensionAccountList: (state) => state.global.extensionAccountList,
-    }),
+      sourceSelected: state => state.global.sourceSelected,
+      language: state => state.global.language,
+      token: state => state.global.token,
+      extensionAccountList: state => state.global.extensionAccountList
+    })
   },
   created() {
     this.init();
@@ -170,7 +189,7 @@ export default {
       return isMobile();
     },
     onSubmit() {
-      this.$refs["form"].validate((valid) => {
+      this.$refs["form"].validate(valid => {
         if (valid && this.checkDuplicateMembers()) {
           this.addMultiAccount();
         }
@@ -183,44 +202,44 @@ export default {
         result = false;
         this.$message({
           type: "error",
-          message: this.$t("error.member"),
-        })
+          message: this.$t("error.member")
+        });
       }
       return result;
     },
     addMultiAccount() {
       let signatories = [];
-      _.forEach(this.form.dynamicAccounts, (account) => {
+      _.forEach(this.form.dynamicAccounts, account => {
         signatories.push(account.address);
       });
       let addressPair = [];
-      _.forEach(this.form.dynamicAccounts, (account) => {
+      _.forEach(this.form.dynamicAccounts, account => {
         addressPair.push({
           ...account,
           address: encodeAddressByType(account.address, this.token.ss58Format)
-        })
-      })
+        });
+      });
       try {
         keyring.addMultisig(signatories, this.form.threshold, {
           name: this.form.name,
           genesisHash: this.genesisHash,
-          addressPair: addressPair,
+          addressPair: addressPair
         });
         // const { address } = result.pair;
         this.$message({
           type: "success",
-          message: this.$t("success"),
+          message: this.$t("success")
         });
         this.$router.push("/");
       } catch (error) {
         this.$message({
           type: "error",
-          message: error.message,
+          message: error.message
         });
       }
     },
     handleThresholdInputChange(value) {
-      this.form.threshold = value.replace(/[^\d]/g, '');
+      this.form.threshold = value.replace(/[^\d]/g, "");
     },
     removeAccountRow(item) {
       var index = this.form.dynamicAccounts.indexOf(item);
@@ -232,23 +251,31 @@ export default {
       this.form.dynamicAccounts.push({
         address: "",
         name: "",
-        key: Date.now(),
+        key: Date.now()
       });
     },
 
     querySearch(_, cb) {
-      const result = this.extensionAccountList?.filter(({ address }) => !this.form.dynamicAccounts.find((acc => acc.address === address))) 
+      const result = this.extensionAccountList?.filter(
+        ({ address }) =>
+          !this.form.dynamicAccounts.find(acc => acc.address === address)
+      );
 
       cb(result);
     },
 
-    handleSelect(account) { 
-      const { meta: { name }, address } = account;
-      const index = this.form.dynamicAccounts.findIndex(item => item.address === address);
+    handleSelect(account) {
+      const {
+        meta: { name },
+        address
+      } = account;
+      const index = this.form.dynamicAccounts.findIndex(
+        item => item.address === address
+      );
 
       this.form.dynamicAccounts[index].name = name;
-    },
-  },
+    }
+  }
 };
 </script>
 <style lang="scss" scoped>
@@ -306,15 +333,15 @@ export default {
             align-items: center;
             gap: 5px;
 
-              i {
-                color: var(--main-color);
-                opacity: .5;
-                cursor: help;
-                
-                &:hover {
-                  opacity: .8;
-                }
+            i {
+              color: var(--main-color);
+              opacity: 0.5;
+              cursor: help;
+
+              &:hover {
+                opacity: 0.8;
               }
+            }
           }
           .el-input {
             input {
