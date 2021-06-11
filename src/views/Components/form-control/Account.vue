@@ -24,7 +24,16 @@ export default {
     };
   },
 
+  model: {
+    prop: "value",
+    event: "value-change"
+  },
+
   props: {
+    value: {
+      type: Object,
+      default: null
+    },
     valueKey: {
       type: String,
       default: "address"
@@ -53,7 +62,7 @@ export default {
       const { address } = account;
 
       if (this.validate(address)) {
-        this.$emit("value-change", account);
+        this.$emit("value-change", { ...account, valueKey: this.valueKey });
       }
     },
 
@@ -61,6 +70,7 @@ export default {
       if (this.validate(this.account)) {
         this.$emit("value-change", {
           address: this.account,
+          valueKey: this.valueKey,
           meta: { name: "", source: "", genesisHash: "" }
         });
       }

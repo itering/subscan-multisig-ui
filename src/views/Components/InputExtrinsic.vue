@@ -34,7 +34,10 @@
       :key="index"
       :label="$t(control.label)"
     >
-      <component :is="control.component"></component>
+      <component
+        :is="control.component"
+        v-model="params[index].value"
+      ></component>
     </el-form-item>
   </div>
 </template>
@@ -46,17 +49,24 @@ import { componentDefs } from "../../config/component-def";
 import { Input } from "element-ui";
 
 export default {
+  name: "extrinsic",
+
   data() {
     return {
       section: "",
       method: "",
-      params: null
+      params: null // { name: string; type: {displayName: string; info: number; name: string; type: string}; value: any }[];
     };
+  },
+
+  model: {
+    prop: "value",
+    event: "value-change"
   },
 
   props: {
     value: {
-      type: String,
+      type: Object, // shape of data
       default: null
     }
   },
@@ -123,6 +133,7 @@ export default {
   methods: {
     onSectionChange() {
       this.method = "";
+      this.params = null;
     },
 
     onMethodChange() {
@@ -130,9 +141,8 @@ export default {
         this.params = null;
       } else {
         const method = this.$polkaApi.tx[this.section][this.method];
-        const params = this.getParams(method);
 
-        this.params = params;
+        this.params = this.getParams(method);
       }
     },
 
@@ -141,6 +151,34 @@ export default {
         name: arg.name.toString(),
         type: getTypeDef(arg.type.toString())
       }));
+    },
+
+    onParamsChange() {
+      this.$emit("value-change", {
+        method: this.method,
+        section: this.section,
+        params: this.params
+      });
+    }
+  },
+  watch: {
+    section: function() {
+      this.$emit("value-change", {
+        section: this.section,
+        method: "",
+        params: null
+      });
+    },
+    method: function() {
+      this.$emit("value-change", {
+        section: this.section,
+        method: this.method,
+        params: null
+      });
+    },
+    params: {
+      deep: true,
+      handler: 'onParamsChange'
     }
   }
 };
