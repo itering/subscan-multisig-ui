@@ -48,6 +48,10 @@
     "delete": "Are you sure to delete it？"
   },
   "multisig": {
+    "Confirmed Extrinsic": "Confirmed Extrinsic",
+    "In Progress": "In Progress",
+    "Members": "Members",
+    "Threshold": "Threshold",
     "approval": "Multi-sig approval",
     "approval_tip": "Please check the transaction information carefully and confirm it before approving",
     "cancel": "Multi-sig Cancel",
@@ -56,11 +60,7 @@
     "from_chain": "Call Data (scanned from the chain storage)",
     "index": "Multi-sig",
     "intro": "Subscan Multi-sig is the most secure way to manage Multi-sig wallets and extrinsics",
-    "sending_transaction": "Sending transaction {transaction}",
-    "In Progress": "In Progress",
-    "Confirmed Extrinsic": "Confirmed Extrinsic",
-    "Threshold": "Threshold",
-    "Members": "Members"
+    "sending_transaction": "Sending transaction {transaction}"
   },
   "name": "Name",
   "network": "Network",

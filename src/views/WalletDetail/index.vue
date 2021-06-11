@@ -165,6 +165,7 @@
                 :hasCopyBtn="false"
                 :hasDisplayNameInfo="true"
                 :displayNameInfo="getDisplayInfoByAddress(form.account)"
+                :isLink="false"
               ></address-display>
               <el-option
                 v-for="item in injectedAccountList"
@@ -181,28 +182,15 @@
                   :hasCopyBtn="false"
                   :hasDisplayNameInfo="true"
                   :displayNameInfo="getAccountDisplayInfo(item)"
+                  :isLink="false"
                 ></address-display>
               </el-option>
             </el-select>
           </el-form-item>
-          <el-form-item :label="$t('module')" class="module-item">
-            <el-input v-model="form.module" :readonly="true"></el-input>
-          </el-form-item>
-          <el-form-item :label="$t('call')" class="call-item">
-            <el-input v-model="form.call" :readonly="true"></el-input>
-          </el-form-item>
-          <!-- <el-form-item :label="$t('parameters')">
-          </el-form-item> -->
-          <el-form-item :label="$t('dest')">
-            <el-input v-model="form.dest" @input="handleInputChange"></el-input>
-          </el-form-item>
-          <el-form-item prop="value" :label="$t('value')">
-            <el-input
-              v-model="form.value"
-              @input="handleValueInputChange"
-            ></el-input>
-          </el-form-item>
+
+          <InputExtrinsic v-model="form.extrinsic" />
         </el-form>
+
         <div class="split-line"></div>
         <div class="footer">
           <div class="fee">{{ $t("fee", { num: fee }) }}</div>
@@ -539,16 +527,20 @@ import BN from "bn.js";
 import { BigNumber } from "bignumber.js";
 import Accounts from "@/views/Components/Accounts.vue";
 import { transfers } from "Config";
+import InputExtrinsic from "@/views/Components/InputExtrinsic.vue";
+import { isObject } from "@polkadot/util";
 
 const EMPTY_STATE = new BN(0);
 const ZERO_ACCOUNT = "5CAUdnwecHGxxyr5vABevAfZ34Fi4AaraDRMwfDQXQ52PXqg";
 const SUBSTRATE_PREFIX = 42;
+
 export default {
   name: "Home",
   components: {
     AddressDisplay,
     StructTable,
-    Accounts
+    Accounts,
+    InputExtrinsic
   },
   data() {
     return {
@@ -557,10 +549,7 @@ export default {
       address: "",
       form: {
         account: "",
-        dest: "",
-        module: "balances",
-        call: "transferKeepAlive",
-        value: ""
+        extrinsic: {}
       },
       formRules: {
         value: [
@@ -624,6 +613,10 @@ export default {
       if (newValue) {
         this.getMultisigAccounts();
       }
+    },
+    "form.extrinsic": {
+      deep: true,
+      handler: "calcFee"
     }
   },
   computed: {
@@ -1010,54 +1003,64 @@ export default {
     recodeAddress(address) {
       return keyring.encodeAddress(keyring.decodeAddress(address));
     },
+
     getBn(input) {
-      try {
-        let bignumber = new BigNumber(input)
-          .shiftedBy(+this.tokenDecimal)
-          .integerValue()
-          .toString();
-        let num = new BN(bignumber);
-        return num;
-      } catch (error) {
-        this.$message({
-          type: "error",
-          message: error.message
-        });
-      }
+      const bignumber = new BigNumber(input)
+        .shiftedBy(+this.tokenDecimal)
+        .integerValue()
+        .toString();
+      const num = new BN(bignumber);
+
+      return num;
     },
-    handleValueInputChange(value) {
-      this.fee = this.$t("calculating");
-      this.form.value = value.replace(/[^\d.]/g, "");
-      this.debounceCalc();
-    },
+
     handleInputChange() {
       this.fee = this.$t("calculating");
       this.debounceCalc();
     },
+
     async calcFee() {
       let tx = null;
-      let multiRoot = this.multisigAccount.address;
-      if (this.extrinsicDialogVisible && this.form.dest && this.form.value) {
-        let bn = this.getBn(this.form.value);
-        if (bn) {
-          multiRoot = this.multisigAccount.address;
-          tx = this.$polkaApi.tx.balances.transferKeepAlive(this.form.dest, bn);
+      const multiRoot = this.multisigAccount.address;
+
+      try {
+        if (
+          this.extrinsicDialogVisible &&
+          this.form.extrinsic?.section &&
+          this.form.extrinsic?.method
+        ) {
+          const { section, method, params } = this.form.extrinsic;
+          const parameters = this.getTxParameters(params);
+
+          tx = this.$polkaApi.tx[section][method](...parameters);
         }
-      }
-      if (this.cancelDialogVisible) {
-        tx = this.getCancelTransaction();
-      }
-      if (this.approveDialogVisible && this.approveForm.callData) {
-        tx = await this.getApproveTransaction();
-      }
-      if (tx && multiRoot) {
-        const { partialFee } = await tx.paymentInfo(multiRoot);
-        this.fee =
-          accuracyFormat(partialFee.toJSON(), this.tokenDecimal) +
-          " " +
-          this.tokenSymbol;
+
+        if (this.cancelDialogVisible) {
+          tx = this.getCancelTransaction();
+        }
+
+        if (this.approveDialogVisible && this.approveForm.callData) {
+          tx = await this.getApproveTransaction();
+        }
+
+        if (tx && multiRoot) {
+          const { partialFee } = await tx.paymentInfo(multiRoot);
+
+          this.fee =
+            accuracyFormat(partialFee.toJSON(), this.tokenDecimal) +
+            " " +
+            this.tokenSymbol;
+        }
+      } catch (error) {
+        console.log(
+          "%c [ error ]-1077",
+          "font-size:13px; background:pink; color:#bf2c9f;",
+          error
+        );
+        this.fee = this.$t("calculating");
       }
     },
+
     showLoadingNotify() {
       this.waitingNotify = this.$notify({
         title: this.$t("transaction_waiting_title"),
@@ -1169,16 +1172,43 @@ export default {
         }
       });
     },
+
+    /**
+     * this method should not capture the error during param handling;
+     */
+    getTxParameters(params) {
+      if (!params) {
+        return [];
+      }
+
+      return params.map(({ value }) => {
+        const param =
+          isObject(value) && value.valueKey ? value[value.valueKey] : value;
+
+        return isNaN(+param) ? param : this.getBn(param);
+      });
+    },
+
     async sendTransaction() {
-      let multiRoot = this.multisigAccount.address;
-      let signAddress = this.form.account;
-      let api = this.$polkaApi;
-      let bn = this.getBn(this.form.value);
-      if (!bn) {
+      const multiRoot = this.multisigAccount.address;
+      const signAddress = this.form.account;
+      const api = this.$polkaApi;
+      const { section, method, params } = this.form.extrinsic;
+      let parameters = [];
+
+      try {
+        parameters = this.getTxParameters(params);
+      } catch (error) {
+        this.$message({
+          type: "error",
+          message: error.message
+        });
+
         return;
       }
-      let tx = api.tx.balances.transferKeepAlive(this.form.dest, bn);
-      let multiModule = api.tx.multisig;
+
+      const tx = api.tx[section][method](...parameters);
+      const multiModule = api.tx.multisig;
       const info = await api.query["multisig"].multisigs(
         multiRoot,
         tx.method.hash
@@ -1186,11 +1216,8 @@ export default {
       const { threshold, who } = this.extractExternal(multiRoot);
       const others = who.filter(w => w !== signAddress);
       const { weight } = await tx.paymentInfo(multiRoot);
-      let timepoint = null;
-      if (info.isSome) {
-        timepoint = info.unwrap().when;
-      }
-      tx =
+      const timepoint = info.isSome ? info.unwrap().when : null;
+      const multiTx =
         multiModule.asMulti.meta.args.length === 6
           ? multiModule.asMulti(
               threshold,
@@ -1201,18 +1228,23 @@ export default {
               weight
             )
           : multiModule.asMulti(threshold, others, timepoint, tx.method);
+      const { partialFee } = await tx.paymentInfo(multiRoot);
+
       this.extrinsicDialogVisible = false;
-      this.signAndSend(tx, this.form.account, () => {
+      this.fee =
+        accuracyFormat(partialFee.toJSON(), this.tokenDecimal) +
+        " " +
+        this.tokenSymbol;
+
+      this.signAndSend(multiTx, this.form.account, () => {
         this.form = {
           account: "",
-          dest: "",
-          module: "balances",
-          call: "transferKeepAlive",
-          value: ""
+          extrinsic: {}
         };
         this.getAccountMultisigs();
       });
     },
+
     async signAndSend(tx, signAddress, callback) {
       try {
         const injector = await web3FromAddress(
@@ -1261,6 +1293,7 @@ export default {
         });
       }
     },
+
     renameWallet() {
       try {
         const pair = keyring.getPair(this.address);
@@ -1318,7 +1351,7 @@ export default {
       const offset = 0;
 
       this.$apollo.provider.clients[this.sourceSelected]
-      // this.$apollo.provider.defaultClient
+        // this.$apollo.provider.defaultClient
         .query({
           query: transfers,
           variables: { offset, limit, account: this.address }
