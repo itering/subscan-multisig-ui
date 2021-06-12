@@ -1,6 +1,7 @@
 <template>
   <el-autocomplete
     :class="className"
+    :placeholder="$t('wallet.tip.member_address')"
     v-model="account"
     :value-key="valueKey"
     :fetch-suggestions="querySearch"
@@ -41,6 +42,10 @@ export default {
     className: {
       type: String,
       default: ""
+    },
+    placeholder: {
+      type: String,
+      default: "" 
     },
     querySearch: {
       type: Function,

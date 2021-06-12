@@ -22,14 +22,14 @@
   "dest": "Destination",
   "destination": "Destination",
   "donate": "Donate",
-  "donate_other": "Donate Other Token",
+  "donate_other": "Donate Other Tokens",
   "donate_unit": "Donate ({unit}) :",
   "error": {
     "404": "Not Found",
     "call_data": "Call Data error",
     "index": "Error",
-    "member": "The members of a multisig cannot be repeated",
-    "threshold": "Threshold number is at least 2",
+    "member": "The members of a multisig cannot be duplicated",
+    "threshold": "Threshold number must be at least 2",
     "value": "Value error"
   },
   "explorer": "Explorer",
@@ -59,7 +59,7 @@
     "customize": "Call Data (Customize)",
     "from_chain": "Call Data (scanned from the chain storage)",
     "index": "Multi-sig",
-    "intro": "Subscan Multi-sig is the most secure way to manage Multi-sig wallets and extrinsics",
+    "intro": "Subscan Multi-sig is the most easy-to-use and secure way to manage Multi-sig wallets and extrinsics",
     "sending_transaction": "Sending transaction {transaction}"
   },
   "name": "Name",
@@ -111,6 +111,13 @@
     "deploy": "Create Wallet",
     "empty": "Please create a Multi-sig wallet first",
     "index": "Wallet",
-    "list": "Multi-sig list"
+    "list": "Multi-sig Wallet list",
+    "tip": {
+      "name": "Arbitrary wallet name to help yourself remember",
+      "threshold": "Minimum approvals required to validate the multi-sig transaction",
+      "members": "Members of the multi-sig wallet.  Each member is identified as an account/address.",
+      "member_name": "Member Name",
+      "member_address": "Input a member account or select your own account from the dropdown list"
+    }
   }
 }
