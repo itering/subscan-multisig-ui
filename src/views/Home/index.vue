@@ -20,9 +20,9 @@
           </el-table-column>
           <el-table-column min-width="300" :label="$t('address')" fit>
             <template slot-scope="props">
-              <a class="link" :href="getNetworkHref(`/account/${props.row.address}`)" target="_blank">
+              <router-link class="link" :to="`/wallet/${props.row.address}`" tag="a">
                 {{props.row.address}}
-              </a>
+              </router-link>
             </template>
           </el-table-column>
           <el-table-column min-width="150" :label="$t('balance')" fit>
@@ -48,10 +48,17 @@
                 <div class="expand-btn aciton-btn" @click="handleRuntimeExpand(props.row)">
                   <icon-svg class="icon" icon-class="users"></icon-svg>
                 </div>
+                
                 <router-link class="detail-btn aciton-btn" :to="`/wallet/${props.row.address}`" tag="div">
                   <icon-svg class="icon" icon-class="triangle"></icon-svg>
                   <div class="red-dot" v-if="props.row.hasInfo && props.row.isAvailable"></div>
                 </router-link>
+
+                <div class="expand-btn aciton-btn">
+                  <a target="_blank" :href="getNetworkHref(`/account/${props.row.address}`)" title="hello">
+                    <icon-svg class="icon" icon-class="earth"></icon-svg>
+                  </a>
+                </div>
               </div>
             </template>
           </el-table-column>
@@ -283,6 +290,7 @@ export default {
           }
           .detail-btn {
             position: relative;
+            margin-right:8px;
             border: 1px solid var(--main-color);
             color: var(--main-color);
             font-size: 12px;

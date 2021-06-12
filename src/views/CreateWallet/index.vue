@@ -16,7 +16,7 @@
             <template slot="label">
               <span>{{ $t("name") }}</span>
               <el-tooltip
-                content="Wallet name, tap any name you like"
+                :content="$t('wallet.tip.name')"
                 placement="right"
                 effect="light"
               >
@@ -29,7 +29,7 @@
             <template slot="label">
               <span>{{ $t("threshold") }}</span>
               <el-tooltip
-                content="The minimum number of accounts approve for transactions"
+                :content="$t('wallet.tip.threshold')"
                 placement="right"
                 effect="light"
               >
@@ -39,13 +39,15 @@
             <el-input
               @input="handleThresholdInputChange"
               v-model="form.threshold"
+              auto-complete="off"
+              type="number"
             ></el-input>
           </el-form-item>
           <el-form-item>
             <template slot="label">
               <span>{{ $t("members") }}</span>
               <el-tooltip
-                content="Each member is a general substrate account"
+                :content="$t('wallet.tip.members')"
                 placement="right"
                 effect="light"
               >
@@ -68,6 +70,7 @@
               <el-input
                 class="column column-2"
                 v-model="account.name"
+                :placeholder="$t('wallet.tip.member_name')"
               ></el-input>
               
               <Account
