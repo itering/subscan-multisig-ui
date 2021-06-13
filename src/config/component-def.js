@@ -1,9 +1,10 @@
 import Account from "../views/Components/form-control/Account.vue";
+import Amount from "../views/Components/form-control/Amount.vue";
 import { Input,InputNumber } from "element-ui";
 
 export const componentDefs = [
   { component: Account, types: ["AccountId", "Address", "LookupSource"] },
-  { component: Input, types: ['AccountIndex', 'i8', 'i16', 'i32', 'i64', 'i128', 'u8', 'u16', 'u32', 'u64', 'u128', 'u256'] },
+  { component: Amount, types: ['AccountIndex', 'i8', 'i16', 'i32', 'i64', 'i128', 'u8', 'u16', 'u32', 'u64', 'u128', 'u256'] },
   { component: InputNumber, types: ['Amount', 'Balance', 'BalanceOf'] },
   { component: Input, types: ['bool'] },
   { component: Input, types: ['Bytes'] },

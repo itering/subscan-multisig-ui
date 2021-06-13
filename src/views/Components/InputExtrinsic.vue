@@ -45,8 +45,7 @@
 <script>
 import { GenericCall } from "@polkadot/types";
 import { getTypeDef } from "@polkadot/types/create";
-import { componentDefs } from "../../config/component-def";
-import { Input } from "element-ui";
+import { findComponent } from "../../utils/find-component";
 
 export default {
   name: "extrinsic",
@@ -117,11 +116,14 @@ export default {
       }
 
       const result = this.params.map(({ name, type }) => {
-        const target = componentDefs.find(
-          ({ types }) => types.indexOf(type.type) > -1
+        const component = findComponent(this.$registry, type, {});
+        console.log(
+          "%c [ component ]-121",
+          "font-size:13px; background:pink; color:#bf2c9f;",
+          component
         );
 
-        return { label: name, component: target ? target.component : Input };
+        return { label: name, component };
       });
 
       return result;
@@ -178,7 +180,7 @@ export default {
     },
     params: {
       deep: true,
-      handler: 'onParamsChange'
+      handler: "onParamsChange"
     }
   }
 };

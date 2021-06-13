@@ -528,7 +528,7 @@ import { BigNumber } from "bignumber.js";
 import Accounts from "@/views/Components/Accounts.vue";
 import { transfers } from "Config";
 import InputExtrinsic from "@/views/Components/InputExtrinsic.vue";
-import { isObject } from "@polkadot/util";
+import { isObject, isUndefined } from "@polkadot/util";
 
 const EMPTY_STATE = new BN(0);
 const ZERO_ACCOUNT = "5CAUdnwecHGxxyr5vABevAfZ34Fi4AaraDRMwfDQXQ52PXqg";
@@ -1030,7 +1030,7 @@ export default {
           this.form.extrinsic?.method
         ) {
           const { section, method, params } = this.form.extrinsic;
-          const parameters = this.getTxParameters(params);
+          const parameters = this.getTxParameters(params).filter(item => !isUndefined(item));
 
           tx = this.$polkaApi.tx[section][method](...parameters);
         }
@@ -1055,7 +1055,7 @@ export default {
         console.log(
           "%c [ error ]-1077",
           "font-size:13px; background:pink; color:#bf2c9f;",
-          error
+          error.message
         );
         this.fee = this.$t("calculating");
       }

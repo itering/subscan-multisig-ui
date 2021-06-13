@@ -25,14 +25,12 @@ import {
   // CarouselItem,
   // Breadcrumb,
   // BreadcrumbItem,
-  // InputNumber,
+  InputNumber,
   Dialog,
   // Collapse,
   // CollapseItem,
   Icon,
   Input,
-  // Col,
-  // Row,
   Link,
   // Menu,
   // Submenu,
@@ -54,6 +52,8 @@ import {
   // Badge
 } from "element-ui";
 import Account from "../views/Components/form-control/Account.vue";
+import Amount from "../views/Components/form-control/Amount.vue";
+import Unknown from "../views/Components/form-control/Unknown.vue";
 // 按需引入element-ui的部分功能
 Vue.use(Loading.directive);
 Vue.prototype.$loading = Loading.service;
@@ -79,7 +79,7 @@ Vue.use(Carousel);
 Vue.use(CarouselItem);
 // Vue.use(Breadcrumb)
 // Vue.use(BreadcrumbItem)
-// Vue.use(InputNumber)
+Vue.use(InputNumber)
 Vue.use(Dialog)
 // Vue.use(Collapse)
 // Vue.use(CollapseItem)
@@ -90,8 +90,6 @@ Vue.use(Checkbox);
 Vue.use(CheckboxGroup);
 Vue.use(Col);
 Vue.use(Tooltip);
-// Vue.use(Col)
-// Vue.use(Row)
 Vue.use(Link);
 // Vue.use(Menu)
 // Vue.use(Submenu)
@@ -112,3 +110,5 @@ Vue.use(Row);
 
 
 Vue.use(Account);
+Vue.use(Amount);
+Vue.use(Unknown);
