@@ -528,7 +528,7 @@ import { BigNumber } from "bignumber.js";
 import Accounts from "@/views/Components/Accounts.vue";
 import { transfers } from "Config";
 import InputExtrinsic from "@/views/Components/InputExtrinsic.vue";
-import { isObject, isUndefined } from "@polkadot/util";
+import { isBoolean, isObject, isUndefined } from "@polkadot/util";
 
 const EMPTY_STATE = new BN(0);
 const ZERO_ACCOUNT = "5CAUdnwecHGxxyr5vABevAfZ34Fi4AaraDRMwfDQXQ52PXqg";
@@ -1023,6 +1023,8 @@ export default {
       let tx = null;
       const multiRoot = this.multisigAccount.address;
 
+      this.fee = this.$t("calculating");
+
       try {
         if (
           this.extrinsicDialogVisible &&
@@ -1031,6 +1033,7 @@ export default {
         ) {
           const { section, method, params } = this.form.extrinsic;
           const parameters = this.getTxParameters(params).filter(item => !isUndefined(item));
+          console.log('%c [ parameters ]-1034', 'font-size:13px; background:pink; color:#bf2c9f;', parameters);
 
           tx = this.$polkaApi.tx[section][method](...parameters);
         }
@@ -1057,7 +1060,8 @@ export default {
           "font-size:13px; background:pink; color:#bf2c9f;",
           error.message
         );
-        this.fee = this.$t("calculating");
+
+        this.fee = this.$t("Insufficient parameters");
       }
     },
 
@@ -1185,7 +1189,7 @@ export default {
         const param =
           isObject(value) && value.valueKey ? value[value.valueKey] : value;
 
-        return isNaN(+param) ? param : this.getBn(param);
+        return isBoolean(param) || isNaN(+param) ? param : this.getBn(param);
       });
     },
 

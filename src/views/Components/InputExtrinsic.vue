@@ -163,6 +163,7 @@ export default {
       });
     }
   },
+
   watch: {
     section: function() {
       this.$emit("value-change", {
@@ -171,6 +172,7 @@ export default {
         params: null
       });
     },
+
     method: function() {
       this.$emit("value-change", {
         section: this.section,
@@ -178,6 +180,7 @@ export default {
         params: null
       });
     },
+    
     params: {
       deep: true,
       handler: "onParamsChange"

@@ -1,4 +1,6 @@
 {
+  "Drag file here or click to select": "Drag file here or click to select",
+  "Insufficient parameters": "Insufficient parameters",
   "about": "About",
   "account": "Account",
   "accounts": "Accounts",
@@ -36,6 +38,7 @@
   "external": "External",
   "extrinsic": "Extrinsic",
   "extrinsic_index": "Extrinsic Index",
+  "false_label": "No",
   "fee": "*Fee: {num}",
   "id": "ID",
   "injected": "Injected",
@@ -100,6 +103,7 @@
   "transaction_success_title": "Success",
   "transaction_waiting_content": "Transaction Pending",
   "transaction_waiting_title": "Waiting",
+  "truth_label": "Yes",
   "unavailable": "Unavailable",
   "value": "Value",
   "version_history": "Version History",
@@ -113,11 +117,11 @@
     "index": "Wallet",
     "list": "Multi-sig Wallet list",
     "tip": {
-      "name": "Arbitrary wallet name to help yourself remember",
-      "threshold": "Minimum approvals required to validate the multi-sig transaction",
-      "members": "Members of the multi-sig wallet.  Each member is identified as an account/address.",
+      "member_address": "Input a member account or select your own account from the dropdown list",
       "member_name": "Member Name",
-      "member_address": "Input a member account or select your own account from the dropdown list"
+      "members": "Members of the multi-sig wallet.  Each member is identified as an account/address.",
+      "name": "Arbitrary wallet name to help yourself remember",
+      "threshold": "Minimum approvals required to validate the multi-sig transaction"
     }
   }
 }
