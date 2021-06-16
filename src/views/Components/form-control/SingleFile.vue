@@ -10,7 +10,9 @@
         :on-change="handleFileChange"
         :file-list="[]"
       >
-        <div v-if="!file">
+        <div v-if="placeholder">{{placeholder}}</div>
+
+        <div v-else-if="!file">
           {{ $t("Drag file here or click to select") }}
         </div>
 
@@ -29,7 +31,7 @@
 </template>
 
 <script>
-import { compactAddLength, formatNumber, u8aToHex } from "@polkadot/util";
+import { formatNumber, u8aToHex } from "@polkadot/util";
 import { convertResult } from "../../../utils/file";
 
 export default {
@@ -55,6 +57,11 @@ export default {
     onChange: {
       type: Function,
       default: () => {}
+    },
+
+    placeholder: {
+      type: String,
+      default: undefined
     }
   },
 
@@ -73,10 +80,8 @@ export default {
             const data = convertResult(target.result);
 
             if (data.length) {
-              const source = compactAddLength(data);
-
-              this.$emit("value-change", source);
-              this.onChange(source);
+              this.$emit("value-change", data);
+              this.onChange(data);
             }
           }
         };

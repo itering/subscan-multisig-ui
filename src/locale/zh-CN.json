@@ -26,6 +26,7 @@
   "donate": "捐赠",
   "donate_other": "捐赠其他网络通证",
   "donate_unit": "捐赠 ({unit}) :",
+  "empty": "空",
   "error": {
     "404": "没有找到相关信息",
     "call_data": "Call Data 错误",
@@ -34,6 +35,7 @@
     "threshold": "阈值至少为2",
     "value": "数量输入有误"
   },
+  "exclude option": "不包括选项",
   "explorer": "浏览器",
   "external": "外部账号",
   "extrinsic": "交易",
@@ -41,6 +43,7 @@
   "false_label": "否",
   "fee": "*手续费: {num}",
   "id": "ID",
+  "include option": "包括选项",
   "injected": "本地账号",
   "language_demo": "语言",
   "loading": "加载中",

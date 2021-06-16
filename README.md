@@ -1,4 +1,5 @@
 ![grants_badge](./grants_badge.png)
+
 # Subscan Multisig UI
 
 ![License: GPL](https://img.shields.io/badge/license-GPL-blue.svg)
@@ -28,6 +29,7 @@ The backend project stores historical calls can be found [here](https://github.c
 4. User-friendly UI
 
 ## Tutorial
+
 ### Presquises
 
 #### 1.Install chrome extension polkadot.js
@@ -52,11 +54,11 @@ If you have installed the polkadot.js extension, you will be automatically conne
 
 #### 1.Create/Add multi-sig accounts
 
-* Click "Create Wallet"
+- Click "Create Wallet"
   <p align="center">
     <img src="./docs/3_create_wallet.png" style="width:800px";>
   </p>
-* Fill in the required form data for a multi-sig account.  Click "Create" to proceed.
+- Fill in the required form data for a multi-sig account.  Click "Create" to proceed.
 
   *Name: The name/label of this multi-signature account.  It is stored locally on your computer only.
 
@@ -70,7 +72,7 @@ If you have installed the polkadot.js extension, you will be automatically conne
 
 #### 2.Manage multi-sig accounts
 
-* View the members of multi-sig account
+- View the members of multi-sig account
   <p align="left">
     Click
     <img src="./docs/btn_member.png" width="30px">
@@ -85,7 +87,7 @@ If you have installed the polkadot.js extension, you will be automatically conne
     <img src="./docs/5_view_members.png" style="width:800px";>
   </p>
 
-* Manage multi-sig accounts
+- Manage multi-sig accounts
   <p align="left">
     1. Click
     <img src="./docs/btn_detail.png" width="30px">
@@ -119,17 +121,19 @@ If you have installed the polkadot.js extension, you will be automatically conne
   </p>
 
 #### 2.Authorize a multi-sig transfer
-  * <p align="left">
+
+- <p align="left">
     As shown in the figure,
     <img src="./docs/btn_pending.png" width="30px">
     a red badge on the button indicates there is at least one pending transaction in this wallet.
+
   </p>
 
   <p align="center">
     <img src="./docs/9_pending.png" style="width:800px";>
   </p>
 
-  * Click to view the multi-signature account details.  After confirming that the extrinsic call data is correct, click "Approve" and approve the extrinsic.
+- Click to view the multi-signature account details.  After confirming that the extrinsic call data is correct, click "Approve" and approve the extrinsic.
 
     *For externally initiated extrinsics, call data may not be stored on the chain or in the database. Therefore, in the last "approved" extrinsic, you need to manually fill in the call data.
 
@@ -137,7 +141,7 @@ If you have installed the polkadot.js extension, you will be automatically conne
       <img src="./docs/10_approve.png" style="width:800px";>
     </p>
 
-  * When the number of approvals reaches the threshold, the extrinsic will be executed.
+- When the number of approvals reaches the threshold, the extrinsic will be executed.
     <p align="center">
       <img src="./docs/11_progress.png" style="width:800px";>
     </p>
@@ -154,16 +158,17 @@ If you have installed the polkadot.js extension, you will be automatically conne
 
 ### Requirement
 
-* Linux / Mac OSX
-* Git
-* yarn / npm
-* Node 8.9.0+
+- Linux / Mac OSX
+- Git
+- yarn / npm
+- Node 8.9.0+
 
 ### Install
 
 ```bash
 yarn && yarn serve
 ```
+
 ### Test
 
 ```bash
@@ -174,7 +179,6 @@ yarn test:e2e
 
 ```
 
-
 ## Contributions
 
 We welcome contributions of any kind. Issues labeled can be good (first) contributions.
@@ -183,7 +187,6 @@ We welcome contributions of any kind. Issues labeled can be good (first) contrib
 
 GPL-3.0
 
-
 ## Resource
 
-- [ITERING] https://github.com/itering
+- [ITERING] <https://github.com/itering>

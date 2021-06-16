@@ -528,7 +528,8 @@ import { BigNumber } from "bignumber.js";
 import Accounts from "@/views/Components/Accounts.vue";
 import { transfers } from "Config";
 import InputExtrinsic from "@/views/Components/InputExtrinsic.vue";
-import { isBoolean, isObject, isUndefined } from "@polkadot/util";
+import { isBoolean, isNull, isObject, isUndefined, u8aToHex } from "@polkadot/util";
+import { isAddress } from '@polkadot/util-crypto';
 
 const EMPTY_STATE = new BN(0);
 const ZERO_ACCOUNT = "5CAUdnwecHGxxyr5vABevAfZ34Fi4AaraDRMwfDQXQ52PXqg";
@@ -1032,8 +1033,14 @@ export default {
           this.form.extrinsic?.method
         ) {
           const { section, method, params } = this.form.extrinsic;
-          const parameters = this.getTxParameters(params).filter(item => !isUndefined(item));
-          console.log('%c [ parameters ]-1034', 'font-size:13px; background:pink; color:#bf2c9f;', parameters);
+          const parameters = this.getTxParameters(params).filter(
+            item => !isUndefined(item)
+          );
+          console.log(
+            "%c [ parameters ]-1034",
+            "font-size:13px; background:pink; color:#bf2c9f;",
+            parameters
+          );
 
           tx = this.$polkaApi.tx[section][method](...parameters);
         }
@@ -1187,9 +1194,17 @@ export default {
 
       return params.map(({ value }) => {
         const param =
-          isObject(value) && value.valueKey ? value[value.valueKey] : value;
+          isObject(value) && value?.valueKey ? value[value.valueKey] : value;
 
-        return isBoolean(param) || isNaN(+param) ? param : this.getBn(param);
+        if (value instanceof Uint8Array) {
+          return u8aToHex(value);
+        }
+
+        if (isBoolean(param) || isNaN(+param) || isAddress(param) || isNull(param)) {
+          return param;
+        }
+
+        return this.getBn(param);
       });
     },
 

@@ -38,7 +38,6 @@ export default {
     },
 
     value: {
-      type: Uint8Array,
       default: () => new Uint8Array(0)
     },
 
@@ -50,6 +49,11 @@ export default {
     withLength: {
       type: Boolean,
       default: false
+    },
+
+    length: {
+      type: Number,
+      default: -1
     },
 
     asHex: {
@@ -73,6 +77,7 @@ export default {
         ? value
         : u8aToHex(value, this.disabled ? 256 : -1)
       : undefined;
+    console.log('%c [ value ]-72', 'font-size:13px; background:pink; color:#bf2c9f;', this.source, value);
   },
 
   methods: {
@@ -82,7 +87,7 @@ export default {
       isValid =
         isValid &&
         this.validate(value) &&
-        (length !== -1 ? value.length === length : value.length !== 0);
+        (this.length !== -1 ? value.length === this.length : value.length !== 0);
 
       if (this.withLength && isValid) {
         value = compactAddLength(value);

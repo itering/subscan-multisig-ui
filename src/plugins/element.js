@@ -48,6 +48,7 @@ import {
   RadioGroup,
   Row,
   Select,
+  Switch,
   Option,
   Pagination,
   Progress,
@@ -62,6 +63,7 @@ import Bool from "../views/Components/form-control/Bool.vue";
 import Bytes from "../views/Components/form-control/Bytes.vue";
 import SingleFile from "../views/Components/form-control/SingleFile.vue";
 import Unknown from "../views/Components/form-control/Unknown.vue";
+// import Hash160 from "../views/Components/form-control/Hash160.vue";
 
 // 按需引入element-ui的部分功能
 Vue.use(Loading.directive);
@@ -113,6 +115,7 @@ Vue.use(Popover);
 Vue.use(Radio);
 Vue.use(RadioGroup);
 Vue.use(Select);
+Vue.use(Switch);
 Vue.use(Option);
 Vue.use(Pagination);
 Vue.use(Progress);
@@ -126,4 +129,5 @@ Vue.use(Balance);
 Vue.use(BaseBytes);
 Vue.use(Bool);
 Vue.use(Bytes);
+// Vue.use(Hash160);
 Vue.use(SingleFile);

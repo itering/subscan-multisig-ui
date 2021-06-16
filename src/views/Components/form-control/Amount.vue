@@ -43,12 +43,18 @@ export default {
     min: {
       type: Number,
       default: 0
+    },
+
+    onChange: {
+      type: Function,
+      default: () => { }
     }
   },
 
   methods: {
     handleChange(value) {
       this.$emit('value-change', value);
+      this.onChange(value);
     }
   }
 };

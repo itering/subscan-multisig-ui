@@ -37,6 +37,7 @@
       <component
         :is="control.component"
         v-model="params[index].value"
+        :sub="params[index].type.sub"
       ></component>
     </el-form-item>
   </div>
@@ -180,7 +181,7 @@ export default {
         params: null
       });
     },
-    
+
     params: {
       deep: true,
       handler: "onParamsChange"

@@ -26,6 +26,7 @@
   "donate": "Donate",
   "donate_other": "Donate Other Tokens",
   "donate_unit": "Donate ({unit}) :",
+  "empty": "Empty",
   "error": {
     "404": "Not Found",
     "call_data": "Call Data error",
@@ -34,6 +35,7 @@
     "threshold": "Threshold number must be at least 2",
     "value": "Value error"
   },
+  "exclude option": "exclude option",
   "explorer": "Explorer",
   "external": "External",
   "extrinsic": "Extrinsic",
@@ -41,6 +43,7 @@
   "false_label": "No",
   "fee": "*Fee: {num}",
   "id": "ID",
+  "include option": "include option",
   "injected": "Injected",
   "language_demo": "Language",
   "loading": "Loading",

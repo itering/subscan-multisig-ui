@@ -3,9 +3,11 @@
     <single-file
       v-if="isFileMode"
       :onRemove="toggleMode"
-      :onChange="handleChange"
+      :onChange="handleFileChange"
+      :placeholder="placeholder"
     >
       <el-button
+        v-if="!disabled && !isInOption"
         icon="el-icon-edit-outline"
         class="toggle-mode-btn"
         @click="isFileMode = false"
@@ -17,20 +19,26 @@
       v-model="source"
       :disabled="disabled"
       :onChange="handleChange"
-      :withLength="true"
+      :withLength="withLength"
+      :length="32"
+      :asHex="true"
     >
-      <el-button icon="el-icon-upload" @click="toggleMode"></el-button>
+      <el-button
+        v-if="!disabled && !isInOption"
+        icon="el-icon-upload"
+        @click="toggleMode"
+      ></el-button>
     </base-bytes>
   </el-row>
 </template>
 
 <script>
+import { u8aToHex } from "@polkadot/util";
 import BaseBytes from "./BaseBytes.vue";
 import SingleFile from "./SingleFile.vue";
-import { compactAddLength } from "@polkadot/util";
 
 export default {
-  name: "Bytes",
+  name: "Hash256",
 
   components: {
     SingleFile,
@@ -39,8 +47,9 @@ export default {
 
   data() {
     return {
-      source: new Uint8Array(0),
-      isFileMode: false
+      source: new Uint8Array(32),
+      isFileMode: false,
+      placeholder: undefined
     };
   },
 
@@ -55,21 +64,41 @@ export default {
       default: false
     },
 
+    withLength: {
+      type: Boolean,
+      default: false
+    },
+
     value: {
-      default: () => new Uint8Array(0)
+      default: () => new Uint8Array(32)
     },
 
     validate: {
       type: Function,
       default: () => {}
+    },
+
+    isInOption: {
+      type: Boolean,
+      default: true
     }
   },
 
-  methods: {
-    handleChange(value) {
-      const source = compactAddLength(value);
+  mounted() {
+    this.handleFileChange(this.source);
+  },
 
-      this.$emit("value-change", source);
+  methods: {
+    handleFileChange(u8a) {
+      const value = this.$registry.hash(u8a);
+
+      this.handleChange(value);
+    },
+
+    handleChange(value) {
+      this.placeholder = u8aToHex(value);
+
+      this.$emit("value-change", value);
     },
 
     toggleMode: function() {
