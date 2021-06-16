@@ -117,7 +117,7 @@ export default {
       }
 
       const result = this.params.map(({ name, type }) => {
-        const component = findComponent(this.$registry, type, {});
+        const component = findComponent(this.$polkaApi.registry, type, {});
         console.log(
           "%c [ component ]-121",
           "font-size:13px; background:pink; color:#bf2c9f;",

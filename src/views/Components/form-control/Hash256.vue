@@ -90,7 +90,7 @@ export default {
 
   methods: {
     handleFileChange(u8a) {
-      const value = this.$registry.hash(u8a);
+      const value = this.$polkaApi.registry.hash(u8a);
 
       this.handleChange(value);
     },

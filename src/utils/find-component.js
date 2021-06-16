@@ -10,8 +10,8 @@ import Bytes from "../views/Components/form-control/Bytes.vue";
 import Hash160 from "../views/Components/form-control/Hash160.vue";
 import Hash256 from "../views/Components/form-control/Hash256.vue";
 import Hash512 from "../views/Components/form-control/Hash512.vue";
+import Option from "../views/Components/form-control/Option.vue";
 import Unknown from "../views/Components/form-control/Unknown.vue";
-import Option from '../views/Components/form-control/Option.vue';
 
 const componentDefs = [
   { component: Account, types: ["AccountId", "Address", "LookupSource"] },

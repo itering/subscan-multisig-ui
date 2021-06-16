@@ -49,7 +49,7 @@ export default {
         return null;
       }
 
-      const component = findComponent(this.$registry, this.sub, {});
+      const component = findComponent(this.$polkaApi.registry, this.sub, {});
 
       return component || null;
     }

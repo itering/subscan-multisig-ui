@@ -21,7 +21,7 @@ export default {
 
   data() {
     return {
-      source: new Uint8Array(0)
+      source: new Uint8Array(128)
     };
   },
 
@@ -37,7 +37,7 @@ export default {
     },
 
     value: {
-      default: () => new Uint8Array(0)
+      default: () => new Uint8Array(128)
     },
 
     validate: {
