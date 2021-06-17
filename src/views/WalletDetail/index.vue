@@ -188,7 +188,15 @@
             </el-select>
           </el-form-item>
 
-          <InputExtrinsic v-model="form.extrinsic" />
+          <input-extrinsic v-model="form.extrinsic" ></input-extrinsic>
+
+          <el-form-item :label="$t('encoded call data')">
+            <el-input :value="form.encode.data || '0x'" disabled></el-input>
+          </el-form-item>
+
+          <el-form-item :label="$t('encoded call hash')">
+            <el-input :value="form.encode.hash || '0x'" disabled></el-input>
+          </el-form-item>
         </el-form>
 
         <div class="split-line"></div>
@@ -528,7 +536,8 @@ import { BigNumber } from "bignumber.js";
 import Accounts from "@/views/Components/Accounts.vue";
 import { transfers } from "Config";
 import InputExtrinsic from "@/views/Components/InputExtrinsic.vue";
-import { isObject } from "@polkadot/util";
+import { isBoolean, isNull, isObject, isUndefined, u8aToHex } from "@polkadot/util";
+import { isAddress } from '@polkadot/util-crypto';
 
 const EMPTY_STATE = new BN(0);
 const ZERO_ACCOUNT = "5CAUdnwecHGxxyr5vABevAfZ34Fi4AaraDRMwfDQXQ52PXqg";
@@ -549,7 +558,8 @@ export default {
       address: "",
       form: {
         account: "",
-        extrinsic: {}
+        extrinsic: {},
+        encode: {}
       },
       formRules: {
         value: [
@@ -1023,6 +1033,8 @@ export default {
       let tx = null;
       const multiRoot = this.multisigAccount.address;
 
+      this.fee = this.$t("calculating");
+
       try {
         if (
           this.extrinsicDialogVisible &&
@@ -1030,7 +1042,15 @@ export default {
           this.form.extrinsic?.method
         ) {
           const { section, method, params } = this.form.extrinsic;
-          const parameters = this.getTxParameters(params);
+          const parameters = this.getTxParameters(params).filter(
+            item => !isUndefined(item)
+          );
+          this.updateEncode(parameters);
+          console.log(
+            "%c [ parameters ]-1034",
+            "font-size:13px; background:pink; color:#bf2c9f;",
+            parameters
+          );
 
           tx = this.$polkaApi.tx[section][method](...parameters);
         }
@@ -1055,9 +1075,10 @@ export default {
         console.log(
           "%c [ error ]-1077",
           "font-size:13px; background:pink; color:#bf2c9f;",
-          error
+          error.message
         );
-        this.fee = this.$t("calculating");
+
+        this.fee = this.$t("Insufficient parameters");
       }
     },
 
@@ -1183,9 +1204,17 @@ export default {
 
       return params.map(({ value }) => {
         const param =
-          isObject(value) && value.valueKey ? value[value.valueKey] : value;
+          isObject(value) && value?.valueKey ? value[value.valueKey] : value;
 
-        return isNaN(+param) ? param : this.getBn(param);
+        if (value instanceof Uint8Array) {
+          return u8aToHex(value);
+        }
+
+        if (isBoolean(param) || isNaN(+param) || isAddress(param) || isNull(param)) {
+          return param;
+        }
+
+        return this.getBn(param);
       });
     },
 
@@ -1198,6 +1227,7 @@ export default {
 
       try {
         parameters = this.getTxParameters(params);
+        this.updateEncode(parameters);
       } catch (error) {
         this.$message({
           type: "error",
@@ -1411,6 +1441,23 @@ export default {
             };
           });
         });
+    },
+
+    updateEncode(parameters) {
+      const { section, method } = this.form.extrinsic;
+      if (!section || !method) {
+        this.encode = {};
+        return;
+      }
+
+      const fn = this.$polkaApi.tx[section][method];
+      const submitable = fn(...parameters);
+      const u8a = submitable.method.toU8a();
+
+      this.form.encode = {
+        data: u8aToHex(u8a),
+        hash: submitable.registry.hash(u8a).toHex()
+      };
     }
   }
 };

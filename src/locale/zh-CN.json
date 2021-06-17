@@ -1,4 +1,6 @@
 {
+  "Drag file here or click to select": "Drag file here or click to select",
+  "Insufficient parameters": "参数不足",
   "about": "关于",
   "account": "账户",
   "accounts": "账户",
@@ -24,6 +26,9 @@
   "donate": "捐赠",
   "donate_other": "捐赠其他网络通证",
   "donate_unit": "捐赠 ({unit}) :",
+  "empty": "空",
+  "encoded call data": "encoded call data",
+  "encoded call hash": "encoded call hash",
   "error": {
     "404": "没有找到相关信息",
     "call_data": "Call Data 错误",
@@ -32,12 +37,15 @@
     "threshold": "阈值至少为2",
     "value": "数量输入有误"
   },
+  "exclude option": "不包括选项",
   "explorer": "浏览器",
   "external": "外部账号",
   "extrinsic": "交易",
   "extrinsic_index": "交易ID",
+  "false_label": "否",
   "fee": "*手续费: {num}",
   "id": "ID",
+  "include option": "包括选项",
   "injected": "本地账号",
   "language_demo": "语言",
   "loading": "加载中",
@@ -48,6 +56,10 @@
     "delete": "确认删除吗？"
   },
   "multisig": {
+    "Confirmed Extrinsic": "已确认",
+    "In Progress": "待确认",
+    "Members": "成员数",
+    "Threshold": "阈值",
     "approval": "批准多签交易",
     "approval_tip": "请确认交易信息无误后，再批准交易",
     "cancel": "取消多签交易",
@@ -56,11 +68,7 @@
     "from_chain": "Call Data (从链存储中读取)",
     "index": "多签钱包",
     "intro": "Subscan Multi-sig 安全便捷的多签钱包管理和交易工具",
-    "sending_transaction": "发送交易 {transaction}",
-    "In Progress": "待确认",
-    "Confirmed Extrinsic": "已确认",
-    "Threshold": "阈值",
-    "Members": "成员数"
+    "sending_transaction": "发送交易 {transaction}"
   },
   "name": "名称",
   "network": "网络",
@@ -100,6 +108,7 @@
   "transaction_success_title": "成功",
   "transaction_waiting_content": "等待交易反馈",
   "transaction_waiting_title": "等待",
+  "truth_label": "是",
   "unavailable": "不可用",
   "value": "数量",
   "version_history": "版本历史",
@@ -113,11 +122,11 @@
     "index": "钱包",
     "list": "多签钱包列表",
     "tip": {
-      "name": "多签钱包名称（任意名字帮助记忆）",
-      "threshold": "多签生效至少需要获得的签名数",
-      "members": "多签钱包成员账号，每一个成员为一个链上账号/地址。",
+      "member_address": "输入账号或者从下拉列表中选择",
       "member_name": "成员名字",
-      "member_address": "输入账号或者从下拉列表中选择"
+      "members": "多签钱包成员账号，每一个成员为一个链上账号/地址。",
+      "name": "多签钱包名称（任意名字帮助记忆）",
+      "threshold": "多签生效至少需要获得的签名数"
     }
   }
 }

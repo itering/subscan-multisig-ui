@@ -37,6 +37,7 @@
       <component
         :is="control.component"
         v-model="params[index].value"
+        :sub="params[index].type.sub"
       ></component>
     </el-form-item>
   </div>
@@ -45,8 +46,7 @@
 <script>
 import { GenericCall } from "@polkadot/types";
 import { getTypeDef } from "@polkadot/types/create";
-import { componentDefs } from "../../config/component-def";
-import { Input } from "element-ui";
+import { findComponent } from "../../utils/find-component";
 
 export default {
   name: "extrinsic",
@@ -117,11 +117,14 @@ export default {
       }
 
       const result = this.params.map(({ name, type }) => {
-        const target = componentDefs.find(
-          ({ types }) => types.indexOf(type.type) > -1
+        const component = findComponent(this.$polkaApi.registry, type, {});
+        console.log(
+          "%c [ component ]-121",
+          "font-size:13px; background:pink; color:#bf2c9f;",
+          component
         );
 
-        return { label: name, component: target ? target.component : Input };
+        return { label: name, component };
       });
 
       return result;
@@ -161,6 +164,7 @@ export default {
       });
     }
   },
+
   watch: {
     section: function() {
       this.$emit("value-change", {
@@ -169,6 +173,7 @@ export default {
         params: null
       });
     },
+
     method: function() {
       this.$emit("value-change", {
         section: this.section,
@@ -176,9 +181,10 @@ export default {
         params: null
       });
     },
+
     params: {
       deep: true,
-      handler: 'onParamsChange'
+      handler: "onParamsChange"
     }
   }
 };

@@ -1,21 +1,23 @@
 <template>
   <el-input-number
-    :disabled="disabled"
-    :min="min"
+    v-model="source"
+    :placeholder="$t('balance')"
+    :controls="false"
+    :min="0"
     :max="max"
-    v-model="amount"
-    controls-position="right"
+    :disabled="disabled"
+    :precision="precision"
     @change="handleChange"
   ></el-input-number>
 </template>
 
 <script>
 export default {
-  name: "Amount",
-  
+  name: "Balance",
+
   data() {
     return {
-      amount: 0
+      source: ""
     };
   },
 
@@ -40,21 +42,15 @@ export default {
       default: Infinity
     },
 
-    min: {
+    precision: {
       type: Number,
       default: 0
-    },
-
-    onChange: {
-      type: Function,
-      default: () => { }
     }
   },
 
   methods: {
     handleChange(value) {
-      this.$emit('value-change', value);
-      this.onChange(value);
+      this.$emit("value-change", value);
     }
   }
 };
