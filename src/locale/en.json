@@ -27,6 +27,8 @@
   "donate_other": "Donate Other Tokens",
   "donate_unit": "Donate ({unit}) :",
   "empty": "Empty",
+  "encoded call data": "encoded call data",
+  "encoded call hash": "encoded call hash",
   "error": {
     "404": "Not Found",
     "call_data": "Call Data error",

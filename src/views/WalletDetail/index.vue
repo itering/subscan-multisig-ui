@@ -188,7 +188,15 @@
             </el-select>
           </el-form-item>
 
-          <InputExtrinsic v-model="form.extrinsic" />
+          <input-extrinsic v-model="form.extrinsic" ></input-extrinsic>
+
+          <el-form-item :label="$t('encoded call data')">
+            <el-input :value="form.encode.data || '0x'" disabled></el-input>
+          </el-form-item>
+
+          <el-form-item :label="$t('encoded call hash')">
+            <el-input :value="form.encode.hash || '0x'" disabled></el-input>
+          </el-form-item>
         </el-form>
 
         <div class="split-line"></div>
@@ -550,7 +558,8 @@ export default {
       address: "",
       form: {
         account: "",
-        extrinsic: {}
+        extrinsic: {},
+        encode: {}
       },
       formRules: {
         value: [
@@ -1036,6 +1045,7 @@ export default {
           const parameters = this.getTxParameters(params).filter(
             item => !isUndefined(item)
           );
+          this.updateEncode(parameters);
           console.log(
             "%c [ parameters ]-1034",
             "font-size:13px; background:pink; color:#bf2c9f;",
@@ -1217,6 +1227,7 @@ export default {
 
       try {
         parameters = this.getTxParameters(params);
+        this.updateEncode(parameters);
       } catch (error) {
         this.$message({
           type: "error",
@@ -1430,6 +1441,23 @@ export default {
             };
           });
         });
+    },
+
+    updateEncode(parameters) {
+      const { section, method } = this.form.extrinsic;
+      if (!section || !method) {
+        this.encode = {};
+        return;
+      }
+
+      const fn = this.$polkaApi.tx[section][method];
+      const submitable = fn(...parameters);
+      const u8a = submitable.method.toU8a();
+
+      this.form.encode = {
+        data: u8aToHex(u8a),
+        hash: submitable.registry.hash(u8a).toHex()
+      };
     }
   }
 };

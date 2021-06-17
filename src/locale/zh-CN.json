@@ -27,6 +27,8 @@
   "donate_other": "捐赠其他网络通证",
   "donate_unit": "捐赠 ({unit}) :",
   "empty": "空",
+  "encoded call data": "encoded call data",
+  "encoded call hash": "encoded call hash",
   "error": {
     "404": "没有找到相关信息",
     "call_data": "Call Data 错误",
