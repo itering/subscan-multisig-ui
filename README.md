@@ -1,3 +1,4 @@
+_This repo is deprecated and replaced by a [React implementation](https://github.com/itering/multisig)_
 ![grants_badge](./grants_badge.png)
 
 # Subscan Multisig UI
